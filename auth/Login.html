@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="utf-8">
+    <title>babyinfo — Autentificare</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<div class="shell" data-screen-label="Login">
+
+    <section class="left">
+        <div class="bubble b1"></div>
+        <div class="bubble b2"></div>
+        <div class="bubble b3"></div>
+        <div class="bubble b4"></div>
+
+        <header class="brand">
+            <div class="brand-mark"></div>
+            <div class="brand-name">baby<em>info</em></div>
+        </header>
+
+        <div class="left-pitch">
+            <div class="eyebrow">Bine ai revenit</div>
+            <h1>Carnetul cel mic<br/>pentru <em>micuțul</em> tău.</h1>
+            <p>Intră în cont și vezi cum a dormit Mila azi-noapte, ce a mâncat și cele șapte fotografii la care bunica a dat deja inimioară.</p>
+        </div>
+
+        <div class="testimonial">
+            <div class="av">A</div>
+            <div>
+                <p>„N-am pierdut nicio masă, niciun moment important, nicio vaccinare în 7 luni. Noi ne amintim doar momentele."</p>
+                <div class="who">Anna · mama Milei, 7 luni</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── RIGHT form ──────────────────────────────────────────── -->
+    <section class="right">
+        <div class="form">
+            <div class="top-link">Cont nou?<a href="register.html">Creează unul →</a></div>
+
+            <h2>Bine ai <em>revenit</em>.</h2>
+            <p class="lede">O familie, fiecare detaliu la locul lui.</p>
+
+            <form id="login-form" onsubmit="handleLogin(event)">
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <div class="input-wrap">
+            <span class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+            </span>
+                        <input id="email" type="email" placeholder="ana@familie.ro" autocomplete="email" name="email">
+                        <div class="field-err" id="err-email">Adresă de email invalidă.</div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="pw">Parolă</label>
+                    <div class="input-wrap">
+            <span class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+                        <input id="pw" type="password" placeholder="••••••••••" autocomplete="current-password" name="password">
+                        <button type="button" class="toggle" onclick="togglePw('pw',this)" aria-label="Arată parola">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                        <div class="field-err" id="err-pw">Parola trebuie să aibă cel puțin 8 caractere.</div>
+                    </div>
+                </div>
+
+                <div class="row-between">
+                    <label class="check">
+                        <input type="checkbox" name="remember" checked>
+                        Ține-mă autentificat
+                    </label>
+                    <a href="ForgotPassword.html">Ai uitat parola?</a>
+                </div>
+
+                <button class="btn-primary" type="submit" id="login-btn">
+                    <span class="spinner"></span>
+                    <span class="btn-label">Intră în cont</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </button>
+
+                <div class="divider">sau continuă cu</div>
+
+                <div class="oauth">
+                    <button type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 11v3.4h4.8c-.2 1.3-1.4 3.8-4.8 3.8-2.9 0-5.3-2.4-5.3-5.4S9.1 7.4 12 7.4c1.7 0 2.8.7 3.4 1.3l2.3-2.2C16.3 5 14.3 4 12 4c-4.4 0-8 3.6-8 8s3.6 8 8 8c4.6 0 7.7-3.3 7.7-7.8 0-.5 0-.9-.1-1.2H12z"/></svg>
+                        Google
+                    </button>
+                    <button type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#000" d="M17.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.8-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2-.1 1.6-.8 3-.8s1.8.8 3 .7c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.4zm-2.4-6.3c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.7-1.3z"/></svg>
+                        Apple
+                    </button>
+                </div>
+
+                <div class="footnote">
+                    Aplicație pentru o singură familie. <a href="#">Planuri extinse →</a>
+                </div>
+
+                <div class="legal">
+                    Prin autentificare ești de acord cu <a href="#">Termenii</a> și <a href="#">Politica de confidențialitate</a>.<br>
+                    Datele copilului tău sunt ale tale — criptate, exportabile, ștergibile.
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    function togglePw(id, btn) {
+        const inp = document.getElementById(id);
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        btn.querySelector('svg').style.opacity = show ? '1' : '0.45';
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const email = document.getElementById('email');
+        const pw    = document.getElementById('pw');
+        const btn   = document.getElementById('login-btn');
+        let ok = true;
+
+        [email, pw].forEach(f => f.classList.remove('err'));
+        document.getElementById('err-email').classList.remove('show');
+        document.getElementById('err-pw').classList.remove('show');
+
+        if (!email.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+            email.classList.add('err');
+            document.getElementById('err-email').classList.add('show');
+            ok = false;
+        }
+        if (!pw.value || pw.value.length < 8) {
+            pw.classList.add('err');
+            document.getElementById('err-pw').classList.add('show');
+            ok = false;
+        }
+        if (!ok) return;
+
+        btn.classList.add('loading'); btn.disabled = true;
+        // producție: fetch('/api/login', { method:'POST', body: new FormData(e.target) })
+        setTimeout(() => { window.location.href = '../Baby Info.html'; }, 1600);
+    }
+</script>
+</body>
+</html>

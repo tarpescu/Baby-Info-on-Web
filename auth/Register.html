@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="ro">
+<head>
+    <meta charset="utf-8">
+    <title>babyinfo — Cont nou</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="auth.css">
+</head>
+<body>
+
+<div class="shell" data-screen-label="Register">
+
+    <section class="left">
+        <div class="bubble b1"></div>
+        <div class="bubble b2"></div>
+        <div class="bubble b3"></div>
+        <div class="bubble b4"></div>
+
+        <header class="brand">
+            <div class="brand-mark"></div>
+            <div class="brand-name">baby<em>info</em></div>
+        </header>
+
+        <div class="left-pitch">
+            <div class="eyebrow">Trei minute, apoi pentru totdeauna</div>
+            <h1>Începeți primul<br/><em>capitol</em> împreună.</h1>
+            <p>O familie gratuită. Co-parentul, bunicii și bona pot intra mai târziu — tu alegi ce poate vedea fiecare.</p>
+        </div>
+
+        <div class="testimonial" style="flex-direction:column;align-items:stretch;gap:12px">
+            <div style="display:flex;gap:12px;align-items:center">
+        <span style="width:26px;height:26px;border-radius:50%;background:#CBE0C2;display:grid;place-items:center;color:#3c5c34;flex:0 0 auto">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+        </span>
+                <span style="font-size:13px;color:var(--ink)">Fotografii, video și memo-uri vocale nelimitate</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+        <span style="width:26px;height:26px;border-radius:50%;background:#E2D5F0;display:grid;place-items:center;color:#5a3f78;flex:0 0 auto">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+        </span>
+                <span style="font-size:13px;color:var(--ink)">Grafice de creștere, somn și hrănire generate automat</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+        <span style="width:26px;height:26px;border-radius:50%;background:#FFE9A8;display:grid;place-items:center;color:#6b5414;flex:0 0 auto">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+        </span>
+                <span style="font-size:13px;color:var(--ink)">Flux RSS privat, doar pentru bunici</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:center">
+        <span style="width:26px;height:26px;border-radius:50%;background:#C9DDF2;display:grid;place-items:center;color:#2f4d70;flex:0 0 auto">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>
+        </span>
+                <span style="font-size:13px;color:var(--ink)">Export complet CSV &amp; JSON — datele sunt ale tale</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="right">
+        <div class="form">
+            <div class="top-link">Deja cu noi?<a href="login.html">Autentifică-te →</a></div>
+
+            <h2>Creează un <em>cont</em>.</h2>
+            <p class="lede">Deocamdată ești singur — invită familia când ești pregătit.</p>
+
+            <div class="steps">
+                <span class="dot on"></span><b>1. Tu</b>
+                <span class="dot"></span>2. Rolul tău
+                <span class="dot"></span>3. Copilul tău
+            </div>
+
+            <form id="reg-form" onsubmit="handleRegister(event)">
+
+                <div class="field row">
+                    <div>
+                        <label for="first">Prenume</label>
+                        <div class="input-wrap">
+              <span class="ico">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+              </span>
+                            <input id="first" type="text" placeholder="Ana" autocomplete="given-name" name="first_name">
+                            <div class="field-err" id="err-first">Câmp obligatoriu.</div>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="last">Nume</label>
+                        <div class="input-wrap">
+              <span class="ico">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="9" r="3.5"/><path d="M5 20a7 7 0 0 1 14 0"/></svg>
+              </span>
+                            <input id="last" type="text" placeholder="Ionescu" autocomplete="family-name" name="last_name">
+                            <div class="field-err" id="err-last">Câmp obligatoriu.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Alege un avatar</label>
+                    <div class="avatar-picker" id="avatar-picker">
+                        <div class="av-pick c1 active" data-color="c1" onclick="pickAvatar(this)"></div>
+                        <div class="av-pick c2" data-color="c2" onclick="pickAvatar(this)"></div>
+                        <div class="av-pick c3" data-color="c3" onclick="pickAvatar(this)"></div>
+                        <div class="av-pick c4" data-color="c4" onclick="pickAvatar(this)"></div>
+                        <div class="av-pick c5" data-color="c5" onclick="pickAvatar(this)"></div>
+                        <div class="av-pick c6" data-color="c6" onclick="pickAvatar(this)"></div>
+                        <span style="font-size:11.5px;color:var(--ink-3);margin-left:4px">sau încarcă o poză</span>
+                    </div>
+                    <input type="hidden" name="avatar_color" id="avatar-color" value="c1">
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <div class="input-wrap">
+            <span class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>
+            </span>
+                        <input id="email" type="email" placeholder="ana@familie.ro" autocomplete="email" name="email">
+                        <div class="field-err" id="err-email">Adresă de email invalidă.</div>
+                    </div>
+                    <div class="hint">Trimitem un singur cod de verificare — fără marketing, niciodată.</div>
+                </div>
+
+                <div class="field">
+                    <label for="pw">Parolă</label>
+                    <div class="input-wrap">
+            <span class="ico">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+            </span>
+                        <input id="pw" type="password" placeholder="Cel puțin 10 caractere" autocomplete="new-password"
+                               name="password" oninput="updateStrength(this.value)">
+                        <button type="button" class="toggle" onclick="togglePw('pw',this)" aria-label="Arată parola">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+                        </button>
+                        <div class="field-err" id="err-pw">Parola trebuie să aibă cel puțin 8 caractere.</div>
+                    </div>
+                    <div class="strength" id="strength"><span></span><span></span><span></span><span></span></div>
+                    <div class="hint">Putere: <b id="strength-label">prea scurtă</b> · recomandăm o frază ca <i>„trei rațuște somnolente"</i></div>
+                </div>
+
+                <div class="field" style="margin-bottom:18px">
+                    <label>Rolul tău în familie</label>
+                    <div class="role-grid">
+
+                        <label class="role-option">
+                            <input type="radio" name="role" value="owner" checked>
+                            <div class="role-card">
+                                <div class="role-icon" style="background:#F2E6F0">👑</div>
+                                <div class="role-name">Owner</div>
+                                <div class="role-perms">Creatorul contului, acces complet, gestionează billing</div>
+                            </div>
+                        </label>
+
+                        <label class="role-option">
+                            <input type="radio" name="role" value="coparent">
+                            <div class="role-card">
+                                <div class="role-icon" style="background:#E8F0E2">🤝</div>
+                                <div class="role-name">Co-parent</div>
+                                <div class="role-perms">Înregistrează, editează, partajează, gestionează cercul</div>
+                            </div>
+                        </label>
+
+                        <label class="role-option">
+                            <input type="radio" name="role" value="caregiver">
+                            <div class="role-card">
+                                <div class="role-icon" style="background:#EAF1F9">🧑‍🍼</div>
+                                <div class="role-name">Caregiver</div>
+                                <div class="role-perms">Înregistrează mese, somn și fotografii</div>
+                            </div>
+                        </label>
+
+                        <label class="role-option">
+                            <input type="radio" name="role" value="viewer">
+                            <div class="role-card">
+                                <div class="role-icon" style="background:#F0EBF5">👁</div>
+                                <div class="role-name">Viewer</div>
+                                <div class="role-perms">Vede timeline-ul și momentele partajate</div>
+                            </div>
+                        </label>
+
+                    </div>
+                    <div class="hint" id="role-hint" style="margin-top:0">
+                        <b>Owner</b> — ai control total asupra contului familiei. Poți invita pe oricine și poți modifica orice.
+                    </div>
+                </div>
+
+                <div class="row-between" style="margin-bottom:20px">
+                    <label class="check">
+                        <input type="checkbox" name="terms" id="terms">
+                        Sunt de acord cu <a href="#" style="color:var(--ink);font-weight:600;margin-left:2px">termenii</a>
+                    </label>
+                    <label class="check">
+                        <input type="checkbox" name="updates">
+                        Noutăți despre produs
+                    </label>
+                </div>
+                <div class="field-err" id="err-terms" style="margin-top:-14px;margin-bottom:14px">Trebuie să accepți termenii.</div>
+
+                <button class="btn-primary" type="submit" id="reg-btn">
+                    <span class="spinner"></span>
+                    <span class="btn-label">Continuă</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>
+                </button>
+
+                <div class="divider">sau înregistrare cu</div>
+
+                <div class="oauth">
+                    <button type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 11v3.4h4.8c-.2 1.3-1.4 3.8-4.8 3.8-2.9 0-5.3-2.4-5.3-5.4S9.1 7.4 12 7.4c1.7 0 2.8.7 3.4 1.3l2.3-2.2C16.3 5 14.3 4 12 4c-4.4 0-8 3.6-8 8s3.6 8 8 8c4.6 0 7.7-3.3 7.7-7.8 0-.5 0-.9-.1-1.2H12z"/></svg>
+                        Google
+                    </button>
+                    <button type="button">
+                        <svg width="16" height="16" viewBox="0 0 24 24"><path fill="#000" d="M17.5 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.1-2.8.9-3.5.9-.7 0-1.8-.8-3-.8-1.5 0-2.9.9-3.7 2.3-1.6 2.8-.4 6.8 1.1 9 .8 1.1 1.7 2.3 2.9 2.2 1.2-.1 1.6-.8 3-.8s1.8.8 3 .7c1.2 0 2-1.1 2.8-2.2.9-1.3 1.2-2.5 1.3-2.6-.1 0-2.5-1-2.5-3.4zm-2.4-6.3c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2-.5 2.7-1.3z"/></svg>
+                        Apple
+                    </button>
+                </div>
+
+                <div class="legal">
+                    Prin crearea unui cont ești de acord cu <a href="#">Termenii</a> și <a href="#">Politica de confidențialitate</a>. Nu vindem niciodată datele copilului tău.
+                </div>
+
+            </form>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    //Avatar picker
+    function pickAvatar(el) {
+        document.querySelectorAll('.av-pick').forEach(a => a.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('avatar-color').value = el.dataset.color;
+    }
+
+    //Password toggle
+    function togglePw(id, btn) {
+        const inp = document.getElementById(id);
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        btn.querySelector('svg').style.opacity = show ? '1' : '0.45';
+    }
+
+    //Password strength
+    const strengthLabels = ['prea scurtă','slabă','acceptabilă','bună','lullaby-puternică'];
+    function updateStrength(v) {
+        let s = 0;
+        if (v.length >= 8)  s++;
+        if (/[A-Z]/.test(v)) s++;
+        if (/[0-9]/.test(v)) s++;
+        if (/[^A-Za-z0-9]/.test(v) || v.length >= 14) s++;
+        const bar = document.getElementById('strength');
+        bar.className = 'strength' + (s ? ' s' + s : '');
+        document.getElementById('strength-label').textContent = strengthLabels[s] || 'prea scurtă';
+    }
+
+    // Role hint
+    const roleDescriptions = {
+        owner:     '<b>Owner</b> — ai control total asupra contului familiei. Poți invita pe oricine și poți modifica orice.',
+        coparent:  '<b>Co-parent</b> — poți înregistra și edita orice informație, invita alte persoane și partaja momente.',
+        caregiver: '<b>Caregiver</b> — poți înregistra mese, ore de somn și încărca fotografii. Ideal pentru bonă sau bunici activi.',
+        viewer:    '<b>Viewer</b> — vezi timeline-ul și momentele marcate ca publice. Perfect pentru bunici, unchi, mătuși.'
+    };
+    document.querySelectorAll('input[name="role"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.getElementById('role-hint').innerHTML = roleDescriptions[radio.value] || '';
+        });
+    });
+
+    /* ── Form submit ── */
+    function handleRegister(e) {
+        e.preventDefault();
+        const first  = document.getElementById('first');
+        const last   = document.getElementById('last');
+        const email  = document.getElementById('email');
+        const pw     = document.getElementById('pw');
+        const terms  = document.getElementById('terms');
+        const btn    = document.getElementById('reg-btn');
+        let ok = true;
+
+        // reset errors
+        [first, last, email, pw].forEach(f => f.classList.remove('err'));
+        ['err-first','err-last','err-email','err-pw','err-terms'].forEach(id => {
+            document.getElementById(id).classList.remove('show');
+        });
+
+        if (!first.value.trim()) { first.classList.add('err'); document.getElementById('err-first').classList.add('show'); ok = false; }
+        if (!last.value.trim())  { last.classList.add('err');  document.getElementById('err-last').classList.add('show');  ok = false; }
+        if (!email.value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+            email.classList.add('err'); document.getElementById('err-email').classList.add('show'); ok = false;
+        }
+        if (!pw.value || pw.value.length < 8) {
+            pw.classList.add('err'); document.getElementById('err-pw').classList.add('show'); ok = false;
+        }
+        if (!terms.checked) { document.getElementById('err-terms').classList.add('show'); ok = false; }
+        if (!ok) return;
+
+        btn.classList.add('loading'); btn.disabled = true;
+        // producție: fetch('/api/register', { method:'POST', body: new FormData(e.target) })
+        setTimeout(() => { window.location.href = '../Baby Info.html'; }, 1800);
+    }
+</script>
+
+</body>
+</html>
