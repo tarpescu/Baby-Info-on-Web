@@ -89,6 +89,15 @@ html, body {
 }
 
 .brand { display:flex; align-items:center; gap:12px; position:relative; z-index:2; }
+.brand-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+.brand-link:hover .brand-name { color: var(--peach-deep); }
 .brand-mark {
     width:38px; height:38px; border-radius:50%;
     background:

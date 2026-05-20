@@ -19,10 +19,10 @@
         <div class="bubble b3"></div>
         <div class="bubble b4"></div>
 
-        <header class="brand">
+        <a class="brand brand-link" id="brand-link" href="Login.html" aria-label="Mergi la meniul de autentificare">
             <div class="brand-mark"></div>
             <div class="brand-name">baby<em>info</em></div>
-        </header>
+        </a>
 
         <div class="left-pitch">
             <div class="eyebrow">Bine ai revenit</div>
@@ -42,7 +42,7 @@
     <!-- ── RIGHT form ──────────────────────────────────────────── -->
     <section class="right">
         <div class="form">
-            <div class="top-link">Cont nou?<a href="register.html">Creează unul →</a></div>
+            <div class="top-link">Cont nou?<a href="Register.html">Creează unul →</a></div>
 
             <h2>Bine ai <em>revenit</em>.</h2>
             <p class="lede">O familie, fiecare detaliu la locul lui.</p>
@@ -124,6 +124,23 @@
         btn.querySelector('svg').style.opacity = show ? '1' : '0.45';
     }
 
+    function isAuthenticated() {
+        try {
+            return localStorage.getItem('babyinfo-authenticated') === '1';
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function syncBrandLink() {
+        const brandLink = document.getElementById('brand-link');
+        if (!brandLink) return;
+        brandLink.href = isAuthenticated() ? '../pages/Dashboard.html' : 'Login.html';
+        brandLink.setAttribute('aria-label', isAuthenticated() ? 'Mergi la dashboard' : 'Mergi la meniul de autentificare');
+    }
+
+    syncBrandLink();
+
     function handleLogin(e) {
         e.preventDefault();
         const email = document.getElementById('email');
@@ -149,7 +166,10 @@
 
         btn.classList.add('loading'); btn.disabled = true;
         // producție: fetch('/api/login', { method:'POST', body: new FormData(e.target) })
-        setTimeout(() => { window.location.href = '/pages/Dashboard.html'; }, 1600);
+        try {
+            localStorage.setItem('babyinfo-authenticated', '1');
+        } catch (error) {}
+        setTimeout(() => { window.location.href = '../pages/Dashboard.html'; }, 1600);
     }
 </script>
 </body>
