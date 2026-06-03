@@ -29,6 +29,10 @@ class Router
         $this->add('PUT', '/api/children/{id}', 'ChildController', 'update');
         $this->add('DELETE', '/api/children/{id}', 'ChildController', 'destroy');
 
+        $this->add('GET', '/api/children/{id}/family', 'FamilyController', 'index');
+        $this->add('PUT', '/api/children/{id}/family/permission', 'FamilyController', 'updatePermission');
+        $this->add('DELETE', '/api/children/{id}/family/member', 'FamilyController', 'removeMember');
+
         $this->add('GET', '/api/children/{id}/timeline', 'TimelineController', 'index');
         $this->add('GET', '/api/children/{id}/feed', 'TimelineController', 'feed');
         $this->add('POST', '/api/children/{id}/moments', 'MomentController', 'store');
