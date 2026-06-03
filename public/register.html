@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Baby Info - Start Your Journey</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:wght@400;600;800&family=Caveat:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <style>
+        /* @author Romila Raluca */
+
+        :root {
+            --bg-paper: #fff8ef;
+            --primary: #130202;
+            --secondary: #9d422c;
+            --text-body: #504443;
+            --text-muted: #75889c;
+            --scrap-sage: #d8e2dc;
+            --outline: #d4c2c1;
+            --tape-blue: rgba(131, 166, 183, 0.7);
+            --ink-wash: rgba(50, 23, 22, 0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-paper);
+            background-image: url('https://www.transparenttextures.com/patterns/p6.png');
+            color: var(--text-body);
+            font-family: 'Courier Prime', monospace;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+        input { font-family: inherit; }
+
+        .font-headline { font-family: 'Libre Caslon Text', serif; }
+        .font-handwritten { font-family: 'Caveat', cursive; }
+        .font-typewriter { font-family: 'Special Elite', cursive; }
+        .font-label { font-family: 'Bricolage Grotesque', sans-serif; }
+
+        .material-symbols-outlined {
+            vertical-align: middle;
+        }
+
+        /* Navbar Layout */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 248, 239, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--outline);
+            z-index: 100;
+        }
+        .nav-logo { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .btn-nav {
+            background: var(--secondary);
+            color: #fff;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            transition: transform 0.2s;
+        }
+        .btn-nav:hover { transform: rotate(2deg); }
+
+        /* Main Container */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 2rem;
+        }
+
+        .form-wrapper {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .torn-paper {
+            background: #fff;
+            padding: 4rem;
+            box-shadow: 5px 15px 30px rgba(0,0,0,0.1);
+            position: relative;
+            transform: rotate(-1deg);
+            clip-path: polygon(
+                    0% 2%, 3% 0%, 7% 1%, 11% 0%, 15% 2%, 20% 0%, 24% 1%, 29% 0%, 33% 2%, 38% 0%, 42% 1%, 47% 0%, 51% 2%, 56% 0%, 60% 1%, 65% 0%, 69% 2%, 74% 0%, 78% 1%, 83% 0%, 87% 2%, 92% 0%, 96% 1%, 100% 0%,
+                    100% 100%, 0% 100%
+            );
+            transition: transform 0.1s ease-out;
+        }
+
+        .washi-tape {
+            position: absolute;
+            top: -10px;
+            left: 25%;
+            width: 120px;
+            height: 35px;
+            z-index: 10;
+            opacity: 0.8;
+            background-color: var(--tape-blue);
+            clip-path: polygon(0 0, 100% 1%, 98% 50%, 100% 99%, 0 100%, 2% 50%);
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .doc-title {
+            font-size: 1.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 0.5rem;
+        }
+
+        .ink-stamp {
+            transform: rotate(-15deg);
+            border: 3px double var(--secondary);
+            color: var(--secondary);
+            mix-blend-mode: multiply;
+            padding: 10px 20px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* Form Grid & Inputs */
+        .notebook-lines {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            background-image: repeating-linear-gradient(transparent, transparent 31px, var(--outline) 31px, var(--outline) 32px);
+            background-size: 100% 32px;
+            line-height: 32px;
+            padding-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: -5px;
+        }
+
+        .typewriter-input {
+            background: transparent;
+            border: none;
+            border-bottom: 1px dashed var(--text-muted);
+            font-size: 1.1rem;
+            color: var(--primary);
+            padding: 4px 0;
+            width: 100%;
+        }
+
+        .typewriter-input:focus {
+            outline: none;
+            border-bottom: 2px solid var(--secondary);
+        }
+
+        .section-title {
+            font-size: 2rem;
+            color: var(--secondary);
+            border-bottom: 1px solid var(--outline);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+        }
+
+        .evidence-box {
+            background: var(--scrap-sage);
+            padding: 1rem;
+            border-radius: 4px;
+            transform: rotate(2deg);
+            border: 1px solid rgba(0,0,0,0.1);
+            position: relative;
+            margin-top: 2rem;
+        }
+
+        /* Footer & Submit */
+        .official-footer {
+            grid-column: span 2;
+            border: 2px dashed var(--outline);
+            padding: 2rem;
+            background: var(--ink-wash);
+            margin-top: 2rem;
+        }
+
+        .btn-submit {
+            background: var(--primary);
+            color: #fff;
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transform: rotate(-1deg);
+            transition: all 0.2s;
+            display: block;
+            margin: 3rem auto 1rem;
+        }
+        .btn-submit:hover {
+            background: var(--secondary);
+            transform: rotate(0deg);
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: rotate(0deg);
+        }
+
+        @media (max-width: 768px) {
+            .notebook-lines { grid-template-columns: 1fr; gap: 2rem; }
+            .form-header { flex-direction: column; gap: 2rem; }
+            .torn-paper { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <a href="/" class="nav-logo font-headline" style="text-decoration:none; color:inherit;">Baby Info</a>
+    <a href="/login" class="btn-nav font-label">Log In</a>
+</header>
+
+<main class="main-content">
+    <div class="form-wrapper">
+        <div class="torn-paper" id="paper-form">
+            <div class="washi-tape"></div>
+
+            <div class="form-header">
+                <div>
+                    <h1 class="doc-title font-headline">Certificate of Registry</h1>
+                    <p class="font-typewriter" style="opacity: 0.7; font-size: 0.9rem;">Series: 2026-B / MEMORY_JOURNAL_V1</p>
+                </div>
+                <div class="ink-stamp font-typewriter">
+                    <span style="font-size: 0.7rem; display: block;">Official Seal</span>
+                    <span class="material-symbols-outlined" style="font-size: 2rem;">verified_user</span>
+                    <span style="font-size: 0.7rem; display: block;">Registry Office</span>
+                </div>
+            </div>
+
+            <form id="registerForm" class="notebook-lines">
+
+                <div class="col-left">
+                    <h2 class="section-title font-handwritten">Parent Details</h2>
+
+                    <div class="input-group">
+                        <label class="font-typewriter">Full Name</label>
+                        <input type="text" name="parent_name" class="typewriter-input font-typewriter" placeholder="Type name here..." required/>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="font-typewriter">Electronic Mail</label>
+                        <input type="email" name="email" class="typewriter-input font-typewriter" placeholder="email@address.com" required/>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="font-typewriter">Security Key (Password)</label>
+                        <input type="password" name="password" class="typewriter-input font-typewriter" placeholder="********" required/>
+                    </div>
+                </div>
+
+                <div class="col-right">
+                    <h2 class="section-title font-handwritten">Baby's Identity</h2>
+
+                    <div class="input-group">
+                        <label class="font-typewriter">Child's Name</label>
+                        <input type="text" name="child_name" class="typewriter-input font-typewriter" placeholder="Little one's name..."/>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="font-typewriter">Expected / Birth Date</label>
+                        <input type="date" name="child_dob" class="typewriter-input font-typewriter"/>
+                    </div>
+
+                    <div class="evidence-box">
+                        <span class="material-symbols-outlined" style="position: absolute; top: -10px; left: -10px; color: var(--text-muted);">push_pin</span>
+                        <div class="font-typewriter" style="font-size: 0.7rem; text-transform: uppercase; font-weight: bold; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(0,0,0,0.1);">Exhibit A: Supporting Statement</div>
+                        <p class="font-typewriter" style="font-size: 0.9rem; font-style: italic;">
+                            "Every scribble, every giggle, and every tiny step deserves to be remembered forever."
+                        </p>
+                    </div>
+                </div>
+
+                <div class="official-footer">
+                    <h3 class="font-typewriter" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; text-align: center;">For Official Use Only</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                        <div style="border-bottom: 1px solid var(--primary); height: 40px; display: flex; align-items: flex-end;">
+                            <span class="font-typewriter" style="font-size: 0.6rem; text-transform: uppercase;">Authorized Signature</span>
+                        </div>
+                        <div style="border-bottom: 1px solid var(--primary); height: 40px; display: flex; align-items: flex-end;">
+                            <span class="font-typewriter" style="font-size: 0.6rem; text-transform: uppercase;">Date of Filing</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mesaj eroare in stil vintage -->
+                <div id="regError" style="grid-column:span 2; display:none; padding:0.75rem 1rem; background:rgba(157,66,44,0.08); border-left:3px solid var(--secondary); font-family:'Special Elite',cursive; font-size:0.9rem; color:var(--secondary); margin-top:1rem;">
+                    <span class="material-symbols-outlined" style="font-size:1rem; vertical-align:middle; margin-right:4px;">error</span>
+                    <span id="regErrorText"></span>
+                </div>
+
+                <div style="grid-column: span 2; text-align: center;">
+                    <button type="submit" id="regBtn" class="btn-submit font-headline">Submit For Archiving</button>
+                    <p class="font-typewriter" style="font-size: 0.7rem; color: var(--text-muted);">FILE REF: BM-2026-ARCHIVE-001</p>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</main>
+
+<script>
+    /* @author Romila Raluca */
+
+    // Form input focus styling
+    const inputs = document.querySelectorAll('.typewriter-input');
+    inputs.forEach(input => {
+        input.addEventListener('focus', () => {
+            if (input.previousElementSibling) {
+                input.previousElementSibling.style.color = 'var(--secondary)';
+            }
+        });
+        input.addEventListener('blur', () => {
+            if (!input.value && input.previousElementSibling) {
+                input.previousElementSibling.style.color = '';
+            }
+        });
+    });
+
+    // Subtle parallax effect on the paper form
+    document.addEventListener('mousemove', (e) => {
+        const form = document.getElementById('paper-form');
+        const x = (window.innerWidth / 2 - e.pageX) / 80;
+        const y = (window.innerHeight / 2 - e.pageY) / 80;
+        form.style.transform = `rotate(-1deg) translate(${x}px, ${y}px)`;
+    });
+
+    // ── Inregistrare cu fetch() ─────────────────────────────────────────────
+    const regForm      = document.getElementById('registerForm');
+    const regBtn       = document.getElementById('regBtn');
+    const regError     = document.getElementById('regError');
+    const regErrorText = document.getElementById('regErrorText');
+
+    /**
+     * Afiseaza un mesaj de eroare in caseta vintage.
+     * @param {string} msg
+     */
+    function showRegError(msg) {
+        regErrorText.textContent = msg;
+        regError.style.display = 'block';
+        regError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    regForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        regError.style.display = 'none';
+
+        // Imparte "Full Name" in first_name + last_name
+        const fullName  = regForm.parent_name.value.trim();
+        const parts     = fullName.split(/\s+/);
+        const firstName = parts[0] || '';
+        const lastName  = parts.slice(1).join(' ') || '.';
+
+        const email    = regForm.email.value.trim();
+        const password = regForm.password.value;
+
+        if (password.length < 6) {
+            showRegError('Password must be at least 6 characters.');
+            return;
+        }
+
+        regBtn.disabled    = true;
+        regBtn.textContent = 'Filing...';
+
+        try {
+            const res = await fetch('/api/auth/register', {
+                method:      'POST',
+                headers:     { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    first_name: firstName,
+                    last_name:  lastName,
+                    email,
+                    password,
+                }),
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) {
+                showRegError(data.error || 'Registration failed. Please try again.');
+                regBtn.disabled    = false;
+                regBtn.textContent = 'Submit For Archiving';
+                return;
+            }
+
+            // Succes — redirect la login cu flag de confirmare
+            window.location.href = '/login?registered=1';
+
+        } catch (err) {
+            showRegError('Connection error. Please try again.');
+            regBtn.disabled    = false;
+            regBtn.textContent = 'Submit For Archiving';
+        }
+    });
+</script>
+</body>
+</html>

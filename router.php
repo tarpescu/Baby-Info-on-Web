@@ -1,6 +1,7 @@
 <?php
 /**
  * Router pentru PHP built-in server
+ * Mapare URL curate -> fisiere HTML din public/
  * @author Romila Raluca
  */
 
@@ -13,11 +14,24 @@ if (str_starts_with($uri, '/api/')) {
     exit;
 }
 
-// Static files -> public/
+// Static files (css, js, images, uploads etc.) -> public/
 $file = __DIR__ . '/public' . $uri;
 if (file_exists($file) && is_file($file)) {
     return false;
 }
 
-// SPA fallback -> public/index.html
-require __DIR__ . '/public/index.html';
+// Mapare URL curate -> pagini HTML
+$pageMap = [
+    '/'                => 'landingpage.html',
+    '/login'           => 'login.html',
+    '/register'        => 'register.html',
+    '/forgot-password' => 'forgotpassword.html',
+];
+
+if (isset($pageMap[$uri])) {
+    readfile(__DIR__ . '/public/' . $pageMap[$uri]);
+    exit;
+}
+
+// Fallback -> landing page
+readfile(__DIR__ . '/public/landingpage.html');
