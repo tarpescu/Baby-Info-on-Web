@@ -1,4 +1,14 @@
 RewriteEngine On
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*)$ index.html [QSA,L]
+
+# Nu rescrie fisierele statice existente
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# URL curate -> fisiere HTML
+RewriteRule ^login$ login.html [L]
+RewriteRule ^register$ register.html [L]
+RewriteRule ^forgot-password$ forgotpassword.html [L]
+
+# Fallback -> landing page
+RewriteRule ^(.*)$ landingpage.html [QSA,L]

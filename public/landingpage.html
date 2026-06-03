@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Baby Info - Memories Journal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:wght@400;600;800&family=Caveat:wght@400;700&family=Special+Elite&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <style>
+        /* @author Romila Raluca */
+
+        :root {
+            --bg-paper: #fff8ef;
+            --primary: #130202;
+            --secondary: #9d422c;
+            --text-body: #504443;
+            --text-muted: #75889c;
+            --scrap-blush: #f0e6e6;
+            --scrap-sage: #d8e2dc;
+            --scrap-olive: #e9edc9;
+            --scrap-envelope: #eee7db;
+            --outline: #d4c2c1;
+            --tape-blue: rgba(131, 166, 183, 0.7);
+            --max-width: 1150px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-paper);
+            background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+            color: var(--text-body);
+            font-family: 'Courier Prime', monospace;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { color: var(--primary); }
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; font-family: inherit; }
+
+        .font-headline { font-family: 'Libre Caslon Text', serif; }
+        .font-handwritten { font-family: 'Caveat', cursive; }
+        .font-typewriter { font-family: 'Special Elite', cursive; }
+        .font-label { font-family: 'Bricolage Grotesque', sans-serif; }
+
+        .torn-edge {
+            clip-path: polygon(0% 0%, 100% 2%, 98% 100%, 3% 97%, 0% 100%);
+        }
+
+        .washi-tape {
+            background-color: var(--tape-blue);
+            mix-blend-mode: multiply;
+            background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.2) 1px, transparent 0);
+            background-size: 4px 4px;
+            -webkit-mask-image: url('data:image/svg+xml,%3Csvg width="100" height="30" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0,5 L5,0 L10,5 L15,2 L20,7 L25,4 L30,8 L35,3 L40,6 L45,2 L50,7 L55,3 L60,9 L65,4 L70,7 L75,2 L80,6 L85,1 L90,8 L95,3 L100,6 L100,25 L95,28 L90,24 L85,29 L80,25 L75,29 L70,26 L65,30 L60,25 L55,29 L50,24 L45,28 L40,24 L35,29 L30,25 L25,29 L20,24 L15,28 L10,24 L5,29 L0,25 Z" fill="black"/%3E%3C/svg%3E');
+            mask-image: url('data:image/svg+xml,%3Csvg width="100" height="30" viewBox="0 0 100 30" xmlns="http://www.w3.org/2000/svg"%3E%3Cpath d="M0,5 L5,0 L10,5 L15,2 L20,7 L25,4 L30,8 L35,3 L40,6 L45,2 L50,7 L55,3 L60,9 L65,4 L70,7 L75,2 L80,6 L85,1 L90,8 L95,3 L100,6 L100,25 L95,28 L90,24 L85,29 L80,25 L75,29 L70,26 L65,30 L60,25 L55,29 L50,24 L45,28 L40,24 L35,29 L30,25 L25,29 L20,24 L15,28 L10,24 L5,29 L0,25 Z" fill="black"/%3E%3C/svg%3E');
+        }
+
+        .polaroid {
+            background: #fff;
+            padding: 12px 12px 40px 12px;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1), 10px 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.4s ease;
+            position: relative;
+        }
+
+        .container {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            background: rgba(255, 248, 239, 0.95);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid var(--outline);
+            z-index: 100;
+        }
+
+        .nav-logo { font-size: 1.8rem; font-weight: 700; }
+        .nav-links { display: flex; gap: 2.5rem; }
+        .nav-links a {
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: underline;
+            text-decoration-style: wavy;
+            text-underline-offset: 6px;
+            color: var(--secondary);
+            transition: transform 0.2s;
+        }
+        .nav-links a:hover { transform: rotate(2deg); }
+
+        .btn-primary {
+            background: var(--secondary);
+            color: #fff;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: transform 0.2s;
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.2);
+        }
+        .btn-primary:hover { transform: rotate(-2deg) scale(1.05); }
+
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 5rem 0;
+            gap: 3rem;
+            position: relative;
+        }
+
+        .hero-title-wrapper { position: relative; }
+        .hero-title {
+            font-size: clamp(3.5rem, 8vw, 5.5rem);
+            line-height: 1.1;
+        }
+        .hero-subtitle-handwritten {
+            position: absolute;
+            right: -60px;
+            top: -20px;
+            font-size: 2rem;
+            color: var(--secondary);
+            transform: rotate(-12deg);
+        }
+
+        .hero-desc {
+            max-width: 600px;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        .hero-polaroid-wrapper {
+            position: relative;
+            max-width: 320px;
+        }
+        .hero-polaroid-wrapper .washi-tape {
+            position: absolute;
+            top: -15px; left: 50%;
+            transform: translateX(-50%) rotate(-3deg);
+            width: 110px; height: 35px;
+            z-index: 10;
+        }
+        .hero-polaroid-wrapper .polaroid {
+            transform: rotate(-2.5deg);
+        }
+        .hero-polaroid-wrapper:hover .polaroid {
+            transform: rotate(0deg) scale(1.02);
+        }
+        .polaroid img {
+            width: 100%;
+            aspect-ratio: 1/1;
+            object-fit: cover;
+            filter: sepia(0.2) contrast(1.1);
+        }
+
+        .btn-large {
+            background: var(--primary);
+            color: #fff;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .btn-large:hover { transform: scale(1.05) translateY(-2px); }
+
+        .bento-section {
+            display: grid;
+            grid-template-columns: 7fr 5fr;
+            gap: 2.5rem;
+            padding: 4rem 0;
+        }
+
+        .scrap-card {
+            padding: 2.5rem;
+            position: relative;
+            box-shadow: 3px 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+
+        .card-story {
+            background-color: var(--scrap-blush);
+            transform: rotate(-1deg);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .card-story:hover { transform: rotate(0); }
+
+        .card-milestones {
+            background-color: var(--scrap-sage);
+            transform: rotate(2deg);
+            border-left: 8px solid var(--secondary);
+            margin-bottom: 2rem;
+        }
+
+        .card-medical {
+            background-color: var(--scrap-envelope);
+            overflow: hidden;
+        }
+
+        .stamp-box {
+            width: 70px; height: 70px;
+            border: 2px dashed var(--outline);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--outline);
+            transform: rotate(-15deg);
+            align-self: flex-end;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            padding: 4rem 0;
+        }
+
+        .photo-grid .polaroid:nth-child(1) { transform: rotate(-3deg); }
+        .photo-grid .polaroid:nth-child(2) { transform: rotate(2deg); margin-top: 2rem; }
+        .photo-grid .polaroid:nth-child(3) { transform: rotate(-2deg); }
+        .photo-grid .polaroid:nth-child(4) { transform: rotate(5deg); margin-top: 1rem; }
+
+        .cta-section {
+            background-color: var(--scrap-olive);
+            padding: 4rem;
+            border-radius: 12px;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .footer {
+            margin-top: 6rem;
+            padding: 2rem;
+            background: var(--scrap-envelope);
+            border-top: 4px double var(--outline);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 860px) {
+            .nav-links { display: none; }
+            .bento-section { grid-template-columns: 1fr; }
+            .photo-grid { grid-template-columns: repeat(2, 1fr); }
+            .hero-title { font-size: 3.5rem; }
+            .footer { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+        @media (max-width: 500px) {
+            .photo-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-logo font-headline">Baby Info</div>
+    <nav class="nav-links font-label">
+        <a href="#">Our Story</a>
+        <a href="#">Gallery</a>
+        <a href="#">Journal</a>
+    </nav>
+    <a href="/login" class="btn-primary font-typewriter stamp-button">Open Book</a>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <div class="hero-title-wrapper">
+            <h1 class="hero-title font-headline">
+                Baby Info
+                <span class="hero-subtitle-handwritten font-handwritten">memories of Sofia</span>
+            </h1>
+        </div>
+
+        <p class="hero-desc font-typewriter">
+            A digital keepsake for every tiny breath, messy giggle, and sleepy milestone. Your family's private journal, hand-stitched with love in the cloud.
+        </p>
+
+        <div class="hero-polaroid-wrapper">
+            <div class="washi-tape"></div>
+            <div class="polaroid">
+                <img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=400&q=80" alt="Baby Sofia smiling">
+                <div class="font-handwritten" style="text-align: center; margin-top: 15px; font-size: 1.8rem; color: var(--text-body);">
+                    First Picnic, August 2024
+                </div>
+            </div>
+        </div>
+
+        <a href="/login" class="btn-large font-headline">
+            Open Your Journal
+            <span class="material-symbols-outlined">auto_stories</span>
+        </a>
+    </section>
+
+    <section class="bento-section">
+
+        <div class="scrap-card torn-edge card-story">
+            <span class="material-symbols-outlined" style="position: absolute; top: 10px; right: 10px; font-size: 2rem; color: var(--outline); transform: rotate(15deg);">push_pin</span>
+
+            <div>
+                <h2 class="font-typewriter" style="color: var(--secondary); margin-bottom: 1.5rem; letter-spacing: 2px;">Chapter I: The Story</h2>
+                <p style="margin-bottom: 2rem;">
+                    Today you laughed for the first time when the dog sneezed. It was the most beautiful sound your father and I have ever heard. We were in the kitchen, and for a moment, time just stopped...
+                </p>
+                <hr style="border: none; border-top: 1px dashed var(--outline); margin-bottom: 2rem;">
+                <p class="font-handwritten" style="font-size: 2.5rem; color: var(--primary); line-height: 1.2;">
+                    "You're growing too fast, little one."
+                </p>
+            </div>
+
+            <div class="stamp-box font-typewriter">STAMP</div>
+        </div>
+
+        <div>
+            <div class="scrap-card card-milestones">
+                <h2 class="font-typewriter" style="margin-bottom: 1rem;">Milestone Log</h2>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 10px;">
+                    <li style="display: flex; gap: 10px; align-items: center;">
+                        <span class="material-symbols-outlined" style="color: var(--secondary);">check_circle</span>
+                        First tooth (bottom left)
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: center;">
+                        <span class="material-symbols-outlined" style="color: var(--secondary);">check_circle</span>
+                        Slept through the night!
+                    </li>
+                    <li style="display: flex; gap: 10px; align-items: center; opacity: 0.5;">
+                        <span class="material-symbols-outlined">radio_button_unchecked</span>
+                        <span style="font-style: italic;">Taking first steps...</span>
+                    </li>
+                </ul>
+                <div class="font-handwritten" style="text-align: right; color: var(--secondary); font-size: 1.5rem; margin-top: 15px;">Getting bigger!</div>
+            </div>
+
+            <div class="scrap-card card-medical">
+                <div style="position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; background: rgba(255,255,255,0.4); transform: rotate(45deg);"></div>
+                <h2 class="font-typewriter" style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
+                    <span class="material-symbols-outlined">medical_services</span> Medical & Records
+                </h2>
+                <p style="font-size: 0.9rem; margin-bottom: 1.5rem;">Securely stored health records, vaccination schedules, and growth charts at your fingertips.</p>
+                <a href="#" class="font-label" style="color: var(--secondary); text-decoration: underline; text-decoration-style: wavy;">View Private Folder &rarr;</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="photo-grid">
+        <div class="polaroid"><img src="https://images.unsplash.com/photo-1544126592-807ade215a0b?auto=format&fit=crop&w=300&q=80" alt="Baby feet"></div>
+        <div class="polaroid"><img src="https://images.unsplash.com/photo-1522771930-78848d9293e8?auto=format&fit=crop&w=300&q=80" alt="Baby hands"></div>
+        <div class="polaroid"><img src="https://images.unsplash.com/photo-1555252333-9f8e92e65df9?auto=format&fit=crop&w=300&q=80" alt="Nursery"></div>
+        <div class="polaroid"><img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=300&q=80" alt="Baby smiling"></div>
+    </section>
+
+    <section class="cta-section">
+        <div class="washi-tape" style="position: absolute; top: -15px; left: -15px; transform: rotate(-25deg); width: 150px; height: 40px; background-color: var(--secondary);"></div>
+        <h2 class="font-headline" style="font-size: 2.5rem; margin-bottom: 1rem;">Start stitching your memories.</h2>
+        <p style="margin-bottom: 2.5rem; font-size: 1.1rem; opacity: 0.8;">Because they only stay this little for a moment.</p>
+        <div style="display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;">
+            <a href="/register" class="btn-primary font-label" style="font-size: 1.1rem; border-radius: 50px;">Get Started Free</a>
+            <a href="/login" class="btn-primary font-label" style="font-size: 1.1rem; border-radius: 50px; background: transparent; color: var(--primary); border: 2px solid var(--primary); box-shadow: none;">Log In</a>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="font-typewriter" style="font-size: 1.5rem; font-weight: bold;">Baby Info</div>
+    <div style="font-size: 0.9rem; opacity: 0.7;">© 2026 Hand-stitched with love. All rights reserved.</div>
+    <div style="display: flex; gap: 1.5rem; font-size: 0.9rem;">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="#">Support</a>
+    </div>
+</footer>
+
+<script>
+    /* @author Romila Raluca */
+    document.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+            const ink = document.createElement('div');
+            ink.style.position = 'absolute';
+            ink.style.left = `${e.pageX - 10}px`;
+            ink.style.top = `${e.pageY - 10}px`;
+            ink.style.width = '20px';
+            ink.style.height = '20px';
+            ink.style.backgroundColor = 'rgba(157, 66, 44, 0.1)';
+            ink.style.borderRadius = '50%';
+            ink.style.pointerEvents = 'none';
+            ink.style.zIndex = '1000';
+            ink.style.transform = `scale(${Math.random() * 2 + 0.5})`;
+            document.body.appendChild(ink);
+
+            setTimeout(() => {
+                ink.style.opacity = '0';
+                ink.style.transition = 'opacity 1s ease';
+                setTimeout(() => ink.remove(), 1000);
+            }, 1500);
+        }
+    });
+</script>
+</body>
+</html>
