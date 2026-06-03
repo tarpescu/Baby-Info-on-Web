@@ -12,10 +12,6 @@
 
     <style>
         /* @author Romila Raluca */
-
-        /* ─────────────────────────────────────────────
-           1. CSS VARIABLES
-        ───────────────────────────────────────────── */
         :root {
             --bg-paper: #e6dfd3;
             --primary: #321716;
@@ -36,9 +32,6 @@
             --error: #ba1a1a;
         }
 
-        /* ─────────────────────────────────────────────
-           2. RESET & BASE
-        ───────────────────────────────────────────── */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -73,9 +66,7 @@
         .font-modern { font-family: 'Figtree', sans-serif; }
         .material-symbols-outlined { vertical-align: middle; }
 
-        /* ─────────────────────────────────────────────
-           3. SKEUOMORPHIC UTILITIES
-        ───────────────────────────────────────────── */
+
         .torn-edge {
             clip-path: polygon(2% 0%, 98% 2%, 100% 5%, 99% 15%, 100% 30%, 98% 45%,
                 100% 60%, 99% 80%, 100% 95%, 95% 100%, 80% 99%, 60% 100%, 45% 98%,
@@ -97,9 +88,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* ─────────────────────────────────────────────
-           4. NAVBAR
-        ───────────────────────────────────────────── */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -143,9 +131,6 @@
             cursor: pointer;
         }
 
-        /* ─────────────────────────────────────────────
-           5. MAIN GRID
-        ───────────────────────────────────────────── */
         .dashboard-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -168,9 +153,6 @@
             box-shadow: 5px 10px 20px rgba(0,0,0,0.05);
         }
 
-        /* ─────────────────────────────────────────────
-           6. HERO COLUMN (left)
-        ───────────────────────────────────────────── */
         .hero-column { position: relative; z-index: 20; }
 
         .hero-polaroid-wrapper {
@@ -194,6 +176,30 @@
             width: 100%; aspect-ratio: 1/1;
             display: flex; align-items: center; justify-content: center;
             font-size: 5rem;
+            cursor: pointer;
+            position: relative;
+        }
+        .avatar-placeholder:hover::after,
+        .avatar-photo-wrapper:hover::after {
+            content: 'Add Photo';
+            position: absolute; inset: 0;
+            background: rgba(50,23,22,0.45);
+            color: #fff;
+            font-family: 'Special Elite', cursive;
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .avatar-photo-wrapper {
+            width: 100%; aspect-ratio: 1/1;
+            position: relative; cursor: pointer; overflow: hidden;
+            background: var(--scrap-sage);
+        }
+        .avatar-photo-wrapper img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(0.2) sepia(0.1) brightness(1.05);
+            display: block;
         }
 
         .polaroid-caption {
@@ -202,7 +208,7 @@
         }
 
         .random-scrap {
-            position: absolute; bottom: -2.5rem; left: -1rem;
+            position: absolute; bottom: -5rem; left: -1rem;
             width: 160px; background: var(--surface-high);
             padding: 1rem; box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
             transform: rotate(-5deg); z-index: 40;
@@ -230,9 +236,6 @@
         }
         .btn-add-child:hover { transform: rotate(-1deg) scale(1.02); }
 
-        /* ─────────────────────────────────────────────
-           7. DASHBOARD COLUMN (right)
-        ───────────────────────────────────────────── */
         .dashboard-column { display: flex; flex-direction: column; gap: 2rem; }
 
         .dashboard-header { transform: rotate(-1.2deg); margin-bottom: 1rem; }
@@ -375,9 +378,6 @@
         }
         @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 
-        /* ─────────────────────────────────────────────
-           8. MOBILE NAV & FAB
-        ───────────────────────────────────────────── */
         .mobile-bottom-nav {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: rgba(244, 237, 225, 0.95); backdrop-filter: blur(5px);
@@ -407,9 +407,104 @@
         }
         .fab:hover { transform: scale(1.1) rotate(12deg); }
 
-        /* ─────────────────────────────────────────────
-           9. RESPONSIVE
-        ───────────────────────────────────────────── */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(30, 20, 15, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            display: flex; align-items: center; justify-content: center;
+            padding: 1rem;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+        .modal-overlay.open {
+            opacity: 1; pointer-events: all;
+        }
+
+        .modal-card {
+            background: #fff;
+            background-image: linear-gradient(rgba(173, 216, 230, 0.4) 1px, transparent 1px);
+            background-size: 100% 2.4rem;
+            max-width: 520px; width: 100%;
+            padding: 3rem 2.5rem 2rem;
+            position: relative;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.08), 12px 12px 30px rgba(0,0,0,0.15);
+            transform: rotate(-1deg) translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.open .modal-card {
+            transform: rotate(-0.5deg) translateY(0);
+        }
+
+        .modal-card::before {
+            content: '';
+            position: absolute; top: 2.4rem; left: 0; right: 0;
+            height: 1px; background: rgba(255,0,0,0.15);
+        }
+
+        .modal-washi {
+            position: absolute; top: -12px; left: 30px;
+            width: 90px; height: 26px;
+            background: var(--tape-blue);
+            clip-path: polygon(0% 15%, 5% 0%, 95% 5%, 100% 15%, 98% 85%, 92% 100%, 8% 95%, 0% 85%);
+            z-index: 10;
+        }
+
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            color: var(--text-muted); font-size: 1.5rem;
+            line-height: 1; transition: color 0.2s;
+        }
+        .modal-close:hover { color: var(--secondary); }
+
+        .modal-title {
+            font-size: 1.6rem; color: var(--primary);
+            margin-bottom: 0.25rem; text-transform: uppercase; letter-spacing: 2px;
+        }
+        .modal-subtitle {
+            font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2rem; opacity: 0.7;
+        }
+
+        .modal-field { margin-bottom: 1.8rem; position: relative; }
+        .modal-field label {
+            display: block; font-size: 0.78rem; text-transform: uppercase;
+            letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.2rem;
+        }
+        .modal-input, .modal-select {
+            width: 100%; background: transparent;
+            border: none; border-bottom: 2px solid var(--outline);
+            font-family: 'Special Elite', cursive; font-size: 1.1rem;
+            color: var(--primary); padding: 2px 0 4px;
+            transition: border-color 0.2s;
+        }
+        .modal-input:focus, .modal-select:focus {
+            outline: none; border-bottom-color: var(--secondary);
+        }
+        .modal-input::placeholder { opacity: 0.3; }
+        .modal-select { cursor: pointer; }
+
+        .modal-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+        .modal-error {
+            display: none; padding: 0.6rem 1rem; margin-bottom: 1rem;
+            background: rgba(186,26,26,0.08); border-left: 3px solid var(--error);
+            font-family: 'Special Elite', cursive; font-size: 0.88rem; color: var(--error);
+        }
+
+        .modal-submit {
+            display: block; margin: 2rem auto 0;
+            background: var(--primary); color: #fff;
+            padding: 0.8rem 2.5rem;
+            font-family: 'Special Elite', cursive; font-size: 1.1rem;
+            text-transform: uppercase; letter-spacing: 2px;
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
+            transform: rotate(-1deg);
+            transition: background 0.2s, transform 0.2s;
+        }
+        .modal-submit:hover { background: var(--secondary); transform: rotate(0); }
+        .modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+
         @media (max-width: 900px) {
             .dashboard-container { grid-template-columns: 1fr; gap: 2rem; padding: 1rem; }
             .navbar .nav-links { display: none; }
@@ -489,15 +584,80 @@
     <span class="material-symbols-outlined">add</span>
 </button>
 
+<div class="modal-overlay" id="addChildModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+        <div class="modal-washi"></div>
+        <button class="modal-close font-typewriter" id="modalCloseBtn" aria-label="Close">&times;</button>
+
+        <h2 class="modal-title font-typewriter" id="modalTitle">New Baby Profile</h2>
+        <p class="modal-subtitle font-typewriter">Series: REG-2026 / MEMORY_JOURNAL</p>
+
+        <div class="modal-error" id="childError">
+            <span class="material-symbols-outlined" style="font-size:1rem;vertical-align:middle;margin-right:4px;">error</span>
+            <span id="childErrorText"></span>
+        </div>
+
+        <form id="addChildForm">
+            <div class="modal-row">
+                <div class="modal-field">
+                    <label class="font-typewriter" for="childFirstName">First Name *</label>
+                    <input type="text" id="childFirstName" name="first_name"
+                           class="modal-input font-typewriter" placeholder="Little one..." required/>
+                </div>
+                <div class="modal-field">
+                    <label class="font-typewriter" for="childLastName">Last Name</label>
+                    <input type="text" id="childLastName" name="last_name"
+                           class="modal-input font-typewriter" placeholder="(optional)"/>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label class="font-typewriter" for="childDob">Date of Birth *</label>
+                <input type="date" id="childDob" name="date_of_birth"
+                       class="modal-input font-typewriter" required/>
+            </div>
+
+            <div class="modal-row">
+                <div class="modal-field">
+                    <label class="font-typewriter" for="childGender">Gender</label>
+                    <select id="childGender" name="gender" class="modal-select font-typewriter">
+                        <option value="">— not specified —</option>
+                        <option value="F">Girl </option>
+                        <option value="M">Boy </option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="modal-field">
+                    <label class="font-typewriter" for="childBlood">Blood Type</label>
+                    <select id="childBlood" name="blood_type" class="modal-select font-typewriter">
+                        <option value="">— unknown —</option>
+                        <option>A+</option><option>A-</option>
+                        <option>B+</option><option>B-</option>
+                        <option>AB+</option><option>AB-</option>
+                        <option>O+</option><option>O-</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="modal-field">
+                <label class="font-typewriter" for="childNotes">Notes</label>
+                <input type="text" id="childNotes" name="notes"
+                       class="modal-input font-typewriter" placeholder="Allergies, special needs..."/>
+            </div>
+
+            <button type="submit" id="childSubmitBtn" class="modal-submit font-typewriter">
+                File in Archive
+            </button>
+        </form>
+    </div>
+</div>
+
 <script>
 /* @author Romila Raluca */
 
-// ── Stare globală ────────────────────────────────────────────────────────────
 let currentUser  = null;
 let children     = [];
 let activeChildId = null;
-
-// ── Utilități ────────────────────────────────────────────────────────────────
 
 /**
  * Calculeaza varsta copilului din data nasterii.
@@ -540,19 +700,16 @@ function avatarBg(color) {
     return map[color] || '#f0e6e6';
 }
 
-// ── Logout ───────────────────────────────────────────────────────────────────
 document.getElementById('logoutBtn').addEventListener('click', async () => {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
     window.location.href = '/login';
 });
 
-// ── Selectare copil activ ────────────────────────────────────────────────────
 document.getElementById('childSelector').addEventListener('change', (e) => {
     activeChildId = parseInt(e.target.value);
     renderDashboard();
 });
 
-// ── Initializare ─────────────────────────────────────────────────────────────
 async function init() {
     // 1. Verifica autentificarea
     const meRes = await fetch('/api/auth/me', { credentials: 'include' });
@@ -586,12 +743,12 @@ async function init() {
     renderDashboard();
 }
 
-// ── Render dashboard pentru copilul activ ────────────────────────────────────
 async function renderDashboard() {
     const child = children.find(c => c.id === activeChildId);
     if (!child) return;
 
     renderHero(child);
+    initAvatarUpload();   // ataseaza click dupa ce DOM e gata
     renderDashboardColumn(child);
 
     // Fetch date în paralel
@@ -610,20 +767,27 @@ async function renderDashboard() {
     updateScrapNote(feedings, sleeps);
 }
 
-// ── Hero Column ───────────────────────────────────────────────────────────────
 function renderHero(child) {
     const bg      = avatarBg(child.avatar_color);
     const name    = child.first_name + (child.last_name ? ' ' + child.last_name : '');
     const age     = calcAge(child.date_of_birth);
     const today   = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
+    const avatarHtml = child.photo_url
+        ? `<div class="avatar-photo-wrapper" id="avatarClick" title="Click to change photo">
+               <img src="${child.photo_url}" alt="${name}">
+           </div>`
+        : `<div class="avatar-placeholder" id="avatarClick" style="background:${bg};" title="Click to add photo">
+               ${child.gender === 'F' ? '👧' : child.gender === 'M' ? '👦' : '👶'}
+           </div>`;
+
     document.getElementById('heroColumn').innerHTML = `
+        <input type="file" id="photoFileInput" accept="image/jpeg,image/png,image/webp"
+               style="display:none;" aria-label="Upload child photo">
         <div class="hero-polaroid-wrapper">
             <div class="washi-tape"></div>
             <div class="polaroid">
-                <div class="avatar-placeholder" style="background:${bg};">
-                    ${child.gender === 'female' ? '👧' : child.gender === 'male' ? '👦' : '👶'}
-                </div>
+                ${avatarHtml}
                 <p class="polaroid-caption font-handwritten">${name}</p>
             </div>
             <div class="random-scrap torn-edge" id="scrapNote">
@@ -634,7 +798,6 @@ function renderHero(child) {
     `;
 }
 
-// ── Dashboard Column ──────────────────────────────────────────────────────────
 function renderDashboardColumn(child) {
     const name = child.first_name;
     const age  = calcAge(child.date_of_birth);
@@ -685,7 +848,7 @@ function renderDashboardColumn(child) {
             <div class="small-polaroid-wrapper">
                 <div class="small-polaroid">
                     <div style="width:100%; aspect-ratio:1/1; background:var(--scrap-sage); display:flex; align-items:center; justify-content:center; font-size:3rem;">
-                        ${child.gender === 'female' ? '🌸' : '⭐'}
+                        ${child.gender === 'F' ? '🌸' : '⭐'}
                     </div>
                     <p class="font-handwritten" style="text-align:center; margin-top:10px; font-size:1.2rem;">
                         ${new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}
@@ -696,7 +859,6 @@ function renderDashboardColumn(child) {
     `;
 }
 
-// ── Populeaza cardul "Today" ──────────────────────────────────────────────────
 function updateTodayCard(feedings, sleeps) {
     const list = document.getElementById('todayList');
     if (!list) return;
@@ -733,7 +895,6 @@ function updateTodayCard(feedings, sleeps) {
     `).join('');
 }
 
-// ── Populeaza cardul "Growth" ─────────────────────────────────────────────────
 function updateGrowthCard(growths, child) {
     const el = document.getElementById('growthContent');
     if (!el) return;
@@ -801,10 +962,183 @@ function updateScrapNote(feedings, sleeps) {
     }
 }
 
-// ── Placeholder modal pentru adaugare copil ───────────────────────────────────
-function showAddChildModal() {
-    alert('Add Child — coming soon! (next sprint)');
+// ── Photo upload pentru avatar copil ─────────────────────────────────────────
+
+/**
+ * Ataseaza event listeners pe avatarul din hero column dupa ce e randat.
+ * Apelat din renderHero() dupa ce DOM-ul e gata.
+ */
+function initAvatarUpload() {
+    const avatarClick    = document.getElementById('avatarClick');
+    const photoFileInput = document.getElementById('photoFileInput');
+    if (!avatarClick || !photoFileInput) return;
+
+    // Click pe avatar -> deschide file picker
+    avatarClick.addEventListener('click', () => photoFileInput.click());
+
+    // Selectie fisier -> upload imediat
+    photoFileInput.addEventListener('change', async () => {
+        const file = photoFileInput.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('photo', file);
+
+        // Preview optimist inainte de upload
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            avatarClick.innerHTML = `<img src="${e.target.result}" alt="preview"
+                style="width:100%;height:100%;object-fit:cover;">`;
+        };
+        reader.readAsDataURL(file);
+
+        try {
+            const res = await fetch(`/api/children/${activeChildId}/photo`, {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+                // NU setam Content-Type — browser-ul adauga automat boundary pentru multipart
+            });
+
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                alert(err.error || 'Photo upload failed.');
+                return;
+            }
+
+            const data = await res.json();
+
+            // Actualizeaza photo_url pe obiectul local
+            const child = children.find(c => c.id === activeChildId);
+            if (child) child.photo_url = data.photo_url;
+
+            // Inlocuieste cu poza finala de pe server
+            avatarClick.outerHTML = `
+                <div class="avatar-photo-wrapper" id="avatarClick" title="Click to change photo">
+                    <img src="${data.photo_url}?t=${Date.now()}" alt="Profile photo">
+                </div>`;
+
+            // Re-ataseaza listener pe noul element
+            initAvatarUpload();
+
+        } catch (err) {
+            console.error('Photo upload error:', err);
+            alert('Connection error during upload.');
+        }
+    });
 }
+
+// ── Modal: Add Child ─────────────────────────────────────────────────────────
+const addChildModal   = document.getElementById('addChildModal');
+const addChildForm    = document.getElementById('addChildForm');
+const childError      = document.getElementById('childError');
+const childErrorText  = document.getElementById('childErrorText');
+const childSubmitBtn  = document.getElementById('childSubmitBtn');
+
+/** Deschide modalul si reseteaza formularul. */
+function showAddChildModal() {
+    addChildForm.reset();
+    childError.style.display = 'none';
+    childSubmitBtn.disabled  = false;
+    childSubmitBtn.textContent = 'File in Archive';
+    addChildModal.classList.add('open');
+    document.getElementById('childFirstName').focus();
+}
+
+/** Inchide modalul. */
+function closeAddChildModal() {
+    addChildModal.classList.remove('open');
+}
+
+// Buton X
+document.getElementById('modalCloseBtn').addEventListener('click', closeAddChildModal);
+
+// Click pe overlay (in afara cardului)
+addChildModal.addEventListener('click', (e) => {
+    if (e.target === addChildModal) closeAddChildModal();
+});
+
+// Escape
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAddChildModal();
+});
+
+/**
+ * Trimite formularul de adaugare copil la POST /api/children.
+ * Dupa succes, actualizeaza lista si re-rendereaza dashboard-ul.
+ */
+addChildForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    childError.style.display = 'none';
+
+    const body = {
+        first_name:    addChildForm.first_name.value.trim(),
+        last_name:     addChildForm.last_name.value.trim() || '',
+        date_of_birth: addChildForm.date_of_birth.value,
+        gender:        addChildForm.gender.value    || null,
+        blood_type:    addChildForm.blood_type.value || null,
+        notes:         addChildForm.notes.value.trim() || '',
+    };
+
+    if (!body.first_name) {
+        childErrorText.textContent = 'First name is required.';
+        childError.style.display   = 'block';
+        return;
+    }
+
+    childSubmitBtn.disabled    = true;
+    childSubmitBtn.textContent = 'Stamping...';
+
+    try {
+        const res  = await fetch('/api/children', {
+            method:      'POST',
+            headers:     { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body:        JSON.stringify(body),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            childErrorText.textContent = data.error || 'Could not save profile.';
+            childError.style.display   = 'block';
+            childSubmitBtn.disabled    = false;
+            childSubmitBtn.textContent = 'File in Archive';
+            return;
+        }
+
+        // Succes: inchide modalul si reinitializeaza
+        closeAddChildModal();
+        document.getElementById('noChildrenState').style.display  = 'none';
+        document.getElementById('dashboardMain').style.display    = 'grid';
+
+        // Reincarca lista de copii si re-rendereaza
+        const childRes = await fetch('/api/children', { credentials: 'include' });
+        children = childRes.ok ? await childRes.json() : [];
+
+        // Actualizeaza selectorul
+        const sel = document.getElementById('childSelector');
+        sel.innerHTML = '';
+        children.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c.id;
+            opt.textContent = `${c.first_name}${c.last_name ? ' ' + c.last_name : ''}`;
+            sel.appendChild(opt);
+        });
+        if (children.length > 1) sel.style.display = 'block';
+
+        // Seteaza copilul nou creat ca activ
+        activeChildId = data.id;
+        sel.value     = data.id;
+        renderDashboard();
+
+    } catch (err) {
+        childErrorText.textContent = 'Connection error. Please try again.';
+        childError.style.display   = 'block';
+        childSubmitBtn.disabled    = false;
+        childSubmitBtn.textContent = 'File in Archive';
+    }
+});
 
 // ── Ink effect on click ───────────────────────────────────────────────────────
 document.addEventListener('click', (e) => {
@@ -821,7 +1155,9 @@ document.addEventListener('click', (e) => {
     }, 2000);
 });
 
-// ── Start ─────────────────────────────────────────────────────────────────────
+// FAB -> deschide modal add child (sau add log in viitor)
+document.querySelector('.fab').addEventListener('click', showAddChildModal);
+
 init();
 </script>
 </body>

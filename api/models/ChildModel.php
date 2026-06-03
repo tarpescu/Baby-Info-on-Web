@@ -83,6 +83,20 @@ class ChildModel extends Model
         ]);
     }
 
+    /**
+     * Actualizeaza URL-ul pozei de profil a copilului.
+     * @param int $id
+     * @param string $photoUrl - calea relativa, ex: /uploads/photos/123_abc.jpg
+     * @return bool
+     */
+    public function updatePhoto(int $id, string $photoUrl): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE children SET photo_url = :photo_url, updated_at = NOW() WHERE id = :id
+        ");
+        return $stmt->execute([':photo_url' => $photoUrl, ':id' => $id]);
+    }
+
     public function delete(int $id): bool
     {
         $stmt = $this->db->prepare("DELETE FROM children WHERE id = :id");

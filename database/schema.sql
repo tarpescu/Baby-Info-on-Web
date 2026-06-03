@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS children (
                                         gender       TEXT    CHECK(gender IN ('M','F','other')),
                                         blood_type   TEXT,
                                         avatar_color TEXT    NOT NULL DEFAULT 'c1',
+                                        photo_url    TEXT,
                                         notes        TEXT,
                                         created_by   INTEGER NOT NULL REFERENCES users(id),
                                         created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -25,9 +25,10 @@ class Router
 
         $this->add('GET', '/api/children', 'ChildController', 'index');
         $this->add('POST', '/api/children', 'ChildController', 'store');
-        $this->add('GET', '/api/children/{id}', 'ChildController', 'show');
-        $this->add('PUT', '/api/children/{id}', 'ChildController', 'update');
-        $this->add('DELETE', '/api/children/{id}', 'ChildController', 'destroy');
+        $this->add('GET',  '/api/children/{id}',       'ChildController', 'show');
+        $this->add('PUT',  '/api/children/{id}',       'ChildController', 'update');
+        $this->add('POST', '/api/children/{id}/photo', 'ChildController', 'uploadPhoto');
+        $this->add('DELETE', '/api/children/{id}',     'ChildController', 'destroy');
 
         $this->add('GET', '/api/children/{id}/family', 'FamilyController', 'index');
         $this->add('PUT', '/api/children/{id}/family/permission', 'FamilyController', 'updatePermission');

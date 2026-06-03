@@ -15,9 +15,15 @@ if (str_starts_with($uri, '/api/')) {
 }
 
 // Static files (css, js, images, uploads etc.) -> public/
+// IMPORTANT: nu folosim "return false" pentru ca PHP built-in server ar servi
+// fisierul din document root (/), nu din /public/. Servim manual cu readfile().
 $file = __DIR__ . '/public' . $uri;
 if (file_exists($file) && is_file($file)) {
-    return false;
+    $mime = mime_content_type($file) ?: 'application/octet-stream';
+    header('Content-Type: ' . $mime);
+    header('Content-Length: ' . filesize($file));
+    readfile($file);
+    exit;
 }
 
 // Mapare URL curate -> pagini HTML
