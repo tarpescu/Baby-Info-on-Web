@@ -39,6 +39,7 @@ class Router
         $this->add('DELETE', '/api/moments/{id}', 'MomentController', 'destroy');
 
         $this->add('POST', '/api/moments/{id}/comments', 'CommentController', 'store');
+        $this->add('GET', '/api/moments/{id}/comments', 'CommentController', 'index');
         $this->add('POST', '/api/moments/{id}/reactions', 'ReactionController', 'store');
         $this->add('DELETE', '/api/moments/{id}/reactions', 'ReactionController', 'destroy');
 
