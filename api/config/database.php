@@ -19,7 +19,7 @@ class Database
     {
         if (self::$instance === null) {
             $host = 'localhost';
-            $port = '5432';
+            $port = '5433';
             $dbname = 'babyinfo';
             $user = 'postgres';
             $pass = 'admin';

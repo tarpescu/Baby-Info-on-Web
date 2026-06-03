@@ -9,6 +9,7 @@ RewriteRule ^ - [L]
 RewriteRule ^login$ login.html [L]
 RewriteRule ^register$ register.html [L]
 RewriteRule ^forgot-password$ forgotpassword.html [L]
+RewriteRule ^dashboard$ dashboard.html [L]
 
 # Fallback -> landing page
 RewriteRule ^(.*)$ landingpage.html [QSA,L]

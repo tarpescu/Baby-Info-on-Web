@@ -14,6 +14,21 @@ use App\Models\SleepModel;
 
 class SleepController extends Controller
 {
+    /**
+     * Returneaza istoricul de somn al unui copil.
+     * Suporta parametrul query ?limit=N (default 20).
+     */
+    public function index(array $params): void
+    {
+        $this->requireAuth();
+        $childId = (int) ($params['id'] ?? 0);
+        $this->requireFamilyAccess($childId);
+
+        $limit = (int) ($this->request->query['limit'] ?? 20);
+        $model = new SleepModel();
+        Response::json($model->getByChild($childId, $limit));
+    }
+
     public function store(array $params): void
     {
         $this->requireAuth();

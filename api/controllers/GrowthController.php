@@ -14,6 +14,19 @@ use App\Models\GrowthModel;
 
 class GrowthController extends Controller
 {
+    /**
+     * Returneaza istoricul de crestere al unui copil.
+     */
+    public function index(array $params): void
+    {
+        $this->requireAuth();
+        $childId = (int) ($params['id'] ?? 0);
+        $this->requireFamilyAccess($childId);
+
+        $model = new GrowthModel();
+        Response::json($model->getByChild($childId));
+    }
+
     public function store(array $params): void
     {
         $this->requireAuth();

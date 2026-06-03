@@ -26,6 +26,7 @@ $pageMap = [
     '/login'           => 'login.html',
     '/register'        => 'register.html',
     '/forgot-password' => 'forgotpassword.html',
+    '/dashboard'       => 'dashboard.html',
 ];
 
 if (isset($pageMap[$uri])) {

@@ -43,9 +43,12 @@ class Router
         $this->add('POST', '/api/moments/{id}/reactions', 'ReactionController', 'store');
         $this->add('DELETE', '/api/moments/{id}/reactions', 'ReactionController', 'destroy');
 
+        $this->add('GET',  '/api/children/{id}/feedings', 'FeedingController', 'index');
         $this->add('POST', '/api/children/{id}/feedings', 'FeedingController', 'store');
-        $this->add('POST', '/api/children/{id}/sleep', 'SleepController', 'store');
-        $this->add('POST', '/api/children/{id}/growth', 'GrowthController', 'store');
+        $this->add('GET',  '/api/children/{id}/sleep',    'SleepController',   'index');
+        $this->add('POST', '/api/children/{id}/sleep',    'SleepController',   'store');
+        $this->add('GET',  '/api/children/{id}/growth',   'GrowthController',  'index');
+        $this->add('POST', '/api/children/{id}/growth',   'GrowthController',  'store');
         $this->add('POST', '/api/children/{id}/medical', 'MedicalController', 'store');
 
         $this->add('POST', '/api/children/{id}/invites', 'InviteController', 'store');
