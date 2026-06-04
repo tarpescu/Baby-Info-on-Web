@@ -10,6 +10,8 @@ RewriteRule ^login$ login.html [L]
 RewriteRule ^register$ register.html [L]
 RewriteRule ^forgot-password$ forgotpassword.html [L]
 RewriteRule ^dashboard$ dashboard.html [L]
+RewriteRule ^join$ join.html [L]
+RewriteRule ^gallery$ gallery.html [L]
 
 # Fallback -> landing page
 RewriteRule ^(.*)$ landingpage.html [QSA,L]

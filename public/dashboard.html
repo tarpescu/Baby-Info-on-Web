@@ -504,6 +504,44 @@
         .modal-submit:hover { background: var(--secondary); transform: rotate(0); }
         .modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
 
+        /* ── Invite button in navbar ── */
+        #inviteBtn {
+            display: flex; align-items: center; gap: 0.4rem;
+            padding: 0.35rem 0.9rem;
+            border: 1.5px solid var(--outline);
+            font-family: 'Special Elite', cursive; font-size: 0.8rem;
+            color: var(--text-muted); letter-spacing: 1px;
+            transition: color 0.2s, border-color 0.2s;
+            background: none; cursor: pointer;
+        }
+        #inviteBtn:hover { color: var(--secondary); border-color: var(--secondary); }
+        #inviteBtn .material-symbols-outlined { font-size: 1.1rem; }
+
+        /* ── Invite modal extras ── */
+        .invite-link-box {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(216, 226, 220, 0.4);
+            border: 1px dashed var(--outline);
+            position: relative;
+        }
+        .invite-link-box .link-label {
+            font-family: 'Special Elite', cursive; font-size: 0.7rem;
+            letter-spacing: 1px; color: var(--text-muted); margin-bottom: 0.4rem;
+            text-transform: uppercase;
+        }
+        .invite-link-box .link-value {
+            font-family: 'Courier Prime', monospace; font-size: 0.85rem;
+            color: var(--primary); word-break: break-all; margin-bottom: 0.6rem;
+        }
+        .invite-copy-btn {
+            font-family: 'Special Elite', cursive; font-size: 0.8rem;
+            color: var(--secondary); background: none; border: none;
+            cursor: pointer; text-decoration: underline;
+            letter-spacing: 1px;
+        }
+        .invite-copy-btn:hover { color: var(--primary); }
 
         @media (max-width: 900px) {
             .dashboard-container { grid-template-columns: 1fr; gap: 2rem; padding: 1rem; }
@@ -531,6 +569,10 @@
     <div class="nav-actions">
         <span id="userGreeting"></span>
         <select id="childSelector" style="display:none;" title="Select child"></select>
+        <button id="inviteBtn" title="Invite a family member">
+            <span class="material-symbols-outlined">person_add</span>
+            Invite
+        </button>
         <button id="logoutBtn" class="font-typewriter">Log Out</button>
     </div>
 </nav>
@@ -652,6 +694,51 @@
     </div>
 </div>
 
+<!-- Invite Modal -->
+<div class="modal-overlay" id="inviteModal" role="dialog" aria-modal="true" aria-labelledby="inviteModalTitle">
+    <div class="modal-card">
+        <div class="modal-washi"></div>
+        <button class="modal-close font-typewriter" id="inviteModalCloseBtn" aria-label="Close">&times;</button>
+
+        <h2 class="modal-title font-typewriter" id="inviteModalTitle">Invite to Family</h2>
+        <p class="modal-subtitle font-typewriter">Series: INV-2026 / FAMILY_ACCESS</p>
+
+        <div class="modal-error" id="inviteError">
+            <span class="material-symbols-outlined" style="font-size:1rem;vertical-align:middle;margin-right:4px;">error</span>
+            <span id="inviteErrorText"></span>
+        </div>
+
+        <form id="inviteForm">
+            <div class="modal-field">
+                <label class="font-typewriter" for="inviteEmail">Their Email <span style="opacity:0.5">(optional, for your reference)</span></label>
+                <input type="email" id="inviteEmail" class="modal-input font-typewriter" placeholder="grandma@example.com"/>
+            </div>
+
+            <div class="modal-field">
+                <label class="font-typewriter" for="inviteRole">Access Level</label>
+                <select id="inviteRole" class="modal-select font-typewriter">
+                    <option value="coparent">Editor — can add photos, log feeds &amp; sleep</option>
+                    <option value="viewer">Viewer — read-only access</option>
+                </select>
+            </div>
+
+            <button type="submit" id="inviteSubmitBtn" class="modal-submit font-typewriter">
+                Generate Invite Link
+            </button>
+        </form>
+
+        <!-- Link generat -->
+        <div class="invite-link-box" id="inviteLinkBox">
+            <p class="link-label">Shareable Invite Link</p>
+            <p class="link-value" id="inviteLinkValue"></p>
+            <button class="invite-copy-btn" id="inviteCopyBtn">
+                <span class="material-symbols-outlined" style="font-size:0.9rem;vertical-align:middle;">content_copy</span>
+                Copy link
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
 /* @author Romila Raluca */
 
@@ -728,7 +815,16 @@ async function init() {
         return;
     }
 
-    // 3. Populeaza selectorul de copii
+    // 3. Doar owner si coparent pot accesa dashboard-ul.
+    //    Caregiver si viewer → redirect la Gallery (read-only).
+    const DASHBOARD_ROLES = ['owner', 'coparent'];
+    const firstPermission  = children[0].permission || 'viewer';
+    if (!DASHBOARD_ROLES.includes(firstPermission)) {
+        window.location.href = '/gallery';
+        return;
+    }
+
+    // 4. Populeaza selectorul de copii
     const sel = document.getElementById('childSelector');
     children.forEach(c => {
         const opt    = document.createElement('option');
@@ -739,6 +835,12 @@ async function init() {
     if (children.length > 1) sel.style.display = 'block';
 
     activeChildId = children[0].id;
+
+    // Ascunde butonul de Invite pentru non-owner
+    if (firstPermission !== 'owner') {
+        document.getElementById('inviteBtn').style.display = 'none';
+    }
+
     document.getElementById('dashboardMain').style.display = 'grid';
     renderDashboard();
 }
@@ -1157,6 +1259,106 @@ document.addEventListener('click', (e) => {
 
 // FAB -> deschide modal add child (sau add log in viitor)
 document.querySelector('.fab').addEventListener('click', showAddChildModal);
+
+// ── Invite Modal ──────────────────────────────────────────────────────────────
+const inviteModal     = document.getElementById('inviteModal');
+const inviteForm      = document.getElementById('inviteForm');
+const inviteError     = document.getElementById('inviteError');
+const inviteErrorText = document.getElementById('inviteErrorText');
+const inviteSubmitBtn = document.getElementById('inviteSubmitBtn');
+const inviteLinkBox   = document.getElementById('inviteLinkBox');
+const inviteLinkValue = document.getElementById('inviteLinkValue');
+
+/** Deschide modalul de invitatie si reseteaza starea. */
+function showInviteModal() {
+    if (!activeChildId) {
+        alert('Please select a child first.');
+        return;
+    }
+    inviteForm.reset();
+    inviteError.style.display  = 'none';
+    inviteLinkBox.style.display = 'none';
+    inviteSubmitBtn.disabled   = false;
+    inviteSubmitBtn.textContent = 'Generate Invite Link';
+    inviteModal.classList.add('open');
+}
+
+/** Inchide modalul de invitatie. */
+function closeInviteModal() {
+    inviteModal.classList.remove('open');
+}
+
+document.getElementById('inviteBtn').addEventListener('click', showInviteModal);
+document.getElementById('inviteModalCloseBtn').addEventListener('click', closeInviteModal);
+inviteModal.addEventListener('click', (e) => { if (e.target === inviteModal) closeInviteModal(); });
+
+/**
+ * Trimite cererea de generare invite la POST /api/children/{id}/invites.
+ * Afiseaza linkul generat pe care utilizatorul il poate copia.
+ */
+inviteForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    inviteError.style.display   = 'none';
+    inviteLinkBox.style.display = 'none';
+
+    const email      = document.getElementById('inviteEmail').value.trim();
+    const permission = document.getElementById('inviteRole').value;
+
+    inviteSubmitBtn.disabled    = true;
+    inviteSubmitBtn.textContent = 'Stamping...';
+
+    try {
+        const res = await fetch(`/api/children/${activeChildId}/invites`, {
+            method:      'POST',
+            headers:     { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body:        JSON.stringify({ email: email || null, permission }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            inviteErrorText.textContent = data.error || 'Could not generate invite.';
+            inviteError.style.display   = 'block';
+            inviteSubmitBtn.disabled    = false;
+            inviteSubmitBtn.textContent = 'Generate Invite Link';
+            return;
+        }
+
+        // Afisam linkul generat
+        const link = `${window.location.origin}/join?token=${data.token}`;
+        inviteLinkValue.textContent  = link;
+        inviteLinkBox.style.display  = 'block';
+        inviteSubmitBtn.textContent  = 'Link Generated!';
+
+    } catch (err) {
+        inviteErrorText.textContent = 'Connection error. Please try again.';
+        inviteError.style.display   = 'block';
+        inviteSubmitBtn.disabled    = false;
+        inviteSubmitBtn.textContent = 'Generate Invite Link';
+    }
+});
+
+/** Copiaza linkul in clipboard. */
+document.getElementById('inviteCopyBtn').addEventListener('click', async () => {
+    const link = inviteLinkValue.textContent;
+    try {
+        await navigator.clipboard.writeText(link);
+        const btn = document.getElementById('inviteCopyBtn');
+        btn.textContent = '✓ Copied!';
+        setTimeout(() => {
+            btn.innerHTML = '<span class="material-symbols-outlined" style="font-size:0.9rem;vertical-align:middle;">content_copy</span> Copy link';
+        }, 2000);
+    } catch {
+        // Fallback pentru browsere fara clipboard API
+        const ta = document.createElement('textarea');
+        ta.value = link;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+    }
+});
 
 init();
 </script>

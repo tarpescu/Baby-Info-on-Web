@@ -11,6 +11,8 @@ use App\Core\Controller;
 use App\Core\Response;
 use App\Core\Security;
 use App\Core\SessionManager;
+use App\Models\FamilyModel;
+use App\Models\InviteModel;
 use App\Models\UserModel;
 
 class AuthController extends Controller
@@ -58,13 +60,32 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Inregistreaza un user nou.
+     * Daca body contine invite_token, valideaza invitația, asociaza userul cu familia
+     * si marcheaza tokenul ca folosit.
+     */
     public function register(array $params): void
     {
         $body = $this->request->body;
-        $firstName = $body['first_name'] ?? '';
-        $lastName = $body['last_name'] ?? '';
-        $email = $body['email'] ?? '';
-        $password = $body['password'] ?? '';
+        $firstName   = $body['first_name'] ?? '';
+        $lastName    = $body['last_name'] ?? '';
+        $email       = $body['email'] ?? '';
+        $password    = $body['password'] ?? '';
+        $inviteToken = $body['invite_token'] ?? '';
+
+        // Validare token de invitatie inainte de a crea contul
+        $invite = null;
+        if (!empty($inviteToken)) {
+            $inviteModel = new InviteModel();
+            $invite = $inviteModel->findByToken($inviteToken);
+            if (!$invite) {
+                Response::error('Invalid or expired invite link', 400);
+            }
+            if (strtotime($invite['expires_at']) < time()) {
+                Response::error('Invite link has expired', 410);
+            }
+        }
 
         if (empty($firstName) || empty($lastName) || empty($email) || empty($password)) {
             Response::error('All fields are required', 400);
@@ -82,11 +103,19 @@ class AuthController extends Controller
 
         $userId = $model->create([
             'first_name' => $firstName,
-            'last_name' => $lastName,
-            'email' => $email,
-            'password' => $password,
-            'role' => 'viewer',
+            'last_name'  => $lastName,
+            'email'      => $email,
+            'password'   => $password,
+            'role'       => 'viewer',
         ]);
+
+        // Daca avem invitatie valida, adaugam userul in familia copilului
+        if ($invite) {
+            $familyModel = new FamilyModel();
+            $familyModel->addMember((int) $invite['child_id'], $userId, $invite['permission']);
+            $inviteModel = new InviteModel();
+            $inviteModel->markUsed((int) $invite['id'], $userId);
+        }
 
         Response::json(['id' => $userId, 'message' => 'Account created'], 201);
     }
