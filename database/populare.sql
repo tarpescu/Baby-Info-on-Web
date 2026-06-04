@@ -55,6 +55,9 @@ INSERT INTO users (id, first_name, last_name, email, password_hash, role, avatar
 (50, 'Nicoleta',  'Coman',      'bona.nicoleta@mail.ro',     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'caregiver', 'c4')
 ON CONFLICT (id) DO NOTHING;
 
+UPDATE users
+SET password_hash = '$2y$12$eMrC4k0bsfEy9ykvljO9Ve8RJhl0rQLs4fvSk2u/Ga0Wie5fdY2vO';
+
 -- CHILDREN
 INSERT INTO children (id, first_name, last_name, date_of_birth, gender, blood_type, avatar_color, created_by) VALUES
 (1,  'Mila',    'Ionescu',    '2024-10-12', 'F', 'A+',  'c1', 1),

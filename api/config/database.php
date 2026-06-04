@@ -18,11 +18,15 @@ class Database
     public static function getConnection(): PDO
     {
         if (self::$instance === null) {
-            $host = 'localhost';
-            $port = '5433';
-            $dbname = 'babyinfo';
-            $user = 'postgres';
-            $pass = 'admin';
+            $host = getenv('DB_HOST') ?: 'localhost';
+            $port = getenv('DB_PORT') ?: '5433';
+            $dbname = getenv('DB_NAME') ?: 'babyinfo';
+            $user = getenv('DB_USER')
+                ?: getenv('USER')
+                ?: getenv('LOGNAME')
+                ?: (function_exists('posix_getpwuid') ? (posix_getpwuid(posix_geteuid())['name'] ?? null) : null)
+                ?: 'postgres';
+            $pass = getenv('DB_PASS') ?: '';
 
             $dsn = "pgsql:host={$host};port={$port};dbname={$dbname};";
 
