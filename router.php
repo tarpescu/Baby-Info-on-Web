@@ -33,6 +33,8 @@ $pageMap = [
     '/register'        => 'register.html',
     '/forgot-password' => 'forgotpassword.html',
     '/dashboard'       => 'dashboard.html',
+    '/join'            => 'join.html',
+    '/gallery'         => 'gallery.html',
 ];
 
 if (isset($pageMap[$uri])) {
