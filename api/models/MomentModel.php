@@ -15,7 +15,12 @@ class MomentModel extends Model
     public function getByChild(int $childId, ?string $type = null, int $limit = 50, int $offset = 0): array
     {
         $sql = "
-            SELECT m.*, u.first_name, u.last_name, u.avatar_color
+            SELECT m.*, u.first_name, u.last_name, u.avatar_color,
+                   (SELECT '/uploads/photos/' || md.filename
+                      FROM media md
+                     WHERE md.moment_id = m.id
+                     ORDER BY md.id ASC
+                     LIMIT 1) AS media_url
             FROM moments m
             JOIN users u ON m.logged_by = u.id
             WHERE m.child_id = :child_id
