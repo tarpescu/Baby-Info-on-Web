@@ -18,5 +18,6 @@ class Constants
     public const CSRF_TOKEN_LENGTH = 32;
     public const INVITE_TOKEN_LENGTH = 48;
     public const INVITE_EXPIRY_HOURS = 72;
+    public const RESET_EXPIRY_MINUTES = 60;
     public const RSS_ITEMS_LIMIT = 50;
 }

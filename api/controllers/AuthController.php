@@ -11,9 +11,11 @@ use App\Core\Controller;
 use App\Core\Response;
 use App\Core\Security;
 use App\Core\SessionManager;
+use App\Config\Constants;
 use App\Models\FamilyModel;
 use App\Models\InviteModel;
 use App\Models\UserModel;
+use App\Models\PasswordResetModel;
 
 class AuthController extends Controller
 {
@@ -118,6 +120,59 @@ class AuthController extends Controller
         }
 
         Response::json(['id' => $userId, 'message' => 'Account created'], 201);
+    }
+
+    /**
+     * Resetare parola intr-un singur endpoint, cu doua moduri determinate de body:
+     *  - {email}                          -> genereaza un cod, il salveaza si il logheaza pe server
+     *  - {email, code, new_password}      -> verifica codul valid si seteaza parola noua
+     *
+     * Raspunsurile sunt generice intentionat (nu dezvaluie daca emailul exista),
+     * pentru a preveni enumerarea conturilor.
+     */
+    public function reset(array $params): void
+    {
+        $body = $this->request->body;
+        $email = strtolower(trim((string) ($body['email'] ?? '')));
+        $code = trim((string) ($body['code'] ?? ''));
+        $newPassword = (string) ($body['new_password'] ?? '');
+
+        if ($email === '') {
+            Response::error('Email required', 400);
+        }
+
+        $userModel = new UserModel();
+        $resetModel = new PasswordResetModel();
+        $user = $userModel->findByEmail($email);
+
+        // MOD 2: confirmare (avem cod + parola noua)
+        if ($code !== '' && $newPassword !== '') {
+            if (strlen($newPassword) < 6) {
+                Response::error('Password must be at least 6 characters', 400);
+            }
+
+            $valid = $user ? $resetModel->findValid((int) $user['id'], $code) : null;
+            if (!$valid) {
+                Response::error('Invalid or expired code', 400);
+            }
+
+            $userModel->updatePassword((int) $user['id'], $newPassword);
+            $resetModel->deleteForUser((int) $user['id']); // invalideaza toate codurile
+
+            Response::json(['message' => 'Password has been reset']);
+        }
+
+        // MOD 1: cerere de cod
+        if ($user) {
+            $resetModel->deleteForUser((int) $user['id']); // pastram un singur cod activ
+            $resetCode = (string) random_int(100000, 999999);
+            $resetModel->create((int) $user['id'], $resetCode, Constants::RESET_EXPIRY_MINUTES);
+
+            // Fara mailer: codul ajunge in log-ul serverului.
+            error_log("[password-reset] user_id={$user['id']} email={$email} code={$resetCode} expira in " . Constants::RESET_EXPIRY_MINUTES . " min");
+        }
+
+        Response::json(['message' => 'If the email exists, a reset code has been generated']);
     }
 
     public function logout(array $params): void

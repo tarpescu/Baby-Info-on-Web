@@ -89,4 +89,32 @@ class UserModel extends Model
         $stmt = $this->db->prepare("UPDATE users SET theme = :theme WHERE id = :id");
         return $stmt->execute([':id' => $id, ':theme' => $theme]);
     }
+
+    /**
+     * Seteaza o parola noua (primeste parola in clar, o hashuieste intern).
+     */
+    public function updatePassword(int $id, string $plainPassword): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users SET password_hash = :hash, updated_at = NOW() WHERE id = :id
+        ");
+        return $stmt->execute([
+            ':id'   => $id,
+            ':hash' => Security::hashPassword($plainPassword),
+        ]);
+    }
+
+    /**
+     * Lista tuturor userilor (fara password_hash), cei mai noi primii.
+     */
+    public function getAll(): array
+    {
+        $stmt = $this->db->query("
+            SELECT id, first_name, last_name, email, role, is_superadmin,
+                   banned_at, ban_reason, theme, avatar_color, created_at
+            FROM users
+            ORDER BY created_at DESC
+        ");
+        return $stmt->fetchAll();
+    }
 }

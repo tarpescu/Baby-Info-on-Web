@@ -22,6 +22,7 @@ class Router
         $this->add('POST', '/api/auth/logout', 'AuthController', 'logout');
         $this->add('GET', '/api/auth/me', 'AuthController', 'me');
         $this->add('POST', '/api/auth/register', 'AuthController', 'register');
+        $this->add('POST', '/api/auth/reset', 'AuthController', 'reset');
 
         $this->add('GET', '/api/children', 'ChildController', 'index');
         $this->add('POST', '/api/children', 'ChildController', 'store');
@@ -51,6 +52,16 @@ class Router
         $this->add('GET',  '/api/children/{id}/growth',   'GrowthController',  'index');
         $this->add('POST', '/api/children/{id}/growth',   'GrowthController',  'store');
         $this->add('POST', '/api/children/{id}/medical', 'MedicalController', 'store');
+
+        $this->add('GET',    '/api/children/{id}/relationships',     'RelationshipController', 'index');
+        $this->add('POST',   '/api/children/{id}/relationships',     'RelationshipController', 'store');
+        $this->add('PUT',    '/api/relationships/{id}',              'RelationshipController', 'update');
+        $this->add('DELETE', '/api/relationships/{id}',              'RelationshipController', 'destroy');
+
+        $this->add('GET',    '/api/children/{id}/interactions',      'InteractionController', 'index');
+        $this->add('GET',    '/api/relationships/{id}/interactions', 'InteractionController', 'byRelationship');
+        $this->add('POST',   '/api/relationships/{id}/interactions', 'InteractionController', 'store');
+        $this->add('DELETE', '/api/interactions/{id}',               'InteractionController', 'destroy');
 
         $this->add('POST', '/api/children/{id}/invites', 'InviteController', 'store');
         $this->add('GET', '/api/invite', 'InviteController', 'validate');
