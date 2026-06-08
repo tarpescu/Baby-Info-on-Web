@@ -805,6 +805,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
 
 document.getElementById('childSelector').addEventListener('change', (e) => {
     activeChildId = parseInt(e.target.value);
+    localStorage.setItem('activeChildId', activeChildId);
     renderDashboard();
 });
 
@@ -857,7 +858,10 @@ async function init() {
     });
     if (children.length > 1) sel.style.display = 'block';
 
-    activeChildId = children[0].id;
+    const savedId = parseInt(localStorage.getItem('activeChildId'));
+    const validSaved = children.find(c => c.id === savedId);
+    activeChildId = validSaved ? savedId : children[0].id;
+    sel.value = activeChildId;
 
     // Ascunde butonul de Invite pentru non-owner
     if (firstPermission !== 'owner') {

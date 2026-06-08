@@ -1020,14 +1020,21 @@ function buildPolaroid(moment) {
 
     const dateStr = formatDate(moment.happened_at);
 
+    // Zona de media: poza reala daca exista, altfel placeholder
+    const mediaZone = moment.media_url
+        ? `<img src="${moment.media_url}" alt="${moment.title}"
+                style="width:100%; height:100%; object-fit:cover; display:block;"
+                onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined big-icon\\'>${placeholderIcon}</span><span class=\\'type-label\\'>${moment.type}</span>'"/>`
+        : `<span class="material-symbols-outlined big-icon">${placeholderIcon}</span>
+           <span class="type-label">${moment.type}</span>`;
+
     wrap.innerHTML = `
         <div class="polaroid">
             <div class="polaroid-tape"></div>
             ${moment.is_pinned ? '<span class="material-symbols-outlined pin-star">star</span>' : ''}
 
-            <div class="polaroid-placeholder" style="background:${placeholderColor};">
-                <span class="material-symbols-outlined big-icon">${placeholderIcon}</span>
-                <span class="type-label">${moment.type}</span>
+            <div class="polaroid-placeholder" style="background:${moment.media_url ? '#fff' : placeholderColor}; padding:${moment.media_url ? '0' : ''};">
+                ${mediaZone}
             </div>
 
             <p class="polaroid-caption font-handwritten" title="${moment.title}">${moment.title}</p>
@@ -1067,6 +1074,11 @@ async function openDetail(moment) {
             <span class="detail-date">${formatDate(moment.happened_at)}</span>
             <span class="detail-author font-handwritten">by ${moment.first_name} ${moment.last_name}</span>
         </div>
+        ${moment.media_url ? `
+            <div style="margin:0.8rem 0; border:1px solid var(--outline);">
+                <img src="${moment.media_url}" alt="${moment.title}"
+                     style="width:100%; max-height:320px; object-fit:cover; display:block;"/>
+            </div>` : ''}
         ${moment.body ? `<p class="detail-body">${moment.body}</p>` : ''}
 
         <div class="reactions-row" id="detailReactions">
@@ -1211,6 +1223,12 @@ function openAddMoment() {
     now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
     document.getElementById('momentDate').value = now.toISOString().slice(0,16);
 
+    // Arata/ascunde campul de fisier in functie de tipul selectat implicit
+    const mediaTypes = ['photo', 'video', 'audio'];
+    const defaultType = document.getElementById('momentType').value;
+    document.getElementById('momentFileField').style.display =
+        mediaTypes.includes(defaultType) ? 'block' : 'none';
+
     document.getElementById('addMomentModal').classList.add('open');
 }
 
@@ -1331,6 +1349,7 @@ document.getElementById('logoutBtn').addEventListener('click', async () => {
 // Child selector
 document.getElementById('childSelector').addEventListener('change', (e) => {
     activeChildId = parseInt(e.target.value);
+    localStorage.setItem('activeChildId', activeChildId);
     buildShelf(children.find(c => String(c.id) === e.target.value) || children[0]);
     updateWriteAccess();
     loadTimeline();
@@ -1443,7 +1462,10 @@ async function init() {
     });
     if (children.length > 1) sel.style.display = 'block';
 
-    activeChildId = children[0].id;
+    const savedId = parseInt(localStorage.getItem('activeChildId'));
+    const validSaved = children.find(c => c.id === savedId);
+    activeChildId = validSaved ? savedId : children[0].id;
+    sel.value = activeChildId;
 
     // Arata UI-ul
     document.getElementById('shelfSection').style.display = 'block';

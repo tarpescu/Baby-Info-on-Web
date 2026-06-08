@@ -440,6 +440,7 @@ document.getElementById('medicalForm').addEventListener('submit', submitForm);
 
 document.getElementById('childSelector').addEventListener('change', (e) => {
     activeChildId = parseInt(e.target.value, 10);
+    localStorage.setItem('activeChildId', activeChildId);
     updateFormAccess();
     loadRecords();
 });
@@ -472,8 +473,6 @@ async function init() {
         return;
     }
 
-    activeChildId = children[0].id;
-
     // 3. Selector copil (afisat pentru familiile cu mai multi copii)
     const sel = document.getElementById('childSelector');
     children.forEach(c => {
@@ -483,6 +482,11 @@ async function init() {
         sel.appendChild(opt);
     });
     if (children.length > 1) sel.style.display = '';
+
+    const savedId = parseInt(localStorage.getItem('activeChildId'));
+    const validSaved = children.find(c => c.id === savedId);
+    activeChildId = validSaved ? savedId : children[0].id;
+    sel.value = activeChildId;
 
     // 4. Render
     document.getElementById('medicalGrid').style.display = 'grid';

@@ -1015,7 +1015,10 @@ async function init() {
     ).join('');
     sel.style.display = '';
 
-    activeChildId = children[0].id;
+    const savedId = parseInt(localStorage.getItem('activeChildId'));
+    const validSaved = children.find(c => c.id === savedId);
+    activeChildId = validSaved ? savedId : children[0].id;
+    sel.value = activeChildId;
     await loadBoard();
 }
 
@@ -1264,6 +1267,7 @@ document.getElementById('inviteFab').addEventListener('click', () => {
 // ── Child selector ─────────────────────────────────────────────────────────
 document.getElementById('childSelector').addEventListener('change', (e) => {
     activeChildId = parseInt(e.target.value);
+    localStorage.setItem('activeChildId', activeChildId);
     loadBoard();
 });
 
