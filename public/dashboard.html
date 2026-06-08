@@ -979,16 +979,10 @@ async function init() {
     document.getElementById('userGreeting').textContent =
         `Hello, ${currentUser.first_name}!`;
 
-<<<<<<< HEAD
-    // Afiseaza link-ul Admin doar pentru super-admini
-    if (currentUser.is_superadmin) {
-        document.getElementById('adminNavLink').style.display = '';
-=======
     // Afiseaza link-ul Admin (sus + meniul de jos) doar pentru super-admini
     if (currentUser.is_superadmin) {
         document.getElementById('adminNavLink').style.display = '';
         document.getElementById('adminBottomNav').style.display = '';
->>>>>>> 6b9d53a (-)
     }
 
     // 2. Fetch copii

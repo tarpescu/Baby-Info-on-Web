@@ -1,8 +1,11 @@
 <?php
 /**
- * Import atomic dintr-un ZIP cu CSV-uri (oglinda exportului). child_id este citit
- * din fiecare rand, accesul este verificat per copil, iar totul ruleaza intr-o
- * singura tranzactie (tot-sau-nimic).
+ * Import atomic al datelor unui copil — oglinda exportului. Doua formate:
+ *   - csv():  un ZIP cu cate un CSV per tabel
+ *   - json(): structura JSON produsa de export (sectiunile sub cheia "data")
+ *
+ * child_id este citit din fiecare rand, accesul este verificat per copil, iar
+ * totul ruleaza intr-o singura tranzactie (tot-sau-nimic).
  * @author Tarpescu Sergiu
  */
 
@@ -25,7 +28,7 @@ use RuntimeException;
 
 class ImportController extends Controller
 {
-    /** Tabel -> clasa de model. Determina si ce fisiere .csv citim din zip. */
+    /** Tabel -> clasa de model. Determina si ce sectiuni importam. */
     private const TABLE_MODELS = [
         'feedings' => FeedingModel::class,
         'sleep'    => SleepModel::class,
@@ -36,6 +39,7 @@ class ImportController extends Controller
 
     private const WRITE_ROLES = ['owner', 'coparent', 'caregiver'];
 
+    /** POST /api/import/csv — ZIP cu CSV-uri. */
     public function csv(array $params): void
     {
         $this->requireAuth();
@@ -69,7 +73,62 @@ class ImportController extends Controller
             Response::error('Archive contains no importable CSV files', 422);
         }
 
+        $this->respondImported($this->insertDatasets($datasets, $userId));
+    }
+
+    /** POST /api/import/json — structura JSON produsa de export. */
+    public function json(array $params): void
+    {
+        $this->requireAuth();
+        $userId = SessionManager::userId();
+
+        // Continutul vine fie ca fisier .json incarcat (camp "file"),
+        // fie ca un corp application/json (deja decodat de Request).
+        if (!empty($this->request->files['file'])) {
+            $file = $this->request->files['file'];
+            if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK) {
+                Response::error('Upload failed', 400);
+            }
+            $payload = json_decode((string) file_get_contents($file['tmp_name']), true);
+            if (!is_array($payload)) {
+                Response::error('Invalid JSON file', 422);
+            }
+        } else {
+            $payload = $this->request->body;
+            if (empty($payload)) {
+                Response::error('No JSON provided (field "file" sau corp application/json)', 400);
+            }
+        }
+
+        // Exportul pune sectiunile sub "data"; acceptam si o structura plata.
+        $sections = (isset($payload['data']) && is_array($payload['data'])) ? $payload['data'] : $payload;
+
+        $datasets = [];
+        foreach (array_keys(self::TABLE_MODELS) as $table) {
+            if (!empty($sections[$table]) && is_array($sections[$table])) {
+                $datasets[$table] = array_values($sections[$table]);
+            }
+        }
+
+        if (empty($datasets)) {
+            Response::error('JSON contains no importable data sections', 422);
+        }
+
+        $this->respondImported($this->insertDatasets($datasets, $userId));
+    }
+
+    /**
+     * Insereaza toate seturile de date intr-o singura tranzactie (tot-sau-nimic).
+     * Valideaza fiecare rand, verifica permisiunea de scriere per copil si forteaza
+     * logged_by = utilizatorul curent. Iese cu 422 + rollback la prima eroare.
+     *
+     * @param array<string,array<int,array>> $datasets  tabel => lista de randuri
+     * @return array<string,int>  cate randuri s-au inserat per tabel
+     */
+    private function insertDatasets(array $datasets, int $userId): array
+    {
         $db = Database::getConnection();
+        $validator = new CsvService(); // validateRow e agnostic de format (CSV sau JSON)
         $accessCache = [];
         $counts = [];
 
@@ -80,20 +139,22 @@ class ImportController extends Controller
                 $counts[$table] = 0;
 
                 foreach ($rows as $i => $row) {
-                    $error = $service->validateRow($table, $row);
+                    $pos = "[{$table} #" . ($i + 1) . ']';
+                    if (!is_array($row)) {
+                        throw new RuntimeException("{$pos} Rand invalid");
+                    }
+
+                    $error = $validator->validateRow($table, $row);
                     if ($error !== null) {
-                        throw new RuntimeException("[{$table}.csv rand " . ($i + 1) . "] {$error}");
+                        throw new RuntimeException("{$pos} {$error}");
                     }
 
                     $childId = (int) $row['child_id'];
                     if (!$this->canWrite($db, $childId, $userId, $accessCache)) {
-                        throw new RuntimeException(
-                            "[{$table}.csv rand " . ($i + 1) . "] Fara permisiune de scriere pentru copilul {$childId}"
-                        );
+                        throw new RuntimeException("{$pos} Fara permisiune de scriere pentru copilul {$childId}");
                     }
 
-                    $data = $this->prepareRow($row, $childId, $userId);
-                    $model->create($data);
+                    $model->create($this->prepareRow($row, $childId, $userId));
                     $counts[$table]++;
                 }
             }
@@ -104,6 +165,11 @@ class ImportController extends Controller
             Response::error('Import esuat (rollback): ' . $e->getMessage(), 422);
         }
 
+        return $counts;
+    }
+
+    private function respondImported(array $counts): void
+    {
         Response::json([
             'success'  => true,
             'imported' => $counts,

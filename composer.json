@@ -1,0 +1,17 @@
+{
+  "name": "tarpescu/babyinfo",
+  "description": "Baby Info web app - local dev composer autoload",
+  "type": "project",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "App\\\\": "api/"
+    },
+    "classmap": [
+      "api/"
+    ]
+  },
+  "config": {
+    "optimize-autoloader": true
+  }
+}

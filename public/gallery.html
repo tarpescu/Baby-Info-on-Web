@@ -1376,13 +1376,8 @@ function updateWriteAccess() {
     // Viewer: ascunde link-urile din nav la sectiuni private
     // Raftul RAMANE vizibil pentru toti — doar controlele de scriere dispar
     document.querySelectorAll('.nav-links a, .mobile-bottom-nav .nav-item').forEach(link => {
-<<<<<<< HEAD
-        // Link-ul Admin e gestionat exclusiv de logica is_superadmin — nu-l atinge aici.
-        if (link.id === 'adminNavLink') return;
-=======
         // Link-urile Admin (sus + meniul de jos) sunt gestionate exclusiv de logica is_superadmin.
         if (link.id === 'adminNavLink' || link.id === 'adminBottomNav') return;
->>>>>>> 6b9d53a (-)
         const href = link.getAttribute('href') || '';
         if (!userCanWrite && !href.includes('gallery')) {
             link.style.display = 'none';
@@ -1426,16 +1421,10 @@ async function init() {
 
     document.getElementById('userGreeting').textContent = `Hello, ${currentUser.first_name}!`;
 
-<<<<<<< HEAD
-    // Afiseaza link-ul Admin doar pentru super-admini
-    if (currentUser.is_superadmin) {
-        document.getElementById('adminNavLink').style.display = '';
-=======
     // Afiseaza link-ul Admin (sus + meniul de jos) doar pentru super-admini
     if (currentUser.is_superadmin) {
         document.getElementById('adminNavLink').style.display = '';
         document.getElementById('adminBottomNav').style.display = '';
->>>>>>> 6b9d53a (-)
     }
 
     const childRes = await fetch('/api/children', { credentials: 'include' });
