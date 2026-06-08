@@ -111,10 +111,26 @@ class AuthController extends Controller
             'role'       => 'viewer',
         ]);
 
-        // Daca avem invitatie valida, adaugam userul in familia copilului
+        // Daca avem invitatie valida, adaugam userul la TOTI copiii familiei invitatorului,
+        // nu doar la copilul specificat in invitatie.
         if ($invite) {
-            $familyModel = new FamilyModel();
-            $familyModel->addMember((int) $invite['child_id'], $userId, $invite['permission']);
+            $familyModel  = new FamilyModel();
+            $invitedBy    = (int) $invite['invited_by'];
+            $permission   = $invite['permission'];
+
+            // Gasim toti copiii la care invitatorul are acces
+            $familyChildIds = $familyModel->getChildIdsByUser($invitedBy);
+
+            // Adaugam noul user la fiecare copil din familie
+            foreach ($familyChildIds as $childId) {
+                $familyModel->addMember((int) $childId, $userId, $permission);
+            }
+
+            // Daca cumva invitatorul nu are niciun copil (caz exceptional), folosim child_id din invitatie
+            if (empty($familyChildIds)) {
+                $familyModel->addMember((int) $invite['child_id'], $userId, $permission);
+            }
+
             $inviteModel = new InviteModel();
             $inviteModel->markUsed((int) $invite['id'], $userId);
         }

@@ -832,6 +832,45 @@ function renderMemberCard(member, index) {
 }
 
 /**
+ * Renders a sibling (another child in the same family) as a polaroid.
+ * Click navigates to that child's board.
+ */
+function renderSiblingCard(sibling, index) {
+    const rot = ROTATIONS[(index + 6) % ROTATIONS.length];
+    const av  = avatarInfo(`${sibling.first_name} ${sibling.last_name || ''}`, sibling.avatar_color);
+    const age = calcAge(sibling.date_of_birth);
+    const genderIcon = sibling.gender === 'F' ? '👧' : sibling.gender === 'M' ? '👦' : '👶';
+
+    return `
+        <div class="pol-member" title="${esc(sibling.first_name)}"
+             onclick="switchToSibling(${sibling.id})" style="cursor:pointer;">
+            <div class="polaroid" style="transform:rotate(${rot}deg);">
+                <div class="washi blush"></div>
+                <div class="polaroid-photo" style="background:${esc(av.bg)}; font-size:${sibling.photo_url ? '0' : '2.8rem'};">
+                    ${sibling.photo_url
+                        ? `<img src="${esc(sibling.photo_url)}" alt="${esc(sibling.first_name)}" style="width:100%;height:100%;object-fit:cover;"/>`
+                        : genderIcon
+                    }
+                </div>
+                <div class="polaroid-caption">
+                    <span class="polaroid-name">${esc(sibling.first_name)}</span>
+                    <span class="group-tag" style="background:var(--scrap-blush);">sibling${age ? ' · ' + age : ''}</span>
+                </div>
+            </div>
+        </div>`;
+}
+
+/**
+ * Switches the active child to a sibling and reloads the board.
+ */
+function switchToSibling(childId) {
+    activeChildId = childId;
+    localStorage.setItem('activeChildId', childId);
+    document.getElementById('childSelector').value = childId;
+    loadBoard();
+}
+
+/**
  * Renders a social relationship as a smaller polaroid.
  */
 function renderRelCard(rel, index) {
@@ -870,7 +909,7 @@ function drawStrings() {
     const cx = cRect.left - bRect.left + cRect.width  / 2 + board.scrollLeft;
     const cy = cRect.top  - bRect.top  + cRect.height / 2 + board.scrollTop;
 
-    document.querySelectorAll('.pol-member .polaroid, .pol-rel .polaroid').forEach(el => {
+    document.querySelectorAll('.pol-member .polaroid, .pol-rel .polaroid, .pol-sibling .polaroid').forEach(el => {
         const r  = el.getBoundingClientRect();
         const tx = r.left - bRect.left + r.width  / 2 + board.scrollLeft;
         const ty = r.top  - bRect.top  + r.height / 2 + board.scrollTop;
@@ -900,16 +939,37 @@ function renderBoard(child) {
     // Family members (exclude self)
     const famEl     = document.getElementById('familyContainer');
     const otherMems = familyMembers.filter(m => m.user_id !== currentUser.id);
+
+    // Siblings = other children in the same family
+    const siblings  = children.filter(c => c.id !== activeChildId);
+
+    let famHtml = '';
+
     if (otherMems.length > 0) {
-        famEl.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
+        famHtml += `<div style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
             ${otherMems.map((m, i) => renderMemberCard(m, i)).join('')}
         </div>`;
     } else {
-        famEl.innerHTML = `
+        famHtml += `
             <div class="add-note" onclick="document.getElementById('inviteModal').classList.add('open')">
                 <p>Invite a co-parent or caregiver →</p>
             </div>`;
     }
+
+    if (siblings.length > 0) {
+        famHtml += `
+            <div style="width:100%; text-align:center; margin-top:1rem;">
+                <span style="font-family:'Caveat',cursive; font-size:1.1rem; color:rgba(255,255,255,0.75);
+                             text-shadow:1px 1px 2px rgba(0,0,0,0.3); display:block; margin-bottom:1rem;">
+                    👶 Siblings
+                </span>
+                <div style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
+                    ${siblings.map((s, i) => renderSiblingCard(s, i)).join('')}
+                </div>
+            </div>`;
+    }
+
+    famEl.innerHTML = famHtml;
 
     // Social relationships — show first 4 in the right column, rest below
     const socEl = document.getElementById('socialContainer');

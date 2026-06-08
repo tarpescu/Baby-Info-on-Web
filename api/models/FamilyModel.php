@@ -60,6 +60,20 @@ class FamilyModel extends Model
         return $stmt->execute([':child_id' => $childId, ':user_id' => $userId]);
     }
 
+    /**
+     * Returneaza toate child_id-urile la care un user are acces (orice rol).
+     * Folosit la acceptarea invitatiei pentru a adauga noul user la toti copiii familiei.
+     */
+    public function getChildIdsByUser(int $userId): array
+    {
+        $stmt = $this->db->prepare("
+            SELECT child_id FROM family_members
+            WHERE user_id = :user_id
+        ");
+        $stmt->execute([':user_id' => $userId]);
+        return array_column($stmt->fetchAll(), 'child_id');
+    }
+
     public function updatePermission(int $childId, int $userId, string $permission): bool
     {
         $stmt = $this->db->prepare("

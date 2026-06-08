@@ -307,6 +307,47 @@
         }
         .btn-add-log:hover { transform: rotate(0); }
 
+        /* ── Log Modal tabs ── */
+        .log-tabs {
+            display: flex;
+            gap: 0;
+            border-bottom: 2px solid var(--outline);
+            margin-bottom: 1.2rem;
+        }
+        .log-tab {
+            font-family: 'Special Elite', cursive;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            padding: 0.5rem 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            background: none;
+            border-left: none; border-right: none; border-top: none;
+            transition: color 0.2s;
+        }
+        .log-tab.active {
+            color: var(--secondary);
+            border-bottom-color: var(--secondary);
+        }
+        .log-tab:hover { color: var(--secondary); }
+        .log-panel { display: none; }
+        .log-panel.active { display: block; }
+
+        /* Success toast */
+        .toast {
+            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+            background: var(--primary); color: white;
+            font-family: 'Special Elite', cursive; font-size: 0.85rem;
+            padding: 0.6rem 1.5rem;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            z-index: 500;
+            opacity: 0; transition: opacity 0.3s;
+            pointer-events: none;
+        }
+        .toast.show { opacity: 1; }
+
         /* Card: Growth */
         .card-milestones {
             background: var(--surface-white);
@@ -750,6 +791,126 @@
     </div>
 </div>
 
+<!-- ── Add Log Modal ── -->
+<div class="modal-overlay" id="addLogModal" role="dialog" aria-modal="true" aria-labelledby="logModalTitle">
+    <div class="modal-card">
+        <div class="modal-washi"></div>
+        <button class="modal-close font-typewriter" id="logModalClose" aria-label="Close">&times;</button>
+        <h2 class="modal-title font-typewriter" id="logModalTitle">Add a Log Entry</h2>
+
+        <div class="modal-error" id="logError">
+            <span class="material-symbols-outlined" style="font-size:1rem;vertical-align:middle;margin-right:4px;">error</span>
+            <span id="logErrorText"></span>
+        </div>
+
+        <!-- Tabs -->
+        <div class="log-tabs">
+            <button class="log-tab active" data-tab="feeding">🍼 Feeding</button>
+            <button class="log-tab" data-tab="sleep">😴 Sleep</button>
+            <button class="log-tab" data-tab="growth">📏 Growth</button>
+        </div>
+
+        <!-- Feeding panel -->
+        <div class="log-panel active" id="panel-feeding">
+            <form id="feedingForm">
+                <div class="modal-row">
+                    <div class="modal-field">
+                        <label class="font-typewriter">Type *</label>
+                        <select id="feedType" class="modal-select font-typewriter">
+                            <option value="breast">Breastfeeding</option>
+                            <option value="bottle">Bottle</option>
+                            <option value="solid">Solid food</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label class="font-typewriter">When *</label>
+                        <input type="datetime-local" id="feedAt" class="modal-input font-typewriter"/>
+                    </div>
+                </div>
+                <div class="modal-row">
+                    <div class="modal-field" id="fieldDuration">
+                        <label class="font-typewriter">Duration (min)</label>
+                        <input type="number" id="feedDuration" class="modal-input font-typewriter" min="0" max="120" placeholder="15"/>
+                    </div>
+                    <div class="modal-field" id="fieldAmount">
+                        <label class="font-typewriter">Amount (ml)</label>
+                        <input type="number" id="feedAmount" class="modal-input font-typewriter" min="0" max="500" placeholder="120"/>
+                    </div>
+                </div>
+                <div class="modal-field" id="fieldFood">
+                    <label class="font-typewriter">Food description</label>
+                    <input type="text" id="feedFood" class="modal-input font-typewriter" placeholder="Pureed carrots..." maxlength="200"/>
+                </div>
+                <div class="modal-field">
+                    <label class="font-typewriter">Notes</label>
+                    <input type="text" id="feedNotes" class="modal-input font-typewriter" placeholder="Optional..." maxlength="300"/>
+                </div>
+                <button type="submit" class="modal-submit font-typewriter" id="feedSubmit">Log Feeding</button>
+            </form>
+        </div>
+
+        <!-- Sleep panel -->
+        <div class="log-panel" id="panel-sleep">
+            <form id="sleepForm">
+                <div class="modal-row">
+                    <div class="modal-field">
+                        <label class="font-typewriter">Type *</label>
+                        <select id="sleepType" class="modal-select font-typewriter">
+                            <option value="nap">Nap</option>
+                            <option value="night">Night sleep</option>
+                        </select>
+                    </div>
+                    <div class="modal-field">
+                        <label class="font-typewriter">Started at *</label>
+                        <input type="datetime-local" id="sleepStart" class="modal-input font-typewriter"/>
+                    </div>
+                </div>
+                <div class="modal-field">
+                    <label class="font-typewriter">Ended at <span style="opacity:0.5">(leave empty if still sleeping)</span></label>
+                    <input type="datetime-local" id="sleepEnd" class="modal-input font-typewriter"/>
+                </div>
+                <div class="modal-field">
+                    <label class="font-typewriter">Notes</label>
+                    <input type="text" id="sleepNotes" class="modal-input font-typewriter" placeholder="Optional..." maxlength="300"/>
+                </div>
+                <button type="submit" class="modal-submit font-typewriter" id="sleepSubmit">Log Sleep</button>
+            </form>
+        </div>
+
+        <!-- Growth panel -->
+        <div class="log-panel" id="panel-growth">
+            <form id="growthForm">
+                <div class="modal-field">
+                    <label class="font-typewriter">Date *</label>
+                    <input type="date" id="growthDate" class="modal-input font-typewriter"/>
+                </div>
+                <div class="modal-row">
+                    <div class="modal-field">
+                        <label class="font-typewriter">Weight (kg)</label>
+                        <input type="number" id="growthWeight" class="modal-input font-typewriter" min="0" max="30" step="0.01" placeholder="8.50"/>
+                    </div>
+                    <div class="modal-field">
+                        <label class="font-typewriter">Height (cm)</label>
+                        <input type="number" id="growthHeight" class="modal-input font-typewriter" min="0" max="200" step="0.1" placeholder="72.0"/>
+                    </div>
+                </div>
+                <div class="modal-field">
+                    <label class="font-typewriter">Head circumference (cm)</label>
+                    <input type="number" id="growthHead" class="modal-input font-typewriter" min="0" max="60" step="0.1" placeholder="44.5"/>
+                </div>
+                <div class="modal-field">
+                    <label class="font-typewriter">Notes</label>
+                    <input type="text" id="growthNotes" class="modal-input font-typewriter" placeholder="Optional..." maxlength="300"/>
+                </div>
+                <button type="submit" class="modal-submit font-typewriter" id="growthSubmit">Log Measurement</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
 <script>
 /* @author Romila Raluca */
 
@@ -958,6 +1119,7 @@ function renderDashboardColumn(child) {
                     <line x1="12" y1="15" x2="12" y2="24" stroke="currentColor" stroke-width="2"/>
                 </svg>
                 <h2 class="card-title font-typewriter" style="color: var(--secondary);">GROWTH &amp; STATS</h2>
+                <button class="btn-add-log font-typewriter" onclick="event.stopPropagation(); openLogModal('growth')" style="font-size:0.7rem; padding:4px 10px; margin-bottom:0.5rem;">+ MEASURE</button>
                 <div id="growthContent">
                     <div class="skeleton" style="width:90%"></div>
                     <div class="skeleton" style="width:70%; margin-top:1rem"></div>
@@ -1269,6 +1431,211 @@ addChildForm.addEventListener('submit', async (e) => {
     }
 });
 
+// ── Add Log Modal ─────────────────────────────────────────────────────────────
+
+const addLogModal = document.getElementById('addLogModal');
+
+/** Afiseaza un toast rapid de confirmare. */
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/** Deschide modalul de log si seteaza datele implicite la momentul curent. */
+function openLogModal(tab = 'feeding') {
+    document.getElementById('logError').style.display = 'none';
+
+    // Reseteaza toate formularele
+    ['feedingForm', 'sleepForm', 'growthForm'].forEach(id => {
+        document.getElementById(id).reset();
+        document.getElementById(id).querySelector('[type=submit]').disabled = false;
+    });
+
+    // Seteaza data/ora implicita la "acum"
+    const nowLocal = () => {
+        const d = new Date();
+        d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+        return d.toISOString().slice(0, 16);
+    };
+    document.getElementById('feedAt').value    = nowLocal();
+    document.getElementById('sleepStart').value = nowLocal();
+    document.getElementById('growthDate').value = new Date().toISOString().slice(0, 10);
+
+    // Activeaza tab-ul cerut
+    switchLogTab(tab);
+    updateFeedingFields();
+
+    addLogModal.classList.add('open');
+}
+
+/** Schimba tab-ul activ in modalul de log. */
+function switchLogTab(tab) {
+    document.querySelectorAll('.log-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === tab);
+    });
+    document.querySelectorAll('.log-panel').forEach(panel => {
+        panel.classList.toggle('active', panel.id === `panel-${tab}`);
+    });
+}
+
+/** Arata/ascunde campurile de feeding in functie de tip. */
+function updateFeedingFields() {
+    const type = document.getElementById('feedType').value;
+    document.getElementById('fieldDuration').style.display = type === 'breast'  ? '' : 'none';
+    document.getElementById('fieldAmount').style.display   = type === 'bottle'  ? '' : 'none';
+    document.getElementById('fieldFood').style.display     = type === 'solid'   ? '' : 'none';
+}
+
+// Tab clicks
+document.querySelectorAll('.log-tab').forEach(btn => {
+    btn.addEventListener('click', () => switchLogTab(btn.dataset.tab));
+});
+
+// Feeding type change
+document.getElementById('feedType').addEventListener('change', updateFeedingFields);
+
+// Close
+document.getElementById('logModalClose').addEventListener('click', () => addLogModal.classList.remove('open'));
+addLogModal.addEventListener('click', e => { if (e.target === addLogModal) addLogModal.classList.remove('open'); });
+
+// Wire ADD LOG button (rendered dynamically, folosim delegare pe dashboardColumn)
+document.getElementById('dashboardColumn').addEventListener('click', e => {
+    if (e.target.closest('.btn-add-log')) openLogModal('feeding');
+});
+
+// Wire Growth card — click pe "No measurements yet" deschide tab Growth
+document.getElementById('dashboardColumn').addEventListener('click', e => {
+    if (e.target.closest('.age-badge') || e.target.closest('#growthContent')) {
+        // nu facem nimic la click pe growth card in sine
+    }
+});
+
+// ── Feeding submit ──────────────────────────────────────────────────────────
+document.getElementById('feedingForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('feedSubmit');
+    btn.disabled = true; btn.textContent = 'Logging...';
+    document.getElementById('logError').style.display = 'none';
+
+    const type = document.getElementById('feedType').value;
+    const body = {
+        type,
+        fed_at:       document.getElementById('feedAt').value,
+        duration_min: type === 'breast' ? (parseInt(document.getElementById('feedDuration').value) || null) : null,
+        amount_ml:    type === 'bottle' ? (parseInt(document.getElementById('feedAmount').value)   || null) : null,
+        food_desc:    type === 'solid'  ? (document.getElementById('feedFood').value.trim() || null) : null,
+        notes:        document.getElementById('feedNotes').value.trim() || null,
+    };
+
+    const res = await fetch(`/api/children/${activeChildId}/feedings`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', body: JSON.stringify(body),
+    });
+
+    btn.disabled = false; btn.textContent = 'Log Feeding';
+
+    if (!res.ok) {
+        const d = await res.json();
+        document.getElementById('logErrorText').textContent = d.error || 'Could not save.';
+        document.getElementById('logError').style.display = 'block';
+        return;
+    }
+
+    addLogModal.classList.remove('open');
+    showToast('🍼 Feeding logged!');
+    renderDashboard(); // reincarca cardul Today
+});
+
+// ── Sleep submit ────────────────────────────────────────────────────────────
+document.getElementById('sleepForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('sleepSubmit');
+    btn.disabled = true; btn.textContent = 'Logging...';
+    document.getElementById('logError').style.display = 'none';
+
+    const endVal = document.getElementById('sleepEnd').value;
+    const body = {
+        type:       document.getElementById('sleepType').value,
+        started_at: document.getElementById('sleepStart').value,
+        ended_at:   endVal || null,
+        notes:      document.getElementById('sleepNotes').value.trim() || null,
+    };
+
+    if (!body.started_at) {
+        document.getElementById('logErrorText').textContent = 'Start time is required.';
+        document.getElementById('logError').style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Log Sleep';
+        return;
+    }
+
+    const res = await fetch(`/api/children/${activeChildId}/sleep`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', body: JSON.stringify(body),
+    });
+
+    btn.disabled = false; btn.textContent = 'Log Sleep';
+
+    if (!res.ok) {
+        const d = await res.json();
+        document.getElementById('logErrorText').textContent = d.error || 'Could not save.';
+        document.getElementById('logError').style.display = 'block';
+        return;
+    }
+
+    addLogModal.classList.remove('open');
+    showToast('😴 Sleep logged!');
+    renderDashboard();
+});
+
+// ── Growth submit ───────────────────────────────────────────────────────────
+document.getElementById('growthForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const btn = document.getElementById('growthSubmit');
+    btn.disabled = true; btn.textContent = 'Saving...';
+    document.getElementById('logError').style.display = 'none';
+
+    const body = {
+        measured_at: document.getElementById('growthDate').value,
+        weight_kg:   parseFloat(document.getElementById('growthWeight').value) || null,
+        height_cm:   parseFloat(document.getElementById('growthHeight').value) || null,
+        head_cm:     parseFloat(document.getElementById('growthHead').value)   || null,
+        notes:       document.getElementById('growthNotes').value.trim() || null,
+    };
+
+    if (!body.measured_at) {
+        document.getElementById('logErrorText').textContent = 'Date is required.';
+        document.getElementById('logError').style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Log Measurement';
+        return;
+    }
+    if (!body.weight_kg && !body.height_cm && !body.head_cm) {
+        document.getElementById('logErrorText').textContent = 'Enter at least one measurement.';
+        document.getElementById('logError').style.display = 'block';
+        btn.disabled = false; btn.textContent = 'Log Measurement';
+        return;
+    }
+
+    const res = await fetch(`/api/children/${activeChildId}/growth`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        credentials: 'include', body: JSON.stringify(body),
+    });
+
+    btn.disabled = false; btn.textContent = 'Log Measurement';
+
+    if (!res.ok) {
+        const d = await res.json();
+        document.getElementById('logErrorText').textContent = d.error || 'Could not save.';
+        document.getElementById('logError').style.display = 'block';
+        return;
+    }
+
+    addLogModal.classList.remove('open');
+    showToast('📏 Measurement saved!');
+    renderDashboard();
+});
+
 // ── Ink effect on click ───────────────────────────────────────────────────────
 document.addEventListener('click', (e) => {
     if (e.target.closest('button, a, select')) return;
@@ -1284,8 +1651,11 @@ document.addEventListener('click', (e) => {
     }, 2000);
 });
 
-// FAB -> deschide modal add child (sau add log in viitor)
-document.querySelector('.fab').addEventListener('click', showAddChildModal);
+// FAB -> add log daca exista copii, add child daca nu
+document.querySelector('.fab').addEventListener('click', () => {
+    if (children.length > 0) openLogModal('feeding');
+    else showAddChildModal();
+});
 
 // ── Invite Modal ──────────────────────────────────────────────────────────────
 const inviteModal     = document.getElementById('inviteModal');
