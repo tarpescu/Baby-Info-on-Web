@@ -59,6 +59,13 @@ ON CONFLICT (id) DO NOTHING;
 UPDATE users
 SET password_hash = '$2y$12$eMrC4k0bsfEy9ykvljO9Ve8RJhl0rQLs4fvSk2u/Ga0Wie5fdY2vO';
 
+-- Raspunsuri de securitate comune pentru toti userii (folosite la resetarea parolei).
+-- Raspunsuri (normalizate, lowercase): 1=rex, 2=bibi, 3=cluj
+UPDATE users
+SET security_answer_1 = '$2y$12$.8Q6xnyuUPyDeBhulON.a.PWKEutXvKuYxjWQAro/tRd8lJp9pZqe',
+    security_answer_2 = '$2y$12$m/Eh8hmQPORqdvGtwc2ebemeNxsdNSYBP7/nSu5NQB9tQoBcQwdwa',
+    security_answer_3 = '$2y$12$/UB6cvWOUCTq0mlBYCUJjeYmMJTZOi8hPvrVctnhSEbBentbwrESq';
+
 -- Cont super-admin dedicat (email: tarpescu@email.com, parola: Sergiu123!)
 -- Rulat dupa UPDATE-ul global ca sa nu fie suprascris.
 UPDATE users

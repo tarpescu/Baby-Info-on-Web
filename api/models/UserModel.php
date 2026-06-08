@@ -45,9 +45,13 @@ class UserModel extends Model
         $colors = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
         $color = $data['avatar_color'] ?? $colors[array_rand($colors)];
 
+        $answers = $data['security_answers'] ?? [];
+
         $stmt = $this->db->prepare("
-            INSERT INTO users (first_name, last_name, email, password_hash, role, avatar_color)
-            VALUES (:first_name, :last_name, :email, :password_hash, :role, :avatar_color)
+            INSERT INTO users (first_name, last_name, email, password_hash, role, avatar_color,
+                               security_answer_1, security_answer_2, security_answer_3)
+            VALUES (:first_name, :last_name, :email, :password_hash, :role, :avatar_color,
+                    :security_answer_1, :security_answer_2, :security_answer_3)
             RETURNING id
         ");
         $stmt->execute([
@@ -57,8 +61,59 @@ class UserModel extends Model
             ':password_hash' => Security::hashPassword($data['password']),
             ':role' => $data['role'] ?? 'viewer',
             ':avatar_color' => $color,
+            ':security_answer_1' => self::hashAnswer($answers[0] ?? null),
+            ':security_answer_2' => self::hashAnswer($answers[1] ?? null),
+            ':security_answer_3' => self::hashAnswer($answers[2] ?? null),
         ]);
         return (int) $stmt->fetchColumn();
+    }
+
+    /** Normalizeaza (lowercase + trim) si hashuieste un raspuns de securitate. */
+    private static function hashAnswer(?string $answer): ?string
+    {
+        $answer = trim((string) $answer);
+        if ($answer === '') {
+            return null;
+        }
+        return Security::hashPassword(mb_strtolower($answer));
+    }
+
+    /** Seteaza/actualizeaza cele 3 raspunsuri de securitate (hash-uite). */
+    public function updateSecurityAnswers(int $id, array $answers): bool
+    {
+        $stmt = $this->db->prepare("
+            UPDATE users SET security_answer_1 = :a1, security_answer_2 = :a2, security_answer_3 = :a3
+            WHERE id = :id
+        ");
+        return $stmt->execute([
+            ':id' => $id,
+            ':a1' => self::hashAnswer($answers[0] ?? null),
+            ':a2' => self::hashAnswer($answers[1] ?? null),
+            ':a3' => self::hashAnswer($answers[2] ?? null),
+        ]);
+    }
+
+    /** Verifica daca toate cele 3 raspunsuri date corespund (case-insensitive). */
+    public function verifySecurityAnswers(int $userId, array $answers): bool
+    {
+        $stmt = $this->db->prepare("
+            SELECT security_answer_1, security_answer_2, security_answer_3
+            FROM users WHERE id = :id LIMIT 1
+        ");
+        $stmt->execute([':id' => $userId]);
+        $row = $stmt->fetch();
+        if (!$row) {
+            return false;
+        }
+
+        $hashes = [$row['security_answer_1'], $row['security_answer_2'], $row['security_answer_3']];
+        for ($i = 0; $i < 3; $i++) {
+            $given = mb_strtolower(trim((string) ($answers[$i] ?? '')));
+            if ($given === '' || empty($hashes[$i]) || !Security::verifyPassword($given, $hashes[$i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public function emailExists(string $email): bool

@@ -14,6 +14,9 @@ CREATE TABLE IF NOT EXISTS users (
                                      theme          TEXT    NOT NULL DEFAULT 'boy'
                                          CHECK(theme IN ('boy','girl')),
                                      avatar_color   TEXT    NOT NULL DEFAULT 'c1',
+                                     security_answer_1 TEXT,
+                                     security_answer_2 TEXT,
+                                     security_answer_3 TEXT,
                                      created_at     TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                      updated_at     TIMESTAMP
 );

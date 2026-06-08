@@ -307,6 +307,24 @@
                     </div>
                 </div>
 
+                <div style="grid-column: span 2;">
+                    <h2 class="section-title font-handwritten">Security Questions
+                        <span class="font-typewriter" style="font-size: 0.7rem; color: var(--text-muted); text-transform: none;">(used to recover your password)</span>
+                    </h2>
+                    <div class="input-group">
+                        <label class="font-typewriter">Numele primului tău animal de companie?</label>
+                        <input type="text" name="security_answer_1" class="typewriter-input font-typewriter" placeholder="ex: Rex" required/>
+                    </div>
+                    <div class="input-group">
+                        <label class="font-typewriter">Care era porecla ta din copilărie?</label>
+                        <input type="text" name="security_answer_2" class="typewriter-input font-typewriter" placeholder="ex: Bibi" required/>
+                    </div>
+                    <div class="input-group">
+                        <label class="font-typewriter">În ce oraș ai copilărit?</label>
+                        <input type="text" name="security_answer_3" class="typewriter-input font-typewriter" placeholder="ex: Cluj" required/>
+                    </div>
+                </div>
+
                 <div class="official-footer">
                     <h3 class="font-typewriter" style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1rem; text-align: center;">For Official Use Only</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
@@ -408,6 +426,9 @@
                     last_name:  lastName,
                     email,
                     password,
+                    security_answer_1: regForm.security_answer_1.value.trim(),
+                    security_answer_2: regForm.security_answer_2.value.trim(),
+                    security_answer_3: regForm.security_answer_3.value.trim(),
                 }),
             });
 
