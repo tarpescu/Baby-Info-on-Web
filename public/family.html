@@ -1,0 +1,1287 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Family | Baby Info</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:wght@400;600;800&family=Caveat:wght@400;700&family=Special+Elite&family=Figtree:wght@300;400;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+
+    <style>
+        /* @author Romila Raluca */
+        :root {
+            --bg-paper:           #e6dfd3;
+            --primary:            #321716;
+            --secondary:          #9e422c;
+            --text-body:          #1e1b14;
+            --text-muted:         #504443;
+            --surface-container:  #f4ede1;
+            --surface-high:       #eee7db;
+            --surface-white:      rgba(255,255,255,0.8);
+            --scrap-sage:         #d8e2dc;
+            --scrap-blush:        #f0e6e6;
+            --scrap-olive:        #e9edc9;
+            --outline:            #d4c3c1;
+            --tape-blue:          rgba(131,166,183,0.7);
+            --error:              #ba1a1a;
+            --ok:                 #4f7942;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-paper);
+            color: var(--text-body);
+            font-family: 'Courier Prime', monospace;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 80px;
+        }
+
+        a { text-decoration: none; color: inherit; }
+        button { cursor: pointer; border: none; background: none; font-family: inherit; }
+        ul { list-style: none; }
+
+        .font-headline   { font-family: 'Libre Caslon Text', serif; }
+        .font-handwritten { font-family: 'Caveat', cursive; }
+        .font-typewriter  { font-family: 'Special Elite', cursive; }
+        .font-label       { font-family: 'Bricolage Grotesque', sans-serif; }
+        .material-symbols-outlined { vertical-align: middle; }
+
+        /* ── Navbar ──────────────────────────────────────────────────── */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background: var(--surface-container);
+            border-bottom: 2px dashed var(--outline);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .nav-logo  { font-family: 'Special Elite', cursive; font-size: 1.5rem; font-weight: bold; color: var(--primary); transform: rotate(-1deg); display: inline-block; }
+        .nav-links { display: flex; gap: 2rem; }
+        .nav-links a { font-family: 'Special Elite', cursive; font-size: 0.9rem; color: var(--text-muted); transition: color 0.2s; }
+        .nav-links a.active { color: var(--secondary); text-decoration: underline; text-decoration-style: wavy; }
+        .nav-links a:hover  { color: var(--secondary); }
+        .nav-actions { display: flex; gap: 1rem; align-items: center; }
+        #userGreeting { font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--text-muted); }
+        #childSelector {
+            font-family: 'Special Elite', cursive; font-size: 0.9rem;
+            background: var(--surface-container); border: 1px dashed var(--outline);
+            padding: 4px 8px; color: var(--primary); cursor: pointer;
+        }
+        #logoutBtn { font-family: 'Special Elite', cursive; font-size: 0.8rem; color: var(--text-muted); }
+        #logoutBtn:hover { color: var(--error); }
+
+        /* ── Corkboard ───────────────────────────────────────────────── */
+        .corkboard {
+            background-color: #b8955a;
+            background-image:
+                radial-gradient(circle at 2px 2px, rgba(0,0,0,0.18) 1px, transparent 0),
+                radial-gradient(circle at 10px 10px, rgba(0,0,0,0.06) 1px, transparent 0);
+            background-size: 4px 4px, 20px 20px;
+            min-height: calc(100vh - 65px);
+            padding: 2.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ── SVG strings layer ───────────────────────────────────────── */
+        #stringLayer {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .red-string {
+            stroke: #ba1a1a;
+            stroke-width: 1.5;
+            stroke-dasharray: 5 3;
+            fill: none;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.4));
+            opacity: 0.75;
+        }
+
+        /* ── Board header ────────────────────────────────────────────── */
+        .board-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+            z-index: 10;
+        }
+        .board-title-note {
+            background: var(--scrap-blush);
+            display: inline-block;
+            padding: 1rem 2.5rem 1.2rem;
+            clip-path: polygon(2% 0%, 98% 1%, 100% 8%, 99% 92%, 96% 100%, 4% 99%, 0% 94%, 1% 8%);
+            box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+            transform: rotate(-1deg);
+        }
+        .board-title-note h2 {
+            font-family: 'Libre Caslon Text', serif;
+            font-size: 2rem;
+            color: var(--secondary);
+            margin-bottom: 0.2rem;
+        }
+        .board-title-note p {
+            font-family: 'Caveat', cursive;
+            font-size: 1.15rem;
+            color: var(--text-muted);
+        }
+
+        /* ── Main board layout ───────────────────────────────────────── */
+        .board-content {
+            position: relative;
+            z-index: 10;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .board-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 2rem 3rem;
+            align-items: start;
+        }
+
+        /* ── Column headers ──────────────────────────────────────────── */
+        .col-header {
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        /* ── Polaroids ───────────────────────────────────────────────── */
+        .polaroid {
+            background: white;
+            padding: 10px 10px 40px;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.2), 6px 6px 18px rgba(0,0,0,0.15);
+            position: relative;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            cursor: pointer;
+        }
+        .polaroid:hover {
+            transform: rotate(0deg) scale(1.05) !important;
+            box-shadow: 4px 4px 14px rgba(0,0,0,0.3), 10px 10px 30px rgba(0,0,0,0.2);
+            z-index: 30;
+        }
+
+        .polaroid-photo {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: var(--scrap-sage);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .polaroid-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+        .polaroid-caption {
+            position: absolute;
+            bottom: 6px; left: 0; right: 0;
+            text-align: center;
+            padding: 0 6px;
+        }
+        .polaroid-name {
+            font-family: 'Caveat', cursive;
+            font-size: 1.05rem;
+            color: var(--primary);
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Push pin */
+        .push-pin {
+            width: 13px; height: 13px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #ff7070, #ba1a1a);
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -7px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 5;
+        }
+        .push-pin.left  { left: 20%; }
+        .push-pin.right { left: 75%; }
+
+        /* Washi tape */
+        .washi {
+            position: absolute;
+            top: -14px; left: 50%;
+            transform: translateX(-50%);
+            width: 70px; height: 26px;
+            background: var(--tape-blue);
+            -webkit-mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="70" height="26" viewBox="0 0 70 26"%3E%3Cpath d="M0,4 L7,0 L14,4 L21,1 L28,5 L35,2 L42,6 L49,3 L56,6 L63,2 L70,5 L70,21 L63,25 L56,21 L49,25 L42,21 L35,25 L28,21 L21,25 L14,21 L7,25 L0,21 Z" fill="black"/%3E%3C/svg%3E');
+            mask-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="70" height="26" viewBox="0 0 70 26"%3E%3Cpath d="M0,4 L7,0 L14,4 L21,1 L28,5 L35,2 L42,6 L49,3 L56,6 L63,2 L70,5 L70,21 L63,25 L56,21 L49,25 L42,21 L35,25 L28,21 L21,25 L14,21 L7,25 L0,21 Z" fill="black"/%3E%3C/svg%3E');
+            z-index: 5;
+        }
+        .washi.olive { background: rgba(180,190,130,0.75); }
+        .washi.blush { background: rgba(210,160,160,0.7); }
+
+        /* ── Polaroid sizes ──────────────────────────────────────────── */
+        .pol-child  { width: 220px; margin: 0 auto; }
+        .pol-member { width: 170px; }
+        .pol-rel    { width: 145px; }
+
+        /* ── Role badge ──────────────────────────────────────────────── */
+        .role-badge {
+            display: inline-block;
+            font-family: 'Special Elite', cursive;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 1px 7px;
+            margin-top: 2px;
+        }
+        .role-owner     { background: var(--scrap-olive); color: var(--primary); }
+        .role-coparent  { background: var(--scrap-sage);  color: var(--primary); }
+        .role-caregiver { background: var(--scrap-blush); color: var(--secondary); }
+        .role-viewer    { background: var(--outline);     color: var(--text-muted); }
+
+        /* ── Group tag ───────────────────────────────────────────────── */
+        .group-tag {
+            font-family: 'Special Elite', cursive;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 1px 7px;
+            background: var(--scrap-sage);
+            color: var(--primary);
+            display: inline-block;
+            margin-top: 2px;
+        }
+        .group-friends { background: var(--scrap-blush); }
+        .group-daycare { background: var(--scrap-olive); }
+        .group-other   { background: var(--outline); }
+
+        /* ── Column containers ───────────────────────────────────────── */
+        .members-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2.5rem;
+        }
+
+        /* ── Social relationships section ────────────────────────────── */
+        .rel-section {
+            position: relative;
+            z-index: 10;
+            margin-top: 3rem;
+            max-width: 1100px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .section-label {
+            font-family: 'Caveat', cursive;
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.9);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .rel-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        /* ── Add note (empty state inside col) ───────────────────────── */
+        .add-note {
+            background: var(--scrap-olive);
+            padding: 1.2rem;
+            clip-path: polygon(2% 0%, 98% 1%, 100% 5%, 99% 95%, 95% 100%, 5% 99%, 0% 90%, 1% 5%);
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.18);
+            transform: rotate(-2deg);
+            width: 160px;
+            cursor: pointer;
+            transition: transform 0.25s;
+        }
+        .add-note:hover { transform: rotate(0deg); }
+        .add-note p { font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--primary); line-height: 1.4; }
+
+        /* ── FAB ─────────────────────────────────────────────────────── */
+        .fab {
+            position: fixed;
+            bottom: 90px; right: 2rem;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: var(--secondary); color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+            z-index: 100;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .fab:hover { transform: scale(1.1); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+
+        .fab-invite {
+            position: fixed;
+            bottom: 160px; right: 2rem;
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            background: var(--scrap-olive); color: var(--primary);
+            display: none; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+            border: 2px dashed var(--outline);
+            transition: transform 0.2s;
+        }
+        .fab-invite:hover { transform: scale(1.08); }
+
+        /* ── Modals ──────────────────────────────────────────────────── */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(30,27,20,0.55);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-card {
+            background: var(--surface-container);
+            border: 2px solid var(--outline);
+            padding: 2rem;
+            width: 90%; max-width: 440px;
+            position: relative;
+            clip-path: polygon(1% 0%, 99% 1%, 100% 3%, 99% 97%, 97% 100%, 3% 99%, 0% 97%, 1% 3%);
+            box-shadow: 4px 4px 24px rgba(0,0,0,0.3);
+        }
+        .modal-push-pin {
+            width: 13px; height: 13px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #ff7070, #ba1a1a);
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            position: absolute;
+            top: -7px; left: 50%;
+            transform: translateX(-50%);
+        }
+        .modal-title {
+            font-family: 'Libre Caslon Text', serif;
+            font-size: 1.4rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+        }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            color: var(--text-muted); font-family: 'Special Elite', cursive;
+            font-size: 1rem; cursor: pointer;
+        }
+        .modal-close:hover { color: var(--error); }
+
+        .form-group { margin-bottom: 1.1rem; }
+        .form-group label {
+            display: block;
+            font-family: 'Special Elite', cursive;
+            font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--text-muted); margin-bottom: 0.35rem;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            background: var(--surface-high);
+            border: 1px solid var(--outline);
+            padding: 0.55rem 0.75rem;
+            font-family: 'Courier Prime', monospace; font-size: 0.95rem;
+            color: var(--text-body); outline: none;
+        }
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus { border-color: var(--secondary); }
+
+        .btn-submit {
+            background: var(--secondary); color: white;
+            padding: 0.6rem 2rem;
+            font-family: 'Special Elite', cursive; font-size: 0.9rem; letter-spacing: 1px;
+            border: none; cursor: pointer; transition: opacity 0.2s;
+        }
+        .btn-submit:hover   { opacity: 0.85; }
+        .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .form-error {
+            color: var(--error); font-family: 'Caveat', cursive;
+            font-size: 1rem; margin-bottom: 0.8rem; display: none;
+        }
+
+        /* ── Detail modal ────────────────────────────────────────────── */
+        .detail-header {
+            display: flex; align-items: center; gap: 1.2rem;
+            margin-bottom: 1.2rem;
+        }
+        .detail-avatar {
+            width: 76px; height: 76px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Caveat', cursive; font-size: 2rem;
+        }
+        .detail-name { font-family: 'Caveat', cursive; font-size: 1.8rem; color: var(--primary); line-height: 1.1; }
+        .detail-sub  { font-family: 'Special Elite', cursive; font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; }
+        .detail-info { font-family: 'Courier Prime', monospace; font-size: 0.88rem; color: var(--text-muted); line-height: 1.9; margin-bottom: 1rem; }
+        .detail-actions {
+            display: flex; gap: 0.75rem; flex-wrap: wrap;
+            border-top: 1px dashed var(--outline);
+            padding-top: 1rem; margin-top: 1rem;
+            align-items: center;
+        }
+        .btn-danger {
+            background: none; border: 1px solid var(--error); color: var(--error);
+            padding: 0.35rem 0.9rem;
+            font-family: 'Special Elite', cursive; font-size: 0.78rem;
+            cursor: pointer; transition: background 0.2s, color 0.2s;
+        }
+        .btn-danger:hover { background: var(--error); color: white; }
+
+        .perm-select {
+            font-family: 'Courier Prime', monospace; font-size: 0.82rem;
+            background: var(--surface-high); border: 1px solid var(--outline);
+            padding: 0.3rem 0.5rem; color: var(--text-body);
+        }
+
+        /* Invite link output */
+        .invite-link-box {
+            background: var(--surface-high);
+            border: 1px dashed var(--secondary);
+            padding: 0.8rem; margin-top: 1rem;
+            font-family: 'Courier Prime', monospace; font-size: 0.78rem;
+            word-break: break-all; color: var(--secondary);
+            display: none;
+        }
+        .invite-link-box strong {
+            font-family: 'Special Elite', cursive; font-size: 0.7rem;
+            letter-spacing: 1px; display: block; margin-bottom: 0.4rem;
+            color: var(--text-muted);
+        }
+        .btn-copy {
+            display: inline-block; margin-top: 0.5rem;
+            background: var(--secondary); color: white;
+            padding: 3px 12px;
+            font-family: 'Special Elite', cursive; font-size: 0.75rem;
+            cursor: pointer; border: none;
+        }
+
+        /* ── Mobile bottom nav ───────────────────────────────────────── */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: var(--surface-container);
+            border-top: 1px solid var(--outline);
+            padding: 0.4rem 0;
+            z-index: 100;
+            justify-content: space-around;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 2px; font-family: 'Special Elite', cursive; font-size: 0.65rem;
+            color: var(--text-muted); padding: 4px 8px; text-decoration: none;
+        }
+        .nav-item.active { color: var(--secondary); }
+        .nav-item .material-symbols-outlined { font-size: 1.35rem; }
+
+        /* ── Loading ─────────────────────────────────────────────────── */
+        .loading-msg {
+            text-align: center; padding: 5rem 2rem;
+            font-family: 'Special Elite', cursive; font-size: 1rem;
+            letter-spacing: 3px; color: rgba(255,255,255,0.85);
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { display: inline-block; animation: spin 1.2s linear infinite; }
+
+        /* ── Responsive ──────────────────────────────────────────────── */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .mobile-bottom-nav { display: flex; }
+            .board-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .members-col { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 1.5rem; }
+            .corkboard { padding: 1.5rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Navbar ──────────────────────────────────────────────────────────── -->
+<header class="navbar">
+    <a href="/dashboard" class="nav-logo font-typewriter">Baby Info</a>
+    <nav class="nav-links font-label">
+        <a href="/dashboard">Journal</a>
+        <a href="/gallery">Gallery</a>
+        <a href="/medical">Medical</a>
+        <a href="/milestones">Milestones</a>
+        <a href="/family" class="active">Family</a>
+        <a href="/admin" id="adminNavLink" style="display:none;">Admin</a>
+    </nav>
+    <div class="nav-actions">
+        <span id="userGreeting" class="font-handwritten"></span>
+        <select id="childSelector" title="Select child" style="display:none;"></select>
+        <button id="logoutBtn" class="font-typewriter">Log Out</button>
+    </div>
+</header>
+
+<!-- ── Corkboard ───────────────────────────────────────────────────────── -->
+<main class="corkboard" id="corkboard">
+
+    <!-- SVG strings layer — drawn by JS -->
+    <svg id="stringLayer" aria-hidden="true"></svg>
+
+    <!-- Board header -->
+    <div class="board-header">
+        <div class="board-title-note">
+            <h2 class="font-headline">The Family Circle</h2>
+            <p id="boardSubtitle" class="font-handwritten">Everyone who loves this little one</p>
+        </div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="loading-msg" id="loadingState">
+        <span class="spin material-symbols-outlined" style="font-size:2rem; display:block; margin-bottom:1rem;">autorenew</span>
+        DEVELOPING FILM...
+    </div>
+
+    <!-- Board content -->
+    <div class="board-content" id="boardContent" style="display:none;">
+
+        <!-- 3-column grid: family | child | social -->
+        <div class="board-grid" id="boardGrid">
+
+            <!-- Left: family members (owners / coparents / caregivers) -->
+            <div class="members-col" id="familyCol">
+                <div class="col-header">Family Members</div>
+                <div id="familyContainer"></div>
+            </div>
+
+            <!-- Center: child -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:1rem;">
+                <div id="childPolaroidWrap"></div>
+            </div>
+
+            <!-- Right: social relationships -->
+            <div class="members-col" id="socialCol">
+                <div class="col-header">Friends &amp; Classmates</div>
+                <div id="socialContainer"></div>
+            </div>
+
+        </div>
+
+        <!-- Bottom: all social relationships as a wider grid -->
+        <div class="rel-section" id="relSection" style="display:none;">
+            <div class="section-label">
+                <span class="material-symbols-outlined">group</span>
+                Social Circle
+            </div>
+            <div class="rel-grid" id="relGrid"></div>
+        </div>
+
+    </div>
+
+    <!-- Empty state (no children) -->
+    <div id="emptyState" style="display:none; text-align:center; padding:5rem 2rem;">
+        <div style="background:white; display:inline-block; padding:2rem; transform:rotate(-1deg); box-shadow:3px 3px 12px rgba(0,0,0,0.2);">
+            <span class="material-symbols-outlined" style="font-size:3rem; color:var(--outline); display:block;">group_off</span>
+            <p class="font-handwritten" style="font-size:1.3rem; color:var(--text-muted); margin-top:0.5rem;">No children added yet.<br>Start from the Journal page!</p>
+        </div>
+    </div>
+
+</main>
+
+<!-- ── Modals ──────────────────────────────────────────────────────────── -->
+
+<!-- Add social relationship -->
+<div class="modal-overlay" id="addRelModal" role="dialog" aria-modal="true" aria-labelledby="addRelTitle">
+    <div class="modal-card">
+        <div class="modal-push-pin"></div>
+        <h3 class="modal-title font-headline" id="addRelTitle">Pin a New Person</h3>
+        <button class="modal-close font-typewriter" id="addRelClose" aria-label="Close">✕</button>
+        <form id="addRelForm">
+            <div class="form-group">
+                <label for="relName">Name *</label>
+                <input type="text" id="relName" maxlength="100" required placeholder="Sophie, Grandpa Ion..."/>
+            </div>
+            <div class="form-group">
+                <label for="relRelationship">Relationship *</label>
+                <input type="text" id="relRelationship" maxlength="100" required placeholder="cousin, daycare friend, neighbour..."/>
+            </div>
+            <div class="form-group">
+                <label for="relGroup">Group</label>
+                <select id="relGroup">
+                    <option value="family">Family</option>
+                    <option value="friends" selected>Friends</option>
+                    <option value="daycare">Daycare</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="relAge">Age (years)</label>
+                <input type="number" id="relAge" min="0" max="18" placeholder="3"/>
+            </div>
+            <div class="form-group">
+                <label for="relNotes">Notes</label>
+                <textarea id="relNotes" rows="2" maxlength="300" placeholder="Met at the playground..."></textarea>
+            </div>
+            <div class="form-error" id="addRelError"></div>
+            <button type="submit" class="btn-submit" id="addRelSubmit">Pin to Board</button>
+        </form>
+    </div>
+</div>
+
+<!-- Invite family member (owners only) -->
+<div class="modal-overlay" id="inviteModal" role="dialog" aria-modal="true" aria-labelledby="inviteTitle">
+    <div class="modal-card">
+        <div class="modal-push-pin"></div>
+        <h3 class="modal-title font-headline" id="inviteTitle">Invite to Family</h3>
+        <button class="modal-close font-typewriter" id="inviteClose" aria-label="Close">✕</button>
+        <form id="inviteForm">
+            <div class="form-group">
+                <label for="inviteEmail">Email (optional)</label>
+                <input type="email" id="inviteEmail" placeholder="grandma@example.com"/>
+            </div>
+            <div class="form-group">
+                <label for="invitePermission">Permission *</label>
+                <select id="invitePermission">
+                    <option value="coparent">Co-parent — add logs &amp; photos</option>
+                    <option value="caregiver">Caregiver — read-only access</option>
+                    <option value="viewer" selected>Viewer — shared gallery only</option>
+                </select>
+            </div>
+            <div class="form-error" id="inviteError"></div>
+            <button type="submit" class="btn-submit" id="inviteSubmit">Generate Invite Link</button>
+        </form>
+        <div class="invite-link-box" id="inviteLinkBox">
+            <strong>INVITE LINK (valid 72 hours):</strong>
+            <span id="inviteLinkText"></span>
+            <button class="btn-copy" id="copyLinkBtn">Copy Link</button>
+        </div>
+    </div>
+</div>
+
+<!-- Person detail modal -->
+<div class="modal-overlay" id="detailModal" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+    <div class="modal-card">
+        <div class="modal-push-pin" style="left:auto; right:2rem; transform:none;"></div>
+        <button class="modal-close font-typewriter" id="detailClose" aria-label="Close">✕</button>
+        <div id="detailContent"></div>
+    </div>
+</div>
+
+<!-- ── FABs ────────────────────────────────────────────────────────────── -->
+<button class="fab" id="fabBtn" title="Add person to social circle" aria-label="Add relationship">
+    <span class="material-symbols-outlined">add</span>
+</button>
+
+<button class="fab-invite" id="inviteFab" title="Invite a family member" aria-label="Invite">
+    <span class="material-symbols-outlined">person_add</span>
+</button>
+
+<!-- ── Mobile bottom nav ───────────────────────────────────────────────── -->
+<nav class="mobile-bottom-nav" aria-label="Mobile navigation">
+    <a href="/dashboard" class="nav-item">
+        <span class="material-symbols-outlined">book</span>
+        <span>Journal</span>
+    </a>
+    <a href="/gallery" class="nav-item">
+        <span class="material-symbols-outlined">photo_library</span>
+        <span>Gallery</span>
+    </a>
+    <a href="/family" class="nav-item active">
+        <span class="material-symbols-outlined">groups</span>
+        <span>Family</span>
+    </a>
+    <a href="/medical" class="nav-item">
+        <span class="material-symbols-outlined">medical_services</span>
+        <span>Medical</span>
+    </a>
+    <a href="/admin" class="nav-item" id="adminBottomNav" style="display:none;">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+        <span>Admin</span>
+    </a>
+</nav>
+
+<script>
+/* @author Romila Raluca */
+
+// ── State ──────────────────────────────────────────────────────────────────
+let currentUser    = null;
+let children       = [];
+let activeChildId  = null;
+let familyMembers  = [];
+let relationships  = [];
+let userPermission = 'viewer';
+
+// Scatter rotations for polaroids
+const ROTATIONS = [-4, 3, -2, 5, -3, 2, -5, 4, -1, 6];
+
+const ROLE_LABELS = {
+    owner:     'Owner',
+    coparent:  'Co-parent',
+    caregiver: 'Caregiver',
+    viewer:    'Viewer',
+};
+
+const GROUP_ICONS = {
+    family:  '👨‍👩‍👧',
+    friends: '🌟',
+    daycare: '🏫',
+    other:   '💛',
+};
+
+// ── Utilities ──────────────────────────────────────────────────────────────
+
+/**
+ * Escapes a value for safe HTML output (XSS prevention).
+ */
+function esc(val) {
+    const d = document.createElement('div');
+    d.textContent = String(val ?? '');
+    return d.innerHTML;
+}
+
+/**
+ * Returns initials and background color for a person based on name and avatarColor.
+ */
+function avatarInfo(name, avatarColor) {
+    const palettes = {
+        c1: '#d8e2dc', c2: '#f0e6e6', c3: '#e9edc9',
+        c4: '#d4e4f7', c5: '#f7e4d4', c6: '#e4d4f7',
+    };
+    const bg       = palettes[avatarColor] || palettes.c1;
+    const initials = (name || '?').split(' ')
+        .map(p => p[0] || '').join('').substring(0, 2).toUpperCase();
+    return { bg, initials };
+}
+
+/**
+ * Calculates age string from ISO date of birth.
+ */
+function calcAge(dob) {
+    if (!dob) return '';
+    const d = new Date(dob), now = new Date();
+    const m = (now.getFullYear() - d.getFullYear()) * 12 + (now.getMonth() - d.getMonth());
+    return m < 24 ? `${m}m` : `${Math.floor(m / 12)}y`;
+}
+
+// ── Render helpers ─────────────────────────────────────────────────────────
+
+/**
+ * Renders the child's center polaroid.
+ */
+function renderChildPolaroid(child) {
+    const age = calcAge(child.date_of_birth);
+    const av  = avatarInfo(`${child.first_name} ${child.last_name}`, child.avatar_color);
+    return `
+        <div class="pol-child" id="child-center">
+            <div class="polaroid" style="transform:rotate(-2deg); cursor:default;">
+                <div class="push-pin"></div>
+                <div class="polaroid-photo" style="background:${esc(av.bg)};">
+                    ${child.photo_url
+                        ? `<img src="${esc(child.photo_url)}" alt="${esc(child.first_name)}"/>`
+                        : `<span style="font-family:'Caveat',cursive; font-size:3.5rem; color:var(--primary);">${esc(av.initials)}</span>`
+                    }
+                </div>
+                <div class="polaroid-caption">
+                    <span class="polaroid-name" style="font-size:1.3rem; font-weight:700;">
+                        ${esc(child.first_name)}
+                    </span>
+                    ${age ? `<span style="font-family:'Special Elite',cursive; font-size:0.7rem; color:var(--text-muted); display:block;">${esc(age)} old</span>` : ''}
+                </div>
+            </div>
+        </div>`;
+}
+
+/**
+ * Renders a single family member as a polaroid.
+ */
+function renderMemberCard(member, index) {
+    const rot = ROTATIONS[index % ROTATIONS.length];
+    const av  = avatarInfo(`${member.first_name} ${member.last_name}`, member.avatar_color || 'c1');
+    const rl  = ROLE_LABELS[member.permission] || member.permission;
+    const pin = index % 2 === 0
+        ? `<div class="push-pin left"></div>`
+        : `<div class="washi ${index % 3 === 1 ? 'olive' : 'blush'}"></div>`;
+
+    return `
+        <div class="pol-member" onclick="openMemberDetail(${member.user_id})" title="${esc(member.first_name)} ${esc(member.last_name)}">
+            <div class="polaroid" style="transform:rotate(${rot}deg);">
+                ${pin}
+                <div class="polaroid-photo" style="background:${esc(av.bg)};">
+                    <span style="font-family:'Caveat',cursive; font-size:2.8rem; color:var(--primary);">${esc(av.initials)}</span>
+                </div>
+                <div class="polaroid-caption">
+                    <span class="polaroid-name">${esc(member.first_name)} ${esc(member.last_name)}</span>
+                    <span class="role-badge role-${esc(member.permission)}">${esc(rl)}</span>
+                </div>
+            </div>
+        </div>`;
+}
+
+/**
+ * Renders a social relationship as a smaller polaroid.
+ */
+function renderRelCard(rel, index) {
+    const rot  = ROTATIONS[(index + 4) % ROTATIONS.length];
+    const icon = GROUP_ICONS[rel.group_type] || '💛';
+    const gCls = `group-${rel.group_type}`;
+
+    return `
+        <div class="pol-rel" onclick="openRelDetail(${rel.id})" title="${esc(rel.name)}">
+            <div class="polaroid" style="transform:rotate(${rot}deg);">
+                <div class="push-pin"></div>
+                <div class="polaroid-photo" style="background:var(--scrap-blush); font-size:2.8rem;">
+                    ${icon}
+                </div>
+                <div class="polaroid-caption">
+                    <span class="polaroid-name" style="font-size:0.95rem;">${esc(rel.name)}</span>
+                    <span class="group-tag ${gCls}">${esc(rel.group_type)}</span>
+                </div>
+            </div>
+        </div>`;
+}
+
+/**
+ * Draws SVG dashed red strings from the center child polaroid
+ * to every visible family member and relationship card.
+ */
+function drawStrings() {
+    const svg   = document.getElementById('stringLayer');
+    const board = document.getElementById('corkboard');
+    const center = document.getElementById('child-center');
+    svg.innerHTML = '';
+    if (!center) return;
+
+    const bRect = board.getBoundingClientRect();
+    const cRect = center.getBoundingClientRect();
+    const cx = cRect.left - bRect.left + cRect.width  / 2 + board.scrollLeft;
+    const cy = cRect.top  - bRect.top  + cRect.height / 2 + board.scrollTop;
+
+    document.querySelectorAll('.pol-member .polaroid, .pol-rel .polaroid').forEach(el => {
+        const r  = el.getBoundingClientRect();
+        const tx = r.left - bRect.left + r.width  / 2 + board.scrollLeft;
+        const ty = r.top  - bRect.top  + r.height / 2 + board.scrollTop;
+
+        // Slight random curve so strings don't all overlap
+        const seed = tx * 0.01 + ty * 0.01;
+        const mx = (cx + tx) / 2 + Math.sin(seed) * 50;
+        const my = (cy + ty) / 2 + Math.cos(seed) * 30;
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M${cx},${cy} Q${mx},${my} ${tx},${ty}`);
+        path.setAttribute('class', 'red-string');
+        svg.appendChild(path);
+    });
+}
+
+// ── Board render ───────────────────────────────────────────────────────────
+
+function renderBoard(child) {
+    // Subtitle
+    document.getElementById('boardSubtitle').textContent =
+        `${child.first_name}'s favourite people, all pinned up!`;
+
+    // Child center
+    document.getElementById('childPolaroidWrap').innerHTML = renderChildPolaroid(child);
+
+    // Family members (exclude self)
+    const famEl     = document.getElementById('familyContainer');
+    const otherMems = familyMembers.filter(m => m.user_id !== currentUser.id);
+    if (otherMems.length > 0) {
+        famEl.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
+            ${otherMems.map((m, i) => renderMemberCard(m, i)).join('')}
+        </div>`;
+    } else {
+        famEl.innerHTML = `
+            <div class="add-note" onclick="document.getElementById('inviteModal').classList.add('open')">
+                <p>Invite a co-parent or caregiver →</p>
+            </div>`;
+    }
+
+    // Social relationships — show first 4 in the right column, rest below
+    const socEl = document.getElementById('socialContainer');
+    if (relationships.length > 0) {
+        const inCol  = relationships.slice(0, 4);
+        const inGrid = relationships.slice(4);
+
+        socEl.innerHTML = `<div style="display:flex; flex-direction:column; align-items:center; gap:2rem;">
+            ${inCol.map((r, i) => renderRelCard(r, i)).join('')}
+        </div>`;
+
+        if (inGrid.length > 0) {
+            document.getElementById('relSection').style.display = 'block';
+            document.getElementById('relGrid').innerHTML =
+                inGrid.map((r, i) => renderRelCard(r, i + 4)).join('');
+        } else {
+            document.getElementById('relSection').style.display = 'none';
+        }
+    } else {
+        socEl.innerHTML = `
+            <div class="add-note" onclick="document.getElementById('addRelModal').classList.add('open')">
+                <p>Pin a cousin, friend or classmate →</p>
+            </div>`;
+        document.getElementById('relSection').style.display = 'none';
+    }
+
+    document.getElementById('loadingState').style.display = 'none';
+    document.getElementById('boardContent').style.display  = 'block';
+
+    // Draw strings after DOM settles
+    setTimeout(drawStrings, 200);
+}
+
+// ── Data loading ───────────────────────────────────────────────────────────
+
+/**
+ * Fetches family members and social relationships for the active child,
+ * then re-renders the board.
+ */
+async function loadBoard() {
+    if (!activeChildId) return;
+
+    document.getElementById('boardContent').style.display = 'none';
+    document.getElementById('loadingState').style.display = 'block';
+
+    const [famRes, relRes] = await Promise.all([
+        fetch(`/api/children/${activeChildId}/family`,        { credentials: 'include' }),
+        fetch(`/api/children/${activeChildId}/relationships`, { credentials: 'include' }),
+    ]);
+
+    familyMembers = famRes.ok ? await famRes.json() : [];
+    relationships = relRes.ok ? await relRes.json() : [];
+
+    // Determine current user's permission on this child
+    const myEntry  = familyMembers.find(m => m.user_id === currentUser.id);
+    userPermission = myEntry ? myEntry.permission : 'viewer';
+
+    // Invite FAB: only owners can invite
+    const invFab = document.getElementById('inviteFab');
+    if (userPermission === 'owner') {
+        invFab.style.display = 'flex';
+    } else {
+        invFab.style.display = 'none';
+    }
+
+    const child = children.find(c => c.id === activeChildId);
+    renderBoard(child);
+}
+
+// ── Initialisation ─────────────────────────────────────────────────────────
+
+/**
+ * Entry point: checks auth, loads children, renders the board.
+ */
+async function init() {
+    // 1. Auth guard
+    const meRes = await fetch('/api/auth/me', { credentials: 'include' });
+    if (!meRes.ok) { window.location.href = '/login'; return; }
+    currentUser = await meRes.json();
+
+    document.getElementById('userGreeting').textContent = `Hello, ${currentUser.first_name}!`;
+
+    // Show admin links for superadmins
+    if (currentUser.is_superadmin) {
+        document.getElementById('adminNavLink').style.display    = '';
+        document.getElementById('adminBottomNav').style.display  = '';
+    }
+
+    // 2. Load children
+    const childRes = await fetch('/api/children', { credentials: 'include' });
+    children = childRes.ok ? await childRes.json() : [];
+
+    if (children.length === 0) {
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('emptyState').style.display   = 'block';
+        return;
+    }
+
+    // 3. Populate child selector
+    const sel = document.getElementById('childSelector');
+    sel.innerHTML = children.map(c =>
+        `<option value="${c.id}">${esc(c.first_name)}</option>`
+    ).join('');
+    sel.style.display = '';
+
+    activeChildId = children[0].id;
+    await loadBoard();
+}
+
+// ── Detail modals ──────────────────────────────────────────────────────────
+
+/**
+ * Opens the detail panel for a family member.
+ * Owners can change permissions or remove members.
+ */
+function openMemberDetail(userId) {
+    const m = familyMembers.find(x => x.user_id === userId);
+    if (!m) return;
+
+    const av       = avatarInfo(`${m.first_name} ${m.last_name}`, m.avatar_color || 'c1');
+    const rl       = ROLE_LABELS[m.permission] || m.permission;
+    const isSelf   = m.user_id === currentUser.id;
+    const canManage = userPermission === 'owner' && !isSelf;
+
+    document.getElementById('detailContent').innerHTML = `
+        <div class="detail-header">
+            <div class="detail-avatar" style="background:${esc(av.bg)};">
+                <span style="color:var(--primary);">${esc(av.initials)}</span>
+            </div>
+            <div>
+                <div class="detail-name" id="detailTitle">${esc(m.first_name)} ${esc(m.last_name)}</div>
+                ${m.email ? `<div class="detail-sub">${esc(m.email)}</div>` : ''}
+                <span class="role-badge role-${esc(m.permission)}" style="margin-top:6px; display:inline-block;">${esc(rl)}</span>
+                ${isSelf ? `<span style="font-family:'Caveat',cursive; font-size:0.9rem; color:var(--text-muted); margin-left:8px;">(you)</span>` : ''}
+            </div>
+        </div>
+        <div class="detail-info">
+            Joined: ${m.joined_at ? new Date(m.joined_at).toLocaleDateString('ro-RO') : '—'}
+        </div>
+        ${canManage ? `
+        <div class="detail-actions">
+            <div>
+                <label style="font-family:'Special Elite',cursive; font-size:0.7rem; letter-spacing:1px; text-transform:uppercase; color:var(--text-muted); display:block; margin-bottom:4px;">Change role:</label>
+                <select class="perm-select" id="permSelect" onchange="changePermission(${m.user_id}, this.value)">
+                    <option value="coparent"  ${m.permission==='coparent'  ? 'selected':''}>Co-parent</option>
+                    <option value="caregiver" ${m.permission==='caregiver' ? 'selected':''}>Caregiver</option>
+                    <option value="viewer"    ${m.permission==='viewer'    ? 'selected':''}>Viewer</option>
+                </select>
+            </div>
+            <button class="btn-danger" onclick="removeMember(${m.user_id})">
+                <span class="material-symbols-outlined" style="font-size:0.9rem;">person_remove</span>
+                Remove
+            </button>
+        </div>` : ''}
+    `;
+    document.getElementById('detailModal').classList.add('open');
+}
+
+/**
+ * Opens the detail panel for a social relationship.
+ * Owners and co-parents can delete it.
+ */
+function openRelDetail(relId) {
+    const r = relationships.find(x => x.id === relId);
+    if (!r) return;
+
+    const icon     = GROUP_ICONS[r.group_type] || '💛';
+    const canEdit  = userPermission === 'owner' || userPermission === 'coparent';
+
+    document.getElementById('detailContent').innerHTML = `
+        <div class="detail-header">
+            <div class="detail-avatar" style="background:var(--scrap-blush); font-size:2.5rem;">
+                ${icon}
+            </div>
+            <div>
+                <div class="detail-name" id="detailTitle">${esc(r.name)}</div>
+                <div class="detail-sub">${esc(r.relationship)} · ${esc(r.group_type)}${r.age_years ? ` · ${r.age_years}y` : ''}</div>
+            </div>
+        </div>
+        ${r.notes ? `<div class="detail-info">${esc(r.notes)}</div>` : ''}
+        ${canEdit ? `
+        <div class="detail-actions">
+            <button class="btn-danger" onclick="deleteRelationship(${r.id})">
+                <span class="material-symbols-outlined" style="font-size:0.9rem;">push_pin</span>
+                Unpin from board
+            </button>
+        </div>` : ''}
+    `;
+    document.getElementById('detailModal').classList.add('open');
+}
+
+// ── Actions ────────────────────────────────────────────────────────────────
+
+/**
+ * Updates a family member's permission. Only owners can call this.
+ */
+async function changePermission(userId, newPerm) {
+    const res = await fetch(`/api/children/${activeChildId}/family/permission`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ user_id: userId, permission: newPerm }),
+    });
+    if (res.ok) {
+        document.getElementById('detailModal').classList.remove('open');
+        await loadBoard();
+    }
+}
+
+/**
+ * Removes a family member from the child's family. Only owners can call this.
+ */
+async function removeMember(userId) {
+    if (!confirm('Remove this person from the family?')) return;
+    const res = await fetch(`/api/children/${activeChildId}/family/member`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ user_id: userId }),
+    });
+    if (res.ok) {
+        document.getElementById('detailModal').classList.remove('open');
+        await loadBoard();
+    }
+}
+
+/**
+ * Deletes a social relationship from the board.
+ */
+async function deleteRelationship(relId) {
+    if (!confirm('Remove this person from the board?')) return;
+    const res = await fetch(`/api/relationships/${relId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+    });
+    if (res.ok) {
+        document.getElementById('detailModal').classList.remove('open');
+        await loadBoard();
+    }
+}
+
+// ── Form: add relationship ─────────────────────────────────────────────────
+document.getElementById('addRelForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('addRelError');
+    errEl.style.display = 'none';
+
+    const btn = document.getElementById('addRelSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Pinning...';
+
+    const res = await fetch(`/api/children/${activeChildId}/relationships`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+            name:         document.getElementById('relName').value.trim(),
+            relationship: document.getElementById('relRelationship').value.trim(),
+            group_type:   document.getElementById('relGroup').value,
+            age_years:    document.getElementById('relAge').value || null,
+            notes:        document.getElementById('relNotes').value.trim() || null,
+        }),
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'Pin to Board';
+
+    const data = await res.json();
+    if (!res.ok) {
+        errEl.textContent = data.error || 'Could not add person.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    document.getElementById('addRelForm').reset();
+    document.getElementById('addRelModal').classList.remove('open');
+    await loadBoard();
+});
+
+// ── Form: invite ───────────────────────────────────────────────────────────
+document.getElementById('inviteForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errEl = document.getElementById('inviteError');
+    errEl.style.display = 'none';
+
+    const btn = document.getElementById('inviteSubmit');
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+
+    const res = await fetch(`/api/children/${activeChildId}/invites`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+            email:      document.getElementById('inviteEmail').value.trim() || null,
+            permission: document.getElementById('invitePermission').value,
+        }),
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'Generate Invite Link';
+
+    const data = await res.json();
+    if (!res.ok) {
+        errEl.textContent = data.error || 'Could not generate link.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    const fullLink = `${window.location.origin}/join?token=${data.token}`;
+    document.getElementById('inviteLinkText').textContent = fullLink;
+    document.getElementById('inviteLinkBox').style.display = 'block';
+});
+
+document.getElementById('copyLinkBtn').addEventListener('click', () => {
+    const link = document.getElementById('inviteLinkText').textContent;
+    navigator.clipboard.writeText(link).catch(() => {
+        window.prompt('Copy this link:', link);
+    });
+});
+
+// ── Close modals ───────────────────────────────────────────────────────────
+['addRelModal', 'inviteModal', 'detailModal'].forEach(id => {
+    const el = document.getElementById(id);
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+document.getElementById('addRelClose').addEventListener('click',  () => document.getElementById('addRelModal').classList.remove('open'));
+document.getElementById('inviteClose').addEventListener('click',  () => {
+    document.getElementById('inviteModal').classList.remove('open');
+    document.getElementById('inviteLinkBox').style.display = 'none';
+    document.getElementById('inviteForm').reset();
+});
+document.getElementById('detailClose').addEventListener('click',  () => document.getElementById('detailModal').classList.remove('open'));
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+        document.getElementById('addRelModal').classList.remove('open');
+        document.getElementById('inviteModal').classList.remove('open');
+        document.getElementById('detailModal').classList.remove('open');
+    }
+});
+
+// ── FABs ───────────────────────────────────────────────────────────────────
+document.getElementById('fabBtn').addEventListener('click', () =>
+    document.getElementById('addRelModal').classList.add('open')
+);
+document.getElementById('inviteFab').addEventListener('click', () => {
+    document.getElementById('inviteLinkBox').style.display = 'none';
+    document.getElementById('inviteForm').reset();
+    document.getElementById('inviteModal').classList.add('open');
+});
+
+// ── Child selector ─────────────────────────────────────────────────────────
+document.getElementById('childSelector').addEventListener('change', (e) => {
+    activeChildId = parseInt(e.target.value);
+    loadBoard();
+});
+
+// ── Logout ─────────────────────────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    window.location.href = '/login';
+});
+
+// ── Redraw strings on resize ───────────────────────────────────────────────
+window.addEventListener('resize', () => {
+    clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(drawStrings, 150);
+});
+
+// ── Boot ───────────────────────────────────────────────────────────────────
+init();
+</script>
+
+</body>
+</html>

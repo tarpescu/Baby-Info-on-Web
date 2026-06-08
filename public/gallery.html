@@ -787,6 +787,17 @@
                 <input type="datetime-local" id="momentDate" class="modal-input"/>
             </div>
 
+            <!-- File upload (shown only for photo/video/audio) -->
+            <div class="modal-field" id="momentFileField" style="display:none;">
+                <label for="momentFile">Attach file</label>
+                <input type="file" id="momentFile" class="modal-input"
+                       accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg"
+                       style="padding:0.3rem; cursor:pointer;"/>
+                <span style="font-family:'Special Elite',cursive; font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
+                    JPEG, PNG, WebP, MP4, MP3 — max 10 MB
+                </span>
+            </div>
+
             <div class="modal-field" style="display:flex; gap:2rem; flex-wrap:wrap;">
                 <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer; text-transform:none; letter-spacing:0;">
                     <input type="checkbox" id="momentPinned" style="accent-color:var(--secondary);">
@@ -1207,6 +1218,16 @@ function openAddMoment() {
 document.getElementById('fabBtn').addEventListener('click', openAddMoment);
 document.getElementById('shelfUploadBtn').addEventListener('click', openAddMoment);
 
+// Arata/ascunde campul de fisier in functie de tipul momentului
+document.getElementById('momentType').addEventListener('change', (e) => {
+    const mediaTypes = ['photo', 'video', 'audio'];
+    const fileField  = document.getElementById('momentFileField');
+    fileField.style.display = mediaTypes.includes(e.target.value) ? 'block' : 'none';
+    if (!mediaTypes.includes(e.target.value)) {
+        document.getElementById('momentFile').value = '';
+    }
+});
+
 document.getElementById('addMomentClose').addEventListener('click', () => {
     document.getElementById('addMomentModal').classList.remove('open');
 });
@@ -1245,16 +1266,8 @@ document.getElementById('addMomentForm').addEventListener('submit', async (e) =>
     e.preventDefault();
     document.getElementById('momentError').style.display = 'none';
 
-    const body = {
-        type:        document.getElementById('momentType').value,
-        title:       document.getElementById('momentTitle').value.trim(),
-        body:        document.getElementById('momentBody').value.trim(),
-        happened_at: document.getElementById('momentDate').value || null,
-        is_pinned:   document.getElementById('momentPinned').checked,
-        is_shared:   document.getElementById('momentShared').checked,
-    };
-
-    if (!body.title) {
+    const title = document.getElementById('momentTitle').value.trim();
+    if (!title) {
         document.getElementById('momentErrorText').textContent = 'Title is required.';
         document.getElementById('momentError').style.display = 'block';
         return;
@@ -1265,11 +1278,28 @@ document.getElementById('addMomentForm').addEventListener('submit', async (e) =>
     btn.textContent = 'Stamping...';
 
     try {
+        // Folosim FormData ca sa putem trimite si fisierul atasat (multipart/form-data).
+        // NU setam Content-Type manual — browser-ul adauga automat boundary-ul corect.
+        const fd = new FormData();
+        fd.append('type',        document.getElementById('momentType').value);
+        fd.append('title',       title);
+        fd.append('body',        document.getElementById('momentBody').value.trim());
+        fd.append('is_pinned',   document.getElementById('momentPinned').checked  ? '1' : '0');
+        fd.append('is_shared',   document.getElementById('momentShared').checked  ? '1' : '0');
+
+        const dateVal = document.getElementById('momentDate').value;
+        if (dateVal) fd.append('happened_at', dateVal);
+
+        const fileInput = document.getElementById('momentFile');
+        if (fileInput.files.length > 0) {
+            fd.append('photo', fileInput.files[0]);
+        }
+
         const res = await fetch(`/api/children/${activeChildId}/moments`, {
             method:      'POST',
-            headers:     { 'Content-Type': 'application/json' },
             credentials: 'include',
-            body:        JSON.stringify(body),
+            body:        fd,
+            // headers intentionat omis — browser seteaza Content-Type: multipart/form-data cu boundary
         });
         const data = await res.json();
 

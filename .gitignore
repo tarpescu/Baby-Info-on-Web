@@ -12,6 +12,7 @@ desktop.ini
 #IDE & editors
 .vscode/
 .idea/
+.claude/
 *.suo
 *.ntvs*
 *.njsproj
@@ -63,6 +64,10 @@ yarn-error.log
 phpunit.xml
 .phpunit.result.cache
 
+
+#Fisiere locale
+CONTEXT.md
+.env
 
 #Fișiere temporare
 *.tmp

@@ -37,6 +37,7 @@ $pageMap = [
     '/gallery'         => 'gallery.html',
     '/admin'           => 'admin.html',
     '/medical'         => 'medical.html',
+    '/family'          => 'family.html',
 ];
 
 if (isset($pageMap[$uri])) {
