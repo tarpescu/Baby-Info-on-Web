@@ -9,7 +9,8 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = urldecode($uri);
 
 // API requests -> api/index.php
-if (str_starts_with($uri, '/api/')) {
+// (si feed-ul RSS public, care are URL /feed/{child_id}.rss in afara prefixului /api/)
+if (str_starts_with($uri, '/api/') || str_starts_with($uri, '/feed/')) {
     require __DIR__ . '/api/index.php';
     exit;
 }

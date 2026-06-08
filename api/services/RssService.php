@@ -23,7 +23,7 @@ class RssService
         $childName = trim(($child['first_name'] ?? '') . ' ' . ($child['last_name'] ?? ''));
         $title = Constants::APP_NAME . ' - ' . $childName;
         $description = 'Momente partajate pentru ' . $childName;
-        $selfUrl = $this->baseUrl() . '/api/rss/' . (int) $child['id'];
+        $selfUrl = $this->baseUrl() . '/feed/' . (int) $child['id'] . '.rss';
         $now = date(DATE_RSS);
 
         $items = '';
@@ -52,7 +52,7 @@ XML;
         $body = $this->esc($moment['body'] ?? '');
         $type = $this->esc($moment['type'] ?? 'other');
         $link = $this->esc($this->baseUrl() . '/dashboard#moment-' . (int) $moment['id']);
-        $guid = $this->esc($this->baseUrl() . '/api/rss/' . $childId . '#moment-' . (int) $moment['id']);
+        $guid = $this->esc($this->baseUrl() . '/feed/' . $childId . '.rss#moment-' . (int) $moment['id']);
         $pubDate = date(DATE_RSS, strtotime($moment['happened_at'] ?? 'now'));
 
         return <<<XML

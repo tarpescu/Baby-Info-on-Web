@@ -71,7 +71,7 @@ class Router
         $this->add('GET', '/api/children/{id}/export/csv', 'ExportController', 'csv');
         $this->add('POST', '/api/import/csv', 'ImportController', 'csv');
 
-        $this->add('GET', '/api/rss/{child_id}', 'RssController', 'feed');
+        $this->add('GET', '/feed/{child_id}.rss', 'RssController', 'feed');
 
         $this->add('GET', '/api/admin/stats', 'AdminController', 'stats');
         $this->add('GET', '/api/admin/users', 'AdminController', 'users');
