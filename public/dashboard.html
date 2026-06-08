@@ -390,12 +390,13 @@
         .nav-item {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
             color: var(--text-muted); cursor: pointer; text-decoration: none;
+            flex: 1 1 0; min-width: 0;
         }
         .nav-item.active {
             color: var(--secondary); background: rgba(158, 66, 44, 0.1);
-            padding: 4px 16px; border-radius: 20px; transform: rotate(-1deg);
+            padding: 4px 8px; border-radius: 20px; transform: rotate(-1deg);
         }
-        .nav-item span.label { font-size: 0.75rem; font-weight: bold; margin-top: 2px; }
+        .nav-item span.label { font-size: 0.64rem; font-weight: bold; margin-top: 2px; white-space: nowrap; }
 
         .fab {
             position: fixed; bottom: 2rem; right: 2rem;
@@ -614,6 +615,10 @@
         <span class="material-symbols-outlined">photo_library</span>
         <span class="label font-label">Gallery</span>
     </a>
+    <a href="/medical" class="nav-item">
+        <span class="material-symbols-outlined">medical_services</span>
+        <span class="label font-label">Medical</span>
+    </a>
     <a href="/milestones" class="nav-item">
         <span class="material-symbols-outlined">auto_awesome</span>
         <span class="label font-label">Milestones</span>
@@ -621,6 +626,10 @@
     <a href="/family" class="nav-item">
         <span class="material-symbols-outlined">groups</span>
         <span class="label font-label">Family</span>
+    </a>
+    <a href="/admin" class="nav-item" id="adminBottomNav" style="display:none;">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+        <span class="label font-label">Admin</span>
     </a>
 </nav>
 
@@ -808,9 +817,16 @@ async function init() {
     document.getElementById('userGreeting').textContent =
         `Hello, ${currentUser.first_name}!`;
 
+<<<<<<< HEAD
     // Afiseaza link-ul Admin doar pentru super-admini
     if (currentUser.is_superadmin) {
         document.getElementById('adminNavLink').style.display = '';
+=======
+    // Afiseaza link-ul Admin (sus + meniul de jos) doar pentru super-admini
+    if (currentUser.is_superadmin) {
+        document.getElementById('adminNavLink').style.display = '';
+        document.getElementById('adminBottomNav').style.display = '';
+>>>>>>> 6b9d53a (-)
     }
 
     // 2. Fetch copii
