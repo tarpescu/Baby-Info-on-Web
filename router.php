@@ -9,8 +9,8 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = urldecode($uri);
 
 // API requests -> api/index.php
-// (si feed-ul RSS public, care are URL /feed/{child_id}.rss in afara prefixului /api/)
-if (str_starts_with($uri, '/api/') || str_starts_with($uri, '/feed/')) {
+// (si paginile publice din afara prefixului /api/: feed RSS si pagina de share per moment)
+if (str_starts_with($uri, '/api/') || str_starts_with($uri, '/feed/') || str_starts_with($uri, '/share/')) {
     require __DIR__ . '/api/index.php';
     exit;
 }

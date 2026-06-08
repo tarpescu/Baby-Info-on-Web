@@ -25,6 +25,14 @@ class Response
         exit;
     }
 
+    public static function html(string $html, int $status = 200): void
+    {
+        http_response_code($status);
+        header('Content-Type: text/html; charset=utf-8');
+        echo $html;
+        exit;
+    }
+
     public static function error(string $message, int $status = 400): void
     {
         self::json(['error' => $message], $status);

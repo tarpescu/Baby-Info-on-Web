@@ -39,6 +39,12 @@ class Security
         return bin2hex(random_bytes(Constants::INVITE_TOKEN_LENGTH));
     }
 
+    /** Token public, neghicibil, pentru URL-ul de partajare al unui moment. */
+    public static function generateShareToken(): string
+    {
+        return bin2hex(random_bytes(Constants::SHARE_TOKEN_LENGTH));
+    }
+
     public static function hashPassword(string $password): string
     {
         return password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]);

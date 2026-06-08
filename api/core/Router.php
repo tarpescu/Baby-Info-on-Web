@@ -73,6 +73,7 @@ class Router
         $this->add('POST', '/api/import/json', 'ImportController', 'json');
 
         $this->add('GET', '/feed/{child_id}.rss', 'RssController', 'feed');
+        $this->add('GET', '/share/{token}', 'ShareController', 'show');
 
         $this->add('GET', '/api/admin/stats', 'AdminController', 'stats');
         $this->add('GET', '/api/admin/users', 'AdminController', 'users');
@@ -93,7 +94,12 @@ class Router
         $uri = $request->uri;
 
         foreach ($this->routes[$method] ?? [] as $route => $handler) {
-            $pattern = preg_replace('/\{(\w+)\}/', '(?P<$1>\d+)', $route);
+            // Parametrii care contin "token" sunt alfanumerici (ex. share token hex);
+            // restul sunt numerici (id-uri).
+            $pattern = preg_replace_callback('/\{(\w+)\}/', static function (array $m): string {
+                $class = str_contains($m[1], 'token') ? '[A-Za-z0-9]+' : '\d+';
+                return '(?P<' . $m[1] . '>' . $class . ')';
+            }, $route);
             $pattern = '#^' . $pattern . '$#';
 
             if (preg_match($pattern, $uri, $matches)) {

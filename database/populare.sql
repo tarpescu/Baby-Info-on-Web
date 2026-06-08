@@ -318,3 +318,8 @@ INSERT INTO relationships (child_id, name, relationship, group_type, age_years, 
 SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
 SELECT setval('children_id_seq', (SELECT COALESCE(MAX(id), 1) FROM children));
 SELECT setval('family_members_id_seq', (SELECT COALESCE(MAX(id), 1) FROM family_members));
+
+-- Token public per moment partajat (pentru URL-ul /share/{token})
+UPDATE moments
+SET share_token = md5(random()::text || id::text || clock_timestamp()::text)
+WHERE is_shared = 1 AND share_token IS NULL;

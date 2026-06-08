@@ -107,6 +107,7 @@ CREATE TABLE IF NOT EXISTS moments (
                                        body        TEXT,
                                        is_pinned   INTEGER NOT NULL DEFAULT 0,
                                        is_shared   INTEGER NOT NULL DEFAULT 0,
+                                       share_token TEXT    UNIQUE,
                                        reactions   INTEGER NOT NULL DEFAULT 0,
                                        happened_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                        created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP

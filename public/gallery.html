@@ -1074,6 +1074,10 @@ async function openDetail(moment) {
             <span class="detail-date">${formatDate(moment.happened_at)}</span>
             <span class="detail-author font-handwritten">by ${moment.first_name} ${moment.last_name}</span>
         </div>
+        ${(moment.is_shared && moment.share_token) ? `
+        <button id="shareLinkBtn" class="font-typewriter" style="margin:0.2rem 0 0.4rem; font-size:0.8rem; color:var(--secondary); border:1px dashed var(--outline); padding:4px 12px; cursor:pointer; background:none; display:inline-flex; align-items:center; gap:5px;">
+            <span class="material-symbols-outlined" style="font-size:1rem;">link</span> Copiază link public
+        </button>` : ''}
         ${moment.media_url ? `
             <div style="margin:0.8rem 0; border:1px solid var(--outline);">
                 <img src="${moment.media_url}" alt="${moment.title}"
@@ -1108,6 +1112,20 @@ async function openDetail(moment) {
     `;
 
     modal.classList.add('open');
+
+    // Buton: copiaza link-ul public /share/{token} (doar pe momentele partajate)
+    const shareBtn = document.getElementById('shareLinkBtn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', async () => {
+            const url = `${location.origin}/share/${moment.share_token}`;
+            try {
+                await navigator.clipboard.writeText(url);
+                shareBtn.innerHTML = '<span class="material-symbols-outlined" style="font-size:1rem;">check</span> Link copiat!';
+            } catch {
+                window.prompt('Copiaza link-ul public:', url);
+            }
+        });
+    }
 
     // Incarca comentariile
     loadComments(moment.id);

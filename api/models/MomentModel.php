@@ -57,9 +57,13 @@ class MomentModel extends Model
 
     public function create(array $data): int
     {
+        $isShared = $data['is_shared'] ? 1 : 0;
+        // Token public generat doar daca momentul e partajat (pentru /share/{token}).
+        $shareToken = $isShared ? Security::generateShareToken() : null;
+
         $stmt = $this->db->prepare("
-            INSERT INTO moments (child_id, logged_by, type, title, body, is_pinned, is_shared, happened_at)
-            VALUES (:child_id, :logged_by, :type, :title, :body, :is_pinned, :is_shared, :happened_at)
+            INSERT INTO moments (child_id, logged_by, type, title, body, is_pinned, is_shared, share_token, happened_at)
+            VALUES (:child_id, :logged_by, :type, :title, :body, :is_pinned, :is_shared, :share_token, :happened_at)
             RETURNING id
         ");
         $stmt->execute([
@@ -69,7 +73,8 @@ class MomentModel extends Model
             ':title' => Security::sanitizeInput($data['title']),
             ':body' => Security::sanitizeInput($data['body'] ?? ''),
             ':is_pinned' => $data['is_pinned'] ? 1 : 0,
-            ':is_shared' => $data['is_shared'] ? 1 : 0,
+            ':is_shared' => $isShared,
+            ':share_token' => $shareToken,
             ':happened_at' => $data['happened_at'] ?? date('Y-m-d H:i:s'),
         ]);
         return (int) $stmt->fetchColumn();
@@ -77,10 +82,16 @@ class MomentModel extends Model
 
     public function update(int $id, array $data): bool
     {
+        $isShared = $data['is_shared'] ? 1 : 0;
+        // Daca devine partajat si nu are inca token, primeste unul; token-ul existent se pastreaza.
+        $maybeToken = $isShared ? Security::generateShareToken() : null;
+
         $stmt = $this->db->prepare("
             UPDATE moments SET
                 title = :title, body = :body, is_pinned = :is_pinned,
-                is_shared = :is_shared, happened_at = :happened_at
+                is_shared = :is_shared,
+                share_token = COALESCE(share_token, :maybe_token),
+                happened_at = :happened_at
             WHERE id = :id
         ");
         return $stmt->execute([
@@ -88,9 +99,32 @@ class MomentModel extends Model
             ':title' => Security::sanitizeInput($data['title']),
             ':body' => Security::sanitizeInput($data['body'] ?? ''),
             ':is_pinned' => $data['is_pinned'] ? 1 : 0,
-            ':is_shared' => $data['is_shared'] ? 1 : 0,
+            ':is_shared' => $isShared,
+            ':maybe_token' => $maybeToken,
             ':happened_at' => $data['happened_at'],
         ]);
+    }
+
+    /** Gaseste un moment partajat dupa token-ul public (pentru pagina /share/{token}). */
+    public function findByShareToken(string $token): ?array
+    {
+        $stmt = $this->db->prepare("
+            SELECT m.*, u.first_name, u.last_name,
+                   c.first_name AS child_first, c.last_name AS child_last,
+                   (SELECT '/uploads/photos/' || md.filename
+                      FROM media md
+                     WHERE md.moment_id = m.id
+                     ORDER BY md.id ASC
+                     LIMIT 1) AS media_url
+            FROM moments m
+            JOIN users u ON m.logged_by = u.id
+            JOIN children c ON m.child_id = c.id
+            WHERE m.share_token = :token AND m.is_shared = 1
+            LIMIT 1
+        ");
+        $stmt->execute([':token' => $token]);
+        $row = $stmt->fetch();
+        return $row ?: null;
     }
 
     public function delete(int $id): bool
