@@ -15,7 +15,14 @@ if (str_starts_with($uri, '/api/') || str_starts_with($uri, '/feed/')) {
     exit;
 }
 
-// Static files (css, js, images, uploads etc.) -> public/
+// Media uploads: fisierele sunt stocate in AFARA webroot (storage/uploads) si
+// servite printr-un script PHP, nu direct ca fisiere statice din public/.
+if (str_starts_with($uri, '/uploads/')) {
+    require __DIR__ . '/api/serve_media.php';
+    exit;
+}
+
+// Static files (css, js, images etc.) -> public/
 // IMPORTANT: nu folosim "return false" pentru ca PHP built-in server ar servi
 // fisierul din document root (/), nu din /public/. Servim manual cu readfile().
 $file = __DIR__ . '/public' . $uri;

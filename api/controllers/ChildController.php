@@ -93,7 +93,7 @@ class ChildController extends Controller
     /**
      * Uploadează poza de profil a copilului.
      * Acceptă multipart/form-data cu câmpul 'photo'.
-     * Salvează în public/uploads/photos/ și actualizează photo_url în DB.
+     * Salvează în storage/uploads/photos/ (în afara webroot) și actualizează photo_url în DB.
      */
     public function uploadPhoto(array $params): void
     {
@@ -128,7 +128,8 @@ class ChildController extends Controller
             default      => 'jpg',
         };
         $filename  = $childId . '_' . uniqid('', true) . '.' . $ext;
-        $uploadDir = __DIR__ . '/../../public/uploads/photos/';
+        // Stocare în AFARA webroot-ului (storage/), servită printr-un script PHP.
+        $uploadDir = __DIR__ . '/../../storage/uploads/photos/';
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);

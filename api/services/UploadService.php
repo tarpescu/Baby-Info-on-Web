@@ -11,9 +11,12 @@ use App\Config\Constants;
 
 class UploadService
 {
+    /** Stocare in AFARA webroot-ului (storage/), servita printr-un script PHP. */
+    private const STORAGE_DIR = __DIR__ . '/../../storage/uploads/photos/';
+
     /**
-     * Salveaza un fisier media in public/uploads/photos/, cu validare MIME reala (finfo).
-     * Returneaza filename + path public ('/uploads/photos/...').
+     * Salveaza un fisier media in storage/uploads/photos/ (in afara webroot),
+     * cu validare MIME reala (finfo). Returneaza filename + URL public ('/uploads/photos/...').
      */
     public function handlePhoto(array $file, int $childId): array
     {
@@ -42,7 +45,7 @@ class UploadService
         };
 
         $filename = $childId . '_' . uniqid('', true) . '.' . $ext;
-        $uploadDir = __DIR__ . '/../../public/uploads/photos/';
+        $uploadDir = self::STORAGE_DIR;
 
         if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true) && !is_dir($uploadDir)) {
             return ['success' => false, 'error' => 'Could not create upload directory'];
@@ -64,7 +67,7 @@ class UploadService
 
     public function delete(string $filename): bool
     {
-        $path = __DIR__ . '/../../public/uploads/photos/' . basename($filename);
+        $path = self::STORAGE_DIR . basename($filename);
         if (file_exists($path)) {
             return unlink($path);
         }

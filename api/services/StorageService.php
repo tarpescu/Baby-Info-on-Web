@@ -10,8 +10,8 @@ namespace App\Services;
 
 class StorageService
 {
-    /** Radacina implicita pentru fisierele incarcate. */
-    private const UPLOAD_DIR = __DIR__ . '/../../public/uploads';
+    /** Radacina implicita pentru fisierele incarcate (in afara webroot-ului). */
+    private const UPLOAD_DIR = __DIR__ . '/../../storage/uploads';
 
     private string $baseDir;
 
