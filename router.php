@@ -35,6 +35,8 @@ $pageMap = [
     '/dashboard'       => 'dashboard.html',
     '/join'            => 'join.html',
     '/gallery'         => 'gallery.html',
+    '/admin'           => 'admin.html',
+    '/medical'         => 'medical.html',
 ];
 
 if (isset($pageMap[$uri])) {

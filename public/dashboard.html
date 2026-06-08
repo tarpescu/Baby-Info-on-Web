@@ -563,8 +563,10 @@
     <div class="nav-links font-label">
         <a href="/dashboard" class="active">Journal</a>
         <a href="/gallery">Gallery</a>
+        <a href="/medical">Medical</a>
         <a href="/milestones">Milestones</a>
         <a href="/family">Family</a>
+        <a href="/admin" id="adminNavLink" style="display:none;">Admin</a>
     </div>
     <div class="nav-actions">
         <span id="userGreeting"></span>
@@ -805,6 +807,11 @@ async function init() {
 
     document.getElementById('userGreeting').textContent =
         `Hello, ${currentUser.first_name}!`;
+
+    // Afiseaza link-ul Admin doar pentru super-admini
+    if (currentUser.is_superadmin) {
+        document.getElementById('adminNavLink').style.display = '';
+    }
 
     // 2. Fetch copii
     const childRes = await fetch('/api/children', { credentials: 'include' });

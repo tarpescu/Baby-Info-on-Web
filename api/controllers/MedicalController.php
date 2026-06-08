@@ -14,6 +14,18 @@ use App\Models\MedicalModel;
 
 class MedicalController extends Controller
 {
+    public function index(array $params): void
+    {
+        $this->requireAuth();
+        $childId = (int) ($params['id'] ?? 0);
+        $this->requireFamilyAccess($childId);
+
+        $limit = (int) ($this->request->query['limit'] ?? 50);
+
+        $model = new MedicalModel();
+        Response::json($model->getByChild($childId, $limit));
+    }
+
     public function store(array $params): void
     {
         $this->requireAuth();

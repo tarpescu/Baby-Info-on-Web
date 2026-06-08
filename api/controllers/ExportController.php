@@ -106,7 +106,7 @@ class ExportController extends Controller
             'feedings' => (new FeedingModel())->getByChild($childId, self::EXPORT_LIMIT),
             'sleep'    => (new SleepModel())->getByChild($childId, self::EXPORT_LIMIT),
             'growth'   => (new GrowthModel())->getByChild($childId),
-            'medical'  => (new MedicalModel())->getByChild($childId),
+            'medical'  => (new MedicalModel())->getByChild($childId, self::EXPORT_LIMIT),
             'moments'  => (new MomentModel())->getByChild($childId, null, self::EXPORT_LIMIT, 0),
         ];
     }

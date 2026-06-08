@@ -51,6 +51,7 @@ class Router
         $this->add('POST', '/api/children/{id}/sleep',    'SleepController',   'store');
         $this->add('GET',  '/api/children/{id}/growth',   'GrowthController',  'index');
         $this->add('POST', '/api/children/{id}/growth',   'GrowthController',  'store');
+        $this->add('GET',  '/api/children/{id}/medical', 'MedicalController', 'index');
         $this->add('POST', '/api/children/{id}/medical', 'MedicalController', 'store');
 
         $this->add('GET',    '/api/children/{id}/relationships',     'RelationshipController', 'index');

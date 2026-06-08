@@ -11,7 +11,7 @@ use App\Core\Model;
 
 class MedicalModel extends Model
 {
-    public function getByChild(int $childId): array
+    public function getByChild(int $childId, int $limit = 50): array
     {
         $stmt = $this->db->prepare("
             SELECT m.*, u.first_name, u.last_name
@@ -19,8 +19,9 @@ class MedicalModel extends Model
             JOIN users u ON m.logged_by = u.id
             WHERE m.child_id = :child_id
             ORDER BY m.date_at DESC
+            LIMIT :limit
         ");
-        $stmt->execute([':child_id' => $childId]);
+        $stmt->execute([':child_id' => $childId, ':limit' => $limit]);
         return $stmt->fetchAll();
     }
 

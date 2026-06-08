@@ -673,8 +673,10 @@
     <div class="nav-links font-label">
         <a href="/dashboard">Journal</a>
         <a href="/gallery" class="active">Gallery</a>
+        <a href="/medical">Medical</a>
         <a href="/milestones">Milestones</a>
         <a href="/family">Family</a>
+        <a href="/admin" id="adminNavLink" style="display:none;">Admin</a>
     </div>
     <div class="nav-actions">
         <span id="userGreeting" class="font-typewriter" style="font-size:0.85rem; color:var(--text-muted);"></span>
@@ -1316,6 +1318,8 @@ function updateWriteAccess() {
     // Viewer: ascunde link-urile din nav la sectiuni private
     // Raftul RAMANE vizibil pentru toti — doar controlele de scriere dispar
     document.querySelectorAll('.nav-links a, .mobile-bottom-nav .nav-item').forEach(link => {
+        // Link-ul Admin e gestionat exclusiv de logica is_superadmin — nu-l atinge aici.
+        if (link.id === 'adminNavLink') return;
         const href = link.getAttribute('href') || '';
         if (!userCanWrite && !href.includes('gallery')) {
             link.style.display = 'none';
@@ -1358,6 +1362,11 @@ async function init() {
     currentUser = await meRes.json();
 
     document.getElementById('userGreeting').textContent = `Hello, ${currentUser.first_name}!`;
+
+    // Afiseaza link-ul Admin doar pentru super-admini
+    if (currentUser.is_superadmin) {
+        document.getElementById('adminNavLink').style.display = '';
+    }
 
     const childRes = await fetch('/api/children', { credentials: 'include' });
     children = childRes.ok ? await childRes.json() : [];

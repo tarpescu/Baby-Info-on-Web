@@ -12,6 +12,8 @@ RewriteRule ^forgot-password$ forgotpassword.html [L]
 RewriteRule ^dashboard$ dashboard.html [L]
 RewriteRule ^join$ join.html [L]
 RewriteRule ^gallery$ gallery.html [L]
+RewriteRule ^admin$ admin.html [L]
+RewriteRule ^medical$ medical.html [L]
 
 # Fallback -> landing page
 RewriteRule ^(.*)$ landingpage.html [QSA,L]

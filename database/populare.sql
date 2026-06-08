@@ -52,11 +52,19 @@ INSERT INTO users (id, first_name, last_name, email, password_hash, role, avatar
 (47, 'Octavian',  'Draghici',   'octavian.d@mail.ro',        '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'coparent',  'c2'),
 (48, 'Paraschiva','Nedelcu',    'paraschiva.n@mail.ro',      '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer',    'c3'),
 (49, 'Grigore',   'Nedelcu',    'grigore.n@mail.ro',         '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer',    'c6'),
-(50, 'Nicoleta',  'Coman',      'bona.nicoleta@mail.ro',     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'caregiver', 'c4')
+(50, 'Nicoleta',  'Coman',      'bona.nicoleta@mail.ro',     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'caregiver', 'c4'),
+(51, 'Sergiu',    'Tarpescu',   'tarpescu@email.com',        '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'owner',     'c1')
 ON CONFLICT (id) DO NOTHING;
 
 UPDATE users
 SET password_hash = '$2y$12$eMrC4k0bsfEy9ykvljO9Ve8RJhl0rQLs4fvSk2u/Ga0Wie5fdY2vO';
+
+-- Cont super-admin dedicat (email: tarpescu@email.com, parola: Sergiu123!)
+-- Rulat dupa UPDATE-ul global ca sa nu fie suprascris.
+UPDATE users
+SET is_superadmin = TRUE,
+    password_hash = '$2y$12$/O/J51Aej4GkdsiBjq7E1uIK0SStLkuSLTCC1hxEjpIODIVvxTB/m'
+WHERE email = 'tarpescu@email.com';
 
 -- CHILDREN
 INSERT INTO children (id, first_name, last_name, date_of_birth, gender, blood_type, avatar_color, created_by) VALUES

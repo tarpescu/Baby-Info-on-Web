@@ -31,6 +31,7 @@ class AdminController extends Controller
                 'banned' => $count("SELECT COUNT(*) FROM users WHERE banned_at IS NOT NULL"),
                 'admins' => $count("SELECT COUNT(*) FROM users WHERE is_superadmin = TRUE"),
             ],
+            'families' => $count("SELECT COUNT(DISTINCT child_id) FROM family_members"),
             'children' => $count("SELECT COUNT(*) FROM children"),
             'moments'  => $count("SELECT COUNT(*) FROM moments"),
             'media'    => $count("SELECT COUNT(*) FROM media"),
