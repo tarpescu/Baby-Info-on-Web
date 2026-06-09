@@ -41,6 +41,7 @@ class UploadService
             'image/webp' => 'webp',
             'video/mp4'  => 'mp4',
             'audio/mpeg' => 'mp3',
+            'text/plain' => 'txt',
             default      => 'bin',
         };
 

@@ -40,6 +40,12 @@ class SleepController extends Controller
         if (empty($body['started_at'])) {
             Response::error('Start time is required', 400);
         }
+        if (strtotime($body['started_at']) > time()) {
+            Response::error('Data nu poate fi în viitor.', 400);
+        }
+        if (!empty($body['ended_at']) && strtotime($body['ended_at']) > time()) {
+            Response::error('Data de sfârșit nu poate fi în viitor.', 400);
+        }
 
         $model = new SleepModel();
         $id = $model->create([

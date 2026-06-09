@@ -9,665 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Bricolage+Grotesque:wght@400;600;800&family=Caveat:wght@400;700&family=Special+Elite&family=Figtree:wght@300;400;700&display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
-
-    <style>
-        /* @author Romila Raluca */
-
-        /* ─────────────────────────────────────────────
-           1. CSS VARIABLES
-        ───────────────────────────────────────────── */
-        :root {
-            --bg-paper: #e6dfd3;
-            --primary: #321716;
-            --secondary: #9e422c;
-            --text-body: #1e1b14;
-            --text-muted: #504443;
-            --surface-container: #f4ede1;
-            --surface-high: #eee7db;
-            --scrap-sage: #d8e2dc;
-            --scrap-blush: #f0e6e6;
-            --scrap-olive: #e9edc9;
-            --outline: #d4c3c1;
-            --tape-blue: rgba(131, 166, 183, 0.7);
-            --error: #ba1a1a;
-        }
-
-        /* ─────────────────────────────────────────────
-           2. RESET & BASE
-        ───────────────────────────────────────────── */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            background-color: var(--bg-paper);
-            background-image:
-                radial-gradient(var(--outline) 0.5px, transparent 0.5px),
-                radial-gradient(var(--outline) 0.5px, var(--bg-paper) 0.5px);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-            color: var(--text-body);
-            font-family: 'Courier Prime', monospace;
-            line-height: 1.6;
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 80px;
-        }
-
-        a { text-decoration: none; color: inherit; }
-        button { cursor: pointer; border: none; background: none; font-family: inherit; }
-        ul { list-style: none; }
-
-        .font-headline    { font-family: 'Libre Caslon Text', serif; }
-        .font-handwritten { font-family: 'Caveat', cursive; }
-        .font-typewriter  { font-family: 'Special Elite', cursive; }
-        .font-label       { font-family: 'Bricolage Grotesque', sans-serif; }
-        .font-modern      { font-family: 'Figtree', sans-serif; }
-        .material-symbols-outlined { vertical-align: middle; }
-
-        /* ─────────────────────────────────────────────
-           3. NAVBAR
-        ───────────────────────────────────────────── */
-        .navbar {
-            position: sticky; top: 0; z-index: 100;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 1rem 2rem;
-            background: rgba(230, 223, 211, 0.9);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--outline);
-        }
-        .nav-logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); transform: rotate(-1deg); display:inline-block; font-family: 'Special Elite', cursive; }
-        .nav-links { display: flex; gap: 2rem; font-family: 'Bricolage Grotesque', sans-serif; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
-        .nav-links a { font-weight: bold; color: var(--text-muted); transition: color 0.2s; }
-        .nav-links a.active { color: var(--secondary); text-decoration: underline; text-decoration-style: wavy; }
-        .nav-links a:hover { color: var(--secondary); }
-        .nav-actions { display: flex; gap: 1rem; align-items: center; color: var(--primary); }
-
-        #logoutBtn {
-            padding: 0.35rem 0.9rem;
-            border: 1.5px solid var(--outline);
-            font-family: 'Special Elite', cursive; font-size: 0.8rem;
-            color: var(--text-muted); letter-spacing: 1px;
-            transition: color 0.2s, border-color 0.2s;
-        }
-        #logoutBtn:hover { color: var(--secondary); border-color: var(--secondary); }
-
-        select#childSelector {
-            background: transparent; border: none;
-            border-bottom: 1.5px solid var(--outline);
-            font-family: 'Special Elite', cursive; font-size: 0.9rem;
-            color: var(--primary); padding: 2px 4px;
-            cursor: pointer;
-        }
-        select#childSelector:focus { outline: none; border-bottom-color: var(--secondary); }
-
-        /* ─────────────────────────────────────────────
-           4. DECORATIVE SHELF
-        ───────────────────────────────────────────── */
-        .shelf-section {
-            padding: 1.5rem 2rem 0;
-            position: relative;
-        }
-
-        .shelf-board {
-            display: flex;
-            align-items: flex-end;
-            gap: 0.5rem;
-            padding: 1rem 1.5rem 0;
-            background: var(--surface-high);
-            border: 1px solid var(--outline);
-            border-bottom: 6px solid #c4b09a;
-            box-shadow: 0 4px 0 #b09a80, 0 6px 12px rgba(0,0,0,0.08);
-            min-height: 100px;
-            overflow-x: auto;
-            position: relative;
-        }
-
-        /* Iteme decorative pe raft */
-        .shelf-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex-shrink: 0;
-            user-select: none;
-        }
-
-        .shelf-block {
-            width: 44px; height: 56px;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Libre Caslon Text', serif;
-            font-size: 1.6rem; font-weight: bold; color: #fff;
-            box-shadow: inset -3px -3px 0 rgba(0,0,0,0.1);
-        }
-
-        .shelf-book {
-            width: 28px; height: 72px;
-            border-radius: 2px 0 0 2px;
-            display: flex; align-items: center; justify-content: center;
-            writing-mode: vertical-rl;
-            font-family: 'Special Elite', cursive;
-            font-size: 0.55rem; letter-spacing: 1px;
-            color: rgba(255,255,255,0.8);
-            box-shadow: inset -2px 0 0 rgba(0,0,0,0.15);
-        }
-
-        .shelf-bear {
-            font-size: 2.8rem; line-height: 1;
-            filter: sepia(0.3);
-        }
-
-        .shelf-photo-frame {
-            width: 56px; height: 64px;
-            background: #fff; border: 3px solid #c4b09a;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 2px 2px 0 rgba(0,0,0,0.08);
-        }
-
-        /* Upload slot pe raft */
-        .shelf-upload-slot {
-            width: 56px; height: 64px;
-            border: 2px dashed var(--outline);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            cursor: pointer;
-            transition: border-color 0.2s, background 0.2s;
-            flex-shrink: 0;
-            margin-left: auto;
-            align-self: flex-end;
-            margin-bottom: 2px;
-        }
-        .shelf-upload-slot:hover {
-            border-color: var(--secondary);
-            background: rgba(158, 66, 44, 0.05);
-        }
-        .shelf-upload-slot .material-symbols-outlined { font-size: 1.4rem; color: var(--text-muted); }
-        .shelf-upload-slot .slot-label { font-size: 0.5rem; color: var(--text-muted); font-family: 'Special Elite', cursive; letter-spacing: 0.5px; margin-top: 2px; }
-
-        /* ─────────────────────────────────────────────
-           5. FILTERS
-        ───────────────────────────────────────────── */
-        .filter-bar {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 1rem 2rem;
-            flex-wrap: wrap;
-        }
-
-        .filter-label {
-            font-family: 'Special Elite', cursive;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .filter-chip {
-            padding: 0.25rem 0.75rem;
-            border: 1.5px solid var(--outline);
-            background: transparent;
-            font-family: 'Special Elite', cursive;
-            font-size: 0.78rem;
-            letter-spacing: 0.5px;
-            color: var(--text-muted);
-            cursor: pointer;
-            transition: all 0.15s;
-        }
-        .filter-chip:hover { border-color: var(--secondary); color: var(--secondary); }
-        .filter-chip.active {
-            background: var(--primary); border-color: var(--primary);
-            color: #fff;
-        }
-
-        /* ─────────────────────────────────────────────
-           6. GALLERY CONTENT
-        ───────────────────────────────────────────── */
-        .gallery-content {
-            padding: 0 2rem;
-        }
-
-        /* Month divider */
-        .month-group { margin-bottom: 3rem; }
-
-        .month-header {
-            display: flex; align-items: center; gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-        .month-title {
-            font-family: 'Libre Caslon Text', serif;
-            font-size: 1.4rem; color: var(--primary);
-            white-space: nowrap;
-        }
-        .month-line {
-            flex: 1; height: 1px;
-            background: var(--outline);
-        }
-        .month-count {
-            font-family: 'Special Elite', cursive;
-            font-size: 0.75rem; color: var(--text-muted);
-            letter-spacing: 1px;
-        }
-
-        /* Polaroid grid */
-        .polaroid-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 2.5rem 2rem;
-        }
-
-        /* ─────────────────────────────────────────────
-           7. POLAROID CARD
-        ───────────────────────────────────────────── */
-        .polaroid-wrap {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .polaroid {
-            background: #fff;
-            padding: 10px 10px 48px 10px;
-            box-shadow: 3px 3px 0 rgba(0,0,0,0.06), 8px 12px 24px rgba(0,0,0,0.1);
-            position: relative;
-            transition: transform 0.25s ease, box-shadow 0.25s;
-        }
-        .polaroid:hover {
-            box-shadow: 6px 10px 0 rgba(0,0,0,0.08), 14px 20px 30px rgba(0,0,0,0.15);
-        }
-        .polaroid-wrap:nth-child(odd) .polaroid  { transform: rotate(-1.5deg); }
-        .polaroid-wrap:nth-child(even) .polaroid { transform: rotate(1.2deg); }
-        .polaroid-wrap:nth-child(odd) .polaroid:hover  { transform: rotate(-0.5deg) scale(1.03); }
-        .polaroid-wrap:nth-child(even) .polaroid:hover { transform: rotate(0.5deg) scale(1.03); }
-
-        .polaroid-img {
-            width: 100%;
-            aspect-ratio: 1/1;
-            object-fit: cover;
-            display: block;
-            filter: sepia(0.1) contrast(1.05);
-        }
-
-        /* Placeholder for non-image moments */
-        .polaroid-placeholder {
-            width: 100%;
-            aspect-ratio: 1/1;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 0.5rem;
-        }
-        .polaroid-placeholder .big-icon { font-size: 3rem; opacity: 0.4; }
-        .polaroid-placeholder .type-label {
-            font-family: 'Special Elite', cursive;
-            font-size: 0.7rem; letter-spacing: 1px;
-            color: var(--text-muted); text-transform: uppercase;
-        }
-
-        .polaroid-caption {
-            position: absolute;
-            bottom: 8px; left: 8px; right: 8px;
-            text-align: center;
-            font-family: 'Caveat', cursive;
-            font-size: 1.15rem;
-            color: var(--text-body);
-            line-height: 1.2;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
-
-        .polaroid-date {
-            font-family: 'Special Elite', cursive;
-            font-size: 0.6rem; color: var(--text-muted);
-            letter-spacing: 1px;
-            text-align: center;
-            margin-top: 2px;
-        }
-
-        /* Washi tape on polaroid */
-        .polaroid-tape {
-            position: absolute;
-            top: -10px;
-            left: 50%; transform: translateX(-50%);
-            width: 60px; height: 22px;
-            background: var(--tape-blue);
-            opacity: 0.85;
-            clip-path: polygon(0% 20%, 5% 0%, 95% 5%, 100% 20%, 98% 80%, 92% 100%, 8% 95%, 0% 80%);
-            z-index: 5;
-        }
-
-        /* Ink stamp reactions */
-        .polaroid-reactions {
-            position: absolute;
-            bottom: 46px; right: -8px;
-            display: flex; flex-direction: column; gap: 2px;
-        }
-
-        .ink-stamp {
-            font-size: 1.3rem;
-            mix-blend-mode: multiply;
-            opacity: 0.85;
-            filter: saturate(0.7) contrast(1.3);
-            line-height: 1;
-            display: flex; align-items: center;
-        }
-        .ink-stamp .stamp-count {
-            font-family: 'Special Elite', cursive;
-            font-size: 0.55rem;
-            color: var(--text-muted);
-            margin-left: 1px;
-        }
-
-        /* Comment count badge */
-        .comment-badge {
-            position: absolute;
-            bottom: 46px; left: -6px;
-            background: var(--surface-container);
-            border: 1px solid var(--outline);
-            padding: 2px 5px;
-            font-family: 'Special Elite', cursive;
-            font-size: 0.6rem;
-            color: var(--text-muted);
-            display: flex; align-items: center; gap: 2px;
-        }
-
-        /* Pinned star */
-        .pin-star {
-            position: absolute;
-            top: 4px; left: 4px;
-            color: #f4d35e;
-            font-size: 1rem;
-        }
-
-        /* ─────────────────────────────────────────────
-           8. EMPTY STATE
-        ───────────────────────────────────────────── */
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-        .empty-state .big-icon {
-            font-size: 4rem; color: var(--outline); display: block; margin-bottom: 1rem;
-        }
-        .empty-state h2 {
-            font-family: 'Libre Caslon Text', serif;
-            font-size: 1.5rem; color: var(--primary); margin-bottom: 0.5rem;
-        }
-        .empty-state p {
-            color: var(--text-muted); margin-bottom: 1.5rem;
-            font-family: 'Special Elite', cursive; font-size: 0.9rem;
-        }
-
-        /* ─────────────────────────────────────────────
-           9. FAB (Add Moment)
-        ───────────────────────────────────────────── */
-        .fab {
-            position: fixed; bottom: 2rem; right: 2rem;
-            width: 60px; height: 60px; border-radius: 50%;
-            background: var(--primary); color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            z-index: 100; transition: transform 0.2s;
-            font-size: 1.8rem;
-        }
-        .fab:hover { transform: scale(1.1) rotate(12deg); }
-
-        /* ─────────────────────────────────────────────
-           10. MODAL BASE
-        ───────────────────────────────────────────── */
-        .modal-overlay {
-            position: fixed; inset: 0;
-            background: rgba(30, 20, 15, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 200;
-            display: flex; align-items: center; justify-content: center;
-            padding: 1rem;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.25s ease;
-        }
-        .modal-overlay.open { opacity: 1; pointer-events: all; }
-
-        .modal-card {
-            background: #fff;
-            background-image: linear-gradient(rgba(173, 216, 230, 0.4) 1px, transparent 1px);
-            background-size: 100% 2.4rem;
-            max-width: 560px; width: 100%;
-            padding: 3rem 2.5rem 2rem;
-            position: relative;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.08), 12px 12px 30px rgba(0,0,0,0.15);
-            transform: rotate(-1deg) translateY(20px);
-            transition: transform 0.3s ease;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        .modal-overlay.open .modal-card { transform: rotate(-0.5deg) translateY(0); }
-
-        .modal-card::before {
-            content: '';
-            position: absolute; top: 2.4rem; left: 0; right: 0;
-            height: 1px; background: rgba(255,0,0,0.15);
-        }
-
-        .modal-washi {
-            position: absolute; top: -12px; left: 30px;
-            width: 90px; height: 26px;
-            background: var(--tape-blue);
-            clip-path: polygon(0% 15%, 5% 0%, 95% 5%, 100% 15%, 98% 85%, 92% 100%, 8% 95%, 0% 85%);
-            z-index: 10;
-        }
-        .modal-close {
-            position: absolute; top: 1rem; right: 1rem;
-            color: var(--text-muted); font-size: 1.5rem; line-height: 1;
-            transition: color 0.2s;
-        }
-        .modal-close:hover { color: var(--secondary); }
-
-        .modal-title {
-            font-size: 1.5rem; color: var(--primary);
-            margin-bottom: 0.25rem; font-family: 'Special Elite', cursive;
-            text-transform: uppercase; letter-spacing: 2px;
-        }
-        .modal-subtitle {
-            font-size: 0.8rem; color: var(--text-muted);
-            margin-bottom: 2rem; opacity: 0.7;
-            font-family: 'Special Elite', cursive;
-        }
-        .modal-field { margin-bottom: 1.6rem; }
-        .modal-field label {
-            display: block; font-size: 0.75rem;
-            text-transform: uppercase; letter-spacing: 1px;
-            color: var(--text-muted); margin-bottom: 0.2rem;
-            font-family: 'Special Elite', cursive;
-        }
-        .modal-input, .modal-select, .modal-textarea {
-            width: 100%; background: transparent;
-            border: none; border-bottom: 2px solid var(--outline);
-            font-family: 'Special Elite', cursive; font-size: 1rem;
-            color: var(--primary); padding: 2px 0 4px;
-            transition: border-color 0.2s;
-        }
-        .modal-input:focus, .modal-select:focus, .modal-textarea:focus {
-            outline: none; border-bottom-color: var(--secondary);
-        }
-        .modal-input::placeholder, .modal-textarea::placeholder { opacity: 0.3; }
-        .modal-textarea { resize: vertical; min-height: 80px; }
-        .modal-select { cursor: pointer; }
-
-        .modal-error {
-            display: none; padding: 0.6rem 1rem; margin-bottom: 1rem;
-            background: rgba(186,26,26,0.08); border-left: 3px solid var(--error);
-            font-family: 'Special Elite', cursive; font-size: 0.88rem; color: var(--error);
-        }
-
-        .modal-submit {
-            display: block; margin: 1.5rem auto 0;
-            background: var(--primary); color: #fff;
-            padding: 0.8rem 2.5rem;
-            font-family: 'Special Elite', cursive; font-size: 1rem;
-            text-transform: uppercase; letter-spacing: 2px;
-            box-shadow: 2px 2px 0 rgba(0,0,0,0.15);
-            transform: rotate(-1deg);
-            transition: background 0.2s, transform 0.2s;
-        }
-        .modal-submit:hover { background: var(--secondary); transform: rotate(0); }
-        .modal-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        /* ─────────────────────────────────────────────
-           11. DETAIL MODAL (click pe polaroid)
-        ───────────────────────────────────────────── */
-        #detailModal .modal-card {
-            max-width: 680px;
-        }
-
-        .detail-img-wrap {
-            margin-bottom: 1.5rem;
-        }
-        .detail-img {
-            width: 100%;
-            max-height: 320px;
-            object-fit: cover;
-            filter: sepia(0.08) contrast(1.05);
-        }
-
-        .detail-meta {
-            display: flex; gap: 1rem; align-items: center;
-            margin-bottom: 1rem; flex-wrap: wrap;
-        }
-        .detail-type-badge {
-            padding: 2px 10px;
-            background: var(--surface-high);
-            border: 1px solid var(--outline);
-            font-family: 'Special Elite', cursive; font-size: 0.7rem;
-            letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted);
-        }
-        .detail-date {
-            font-family: 'Special Elite', cursive;
-            font-size: 0.75rem; color: var(--text-muted);
-        }
-        .detail-author {
-            font-family: 'Caveat', cursive;
-            font-size: 1rem; color: var(--text-muted);
-            margin-left: auto;
-        }
-
-        .detail-body {
-            font-family: 'Courier Prime', monospace;
-            font-size: 0.95rem; color: var(--text-body);
-            margin-bottom: 1.5rem;
-            line-height: 1.8;
-        }
-
-        /* Reactions row */
-        .reactions-row {
-            display: flex; gap: 0.5rem; flex-wrap: wrap;
-            margin-bottom: 1.5rem;
-        }
-        .reaction-btn {
-            display: flex; align-items: center; gap: 4px;
-            padding: 4px 10px;
-            border: 1.5px solid var(--outline);
-            background: transparent;
-            font-size: 1rem; cursor: pointer;
-            transition: all 0.15s;
-            font-family: 'Special Elite', cursive; font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-        .reaction-btn:hover { border-color: var(--secondary); color: var(--secondary); }
-        .reaction-btn.active { background: var(--scrap-blush); border-color: var(--secondary); }
-        .reaction-btn .emoji { font-size: 1.1rem; }
-
-        /* Comments section */
-        .comments-section { margin-top: 1.5rem; }
-        .comments-title {
-            font-family: 'Special Elite', cursive; font-size: 0.8rem;
-            letter-spacing: 2px; text-transform: uppercase;
-            color: var(--text-muted); margin-bottom: 1rem;
-            border-bottom: 1px dashed var(--outline); padding-bottom: 0.5rem;
-        }
-
-        /* Comment jako torn paper */
-        .comment-item {
-            position: relative;
-            background: var(--surface-container);
-            padding: 0.6rem 0.8rem 0.5rem;
-            margin-bottom: 0.75rem;
-            clip-path: polygon(
-                0% 0%, 100% 0%,
-                100% 92%, 98% 95%, 95% 91%, 92% 96%, 89% 92%, 85% 96%,
-                82% 92%, 78% 97%, 74% 93%, 70% 96%, 66% 92%, 62% 97%,
-                58% 93%, 54% 96%, 50% 92%, 46% 96%, 42% 93%, 38% 97%,
-                34% 92%, 30% 96%, 26% 93%, 22% 97%, 18% 93%, 14% 96%,
-                10% 92%, 6% 97%, 3% 93%, 0% 96%
-            );
-            padding-bottom: 1.2rem;
-        }
-        .comment-author {
-            font-family: 'Caveat', cursive; font-size: 1rem;
-            color: var(--secondary); margin-bottom: 2px;
-        }
-        .comment-text {
-            font-family: 'Courier Prime', monospace; font-size: 0.88rem;
-            color: var(--text-body); line-height: 1.5;
-        }
-
-        /* Input comentariu — hârtie ruptă cu border dashed bottom */
-        .comment-input-wrap {
-            display: flex; gap: 0.5rem; align-items: flex-end;
-            margin-top: 1rem;
-        }
-        .comment-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            border-bottom: 2px dashed var(--outline);
-            font-family: 'Caveat', cursive; font-size: 1.1rem;
-            color: var(--primary); padding: 4px 2px;
-            transition: border-color 0.2s;
-        }
-        .comment-input:focus { outline: none; border-bottom-color: var(--secondary); }
-        .comment-input::placeholder { opacity: 0.4; font-size: 1rem; }
-
-        .comment-send-btn {
-            background: var(--primary); color: #fff;
-            padding: 5px 12px;
-            font-family: 'Special Elite', cursive; font-size: 0.75rem;
-            letter-spacing: 1px;
-            transition: background 0.15s;
-        }
-        .comment-send-btn:hover { background: var(--secondary); }
-
-        /* ─────────────────────────────────────────────
-           12. MOBILE BOTTOM NAV
-        ───────────────────────────────────────────── */
-        .mobile-bottom-nav {
-            position: fixed; bottom: 0; left: 0; width: 100%;
-            background: rgba(244, 237, 225, 0.95); backdrop-filter: blur(5px);
-            border-top-left-radius: 20px; border-top-right-radius: 20px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
-            display: none;
-            justify-content: space-around; align-items: center;
-            height: 70px; z-index: 100;
-        }
-        .nav-item {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: var(--text-muted); cursor: pointer; text-decoration: none;
-            flex: 1 1 0; min-width: 0;
-        }
-        .nav-item.active {
-            color: var(--secondary); background: rgba(158, 66, 44, 0.1);
-            padding: 4px 8px; border-radius: 20px; transform: rotate(-1deg);
-        }
-        .nav-item span.label { font-size: 0.64rem; font-weight: bold; margin-top: 2px; white-space: nowrap; font-family: 'Bricolage Grotesque', sans-serif; }
-
-        @media (max-width: 1150px) {
-            .navbar .nav-links { display: none; }
-            .navbar { flex-wrap: nowrap; justify-content: space-between; padding: 0.8rem 1rem; }
-            .nav-logo { white-space: nowrap; }
-            .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
-            .mobile-bottom-nav { display: flex; }
-            .fab { bottom: 90px; right: 1.5rem; }
-            .gallery-content { padding: 0 1rem; }
-            .shelf-section { padding: 1rem 1rem 0; }
-            .filter-bar { padding: 0.75rem 1rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="/css/gallery.css">
 </head>
 <body>
 
@@ -763,6 +105,7 @@
                     <option value="photo">📷 Photo</option>
                     <option value="video">🎬 Video</option>
                     <option value="audio">🎵 Audio</option>
+                    <option value="text">📄 Text file</option>
                     <option value="note">📝 Note</option>
                 </select>
             </div>
@@ -786,10 +129,10 @@
             <div class="modal-field" id="momentFileField" style="display:none;">
                 <label for="momentFile">Attach file</label>
                 <input type="file" id="momentFile" class="modal-input"
-                       accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg"
+                       accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,text/plain,.txt"
                        style="padding:0.3rem; cursor:pointer;"/>
                 <span style="font-family:'Special Elite',cursive; font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
-                    JPEG, PNG, WebP, MP4, MP3 — max 10 MB
+                    JPEG, PNG, WebP, MP4, MP3, TXT — max 10 MB
                 </span>
             </div>
 
@@ -846,6 +189,7 @@ const TYPE_COLORS = {
     photo:     '#f0e6e6',
     video:     '#d8e2dc',
     audio:     '#e9edc9',
+    text:      '#e6e0ef',
     note:      '#eee7db',
 };
 
@@ -853,8 +197,21 @@ const TYPE_ICONS = {
     photo:     'photo_camera',
     video:     'videocam',
     audio:     'mic',
+    text:      'description',
     note:      'edit_note',
 };
+
+/**
+ * Escapeaza un string pentru inserare sigura in innerHTML.
+ * Previne XSS prin inlocuirea caracterelor speciale HTML cu entitati.
+ * @param {*} val
+ * @returns {string}
+ */
+function esc(val) {
+    const d = document.createElement('div');
+    d.textContent = String(val ?? '');
+    return d.innerHTML;
+}
 
 /**
  * Formateaza data in stil vintage.
@@ -1053,7 +410,7 @@ function buildPolaroid(moment) {
             <div class="polaroid-tape"></div>
             ${moment.is_pinned ? '<span class="material-symbols-outlined pin-star">star</span>' : ''}
 
-            <div class="polaroid-placeholder" style="background:${moment.media_url ? '#fff' : placeholderColor}; padding:${moment.media_url ? '0' : ''};">
+            <div class="polaroid-placeholder" style="background:${hasVisualMedia ? '#fff' : placeholderColor}; padding:${hasVisualMedia ? '0' : ''};">
                 ${mediaZone}
             </div>
 
@@ -1085,6 +442,25 @@ async function openDetail(moment) {
     activeMomentId = moment.id;
     const modal   = document.getElementById('detailModal');
     const content = document.getElementById('detailContent');
+
+    // Randare media in functie de tip (poza / video / audio / fisier text)
+    let detailMedia = '';
+    if (moment.media_url) {
+        if (moment.type === 'video') {
+            detailMedia = `<div style="margin:0.8rem 0;"><video src="${moment.media_url}" controls preload="metadata"
+                style="width:100%; max-height:360px; display:block; border:1px solid var(--outline); background:#000;"></video></div>`;
+        } else if (moment.type === 'audio') {
+            detailMedia = `<div style="margin:0.8rem 0;"><audio src="${moment.media_url}" controls style="width:100%;"></audio></div>`;
+        } else if (moment.type === 'text') {
+            detailMedia = `<div style="margin:0.8rem 0;"><a href="${moment.media_url}" target="_blank" rel="noopener"
+                class="font-typewriter" style="display:inline-flex; align-items:center; gap:6px; color:var(--secondary);
+                border:1px dashed var(--outline); padding:8px 14px; font-size:0.85rem;">
+                <span class="material-symbols-outlined">description</span> Open text file</a></div>`;
+        } else {
+            detailMedia = `<div style="margin:0.8rem 0; border:1px solid var(--outline);"><img src="${moment.media_url}"
+                alt="${moment.title}" style="width:100%; max-height:320px; object-fit:cover; display:block;"/></div>`;
+        }
+    }
 
     // Afisam skeleton in timp ce incarcam comentariile
     content.innerHTML = `
@@ -1262,7 +638,7 @@ function openAddMoment() {
     document.getElementById('momentDate').value = now.toISOString().slice(0,16);
 
     // Arata/ascunde campul de fisier in functie de tipul selectat implicit
-    const mediaTypes = ['photo', 'video', 'audio'];
+    const mediaTypes = ['photo', 'video', 'audio', 'text'];
     const defaultType = document.getElementById('momentType').value;
     document.getElementById('momentFileField').style.display =
         mediaTypes.includes(defaultType) ? 'block' : 'none';
@@ -1276,7 +652,7 @@ document.getElementById('shelfUploadBtn').addEventListener('click', openAddMomen
 
 // Arata/ascunde campul de fisier in functie de tipul momentului
 document.getElementById('momentType').addEventListener('change', (e) => {
-    const mediaTypes = ['photo', 'video', 'audio'];
+    const mediaTypes = ['photo', 'video', 'audio', 'text'];
     const fileField  = document.getElementById('momentFileField');
     fileField.style.display = mediaTypes.includes(e.target.value) ? 'block' : 'none';
     if (!mediaTypes.includes(e.target.value)) {
@@ -1506,11 +882,6 @@ async function init() {
     updateWriteAccess();        // sincron acum — nu mai face fetch
     await loadTimeline();
 }
-
-// CSS keyframe pt loading spinner
-const style = document.createElement('style');
-style.textContent = `@keyframes spin { to { transform: rotate(360deg); } }`;
-document.head.appendChild(style);
 
 init();
 </script>
