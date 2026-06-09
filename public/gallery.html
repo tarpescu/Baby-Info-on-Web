@@ -884,6 +884,33 @@ function groupByMonth(moments) {
 }
 
 /**
+ * Escapeaza un string pentru inserare sigura in innerHTML.
+ * Previne XSS prin inlocuirea caracterelor speciale HTML cu entitati.
+ * @param {*} val
+ * @returns {string}
+ */
+function esc(val) {
+    const d = document.createElement('div');
+    d.textContent = String(val ?? '');
+    return d.innerHTML;
+}
+
+/**
+ * CSRF helper — fetches token once, caches it in memory.
+ * @returns {Promise<string>}
+ */
+let _csrfToken = null;
+async function getCsrfToken() {
+    if (_csrfToken) return _csrfToken;
+    try {
+        const r = await fetch('/api/auth/csrf', { credentials: 'include' });
+        const d = await r.json();
+        _csrfToken = d.token || '';
+    } catch { _csrfToken = ''; }
+    return _csrfToken;
+}
+
+/**
  * Construieste raftul decorativ cu initialele copilului.
  * @param {Object} child
  */
@@ -1015,11 +1042,11 @@ function buildPolaroid(moment) {
 
     // Zona de media: poza reala daca exista, altfel placeholder
     const mediaZone = moment.media_url
-        ? `<img src="${moment.media_url}" alt="${moment.title}"
+        ? `<img src="${esc(moment.media_url)}" alt="${esc(moment.title)}"
                 style="width:100%; height:100%; object-fit:cover; display:block;"
-                onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined big-icon\\'>${placeholderIcon}</span><span class=\\'type-label\\'>${moment.type}</span>'"/>`
+                onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined big-icon\\'>${placeholderIcon}</span><span class=\\'type-label\\'>${esc(moment.type)}</span>'"/>`
         : `<span class="material-symbols-outlined big-icon">${placeholderIcon}</span>
-           <span class="type-label">${moment.type}</span>`;
+           <span class="type-label">${esc(moment.type)}</span>`;
 
     wrap.innerHTML = `
         <div class="polaroid">
@@ -1030,7 +1057,7 @@ function buildPolaroid(moment) {
                 ${mediaZone}
             </div>
 
-            <p class="polaroid-caption font-handwritten" title="${moment.title}">${moment.title}</p>
+            <p class="polaroid-caption font-handwritten" title="${esc(moment.title)}">${esc(moment.title)}</p>
 
             ${(moment.reactions && moment.reactions.length > 0) ? `
                 <div class="polaroid-reactions">${reactionEmojis}</div>
@@ -1061,11 +1088,11 @@ async function openDetail(moment) {
 
     // Afisam skeleton in timp ce incarcam comentariile
     content.innerHTML = `
-        <h2 class="modal-title font-typewriter">${moment.title}</h2>
+        <h2 class="modal-title font-typewriter">${esc(moment.title)}</h2>
         <div class="detail-meta">
-            <span class="detail-type-badge">${moment.type}</span>
+            <span class="detail-type-badge">${esc(moment.type)}</span>
             <span class="detail-date">${formatDate(moment.happened_at)}</span>
-            <span class="detail-author font-handwritten">by ${moment.first_name} ${moment.last_name}</span>
+            <span class="detail-author font-handwritten">by ${esc(moment.first_name)} ${esc(moment.last_name)}</span>
         </div>
         ${(moment.is_shared && moment.share_token) ? `
         <button id="shareLinkBtn" class="font-typewriter" style="margin:0.2rem 0 0.4rem; font-size:0.8rem; color:var(--secondary); border:1px dashed var(--outline); padding:4px 12px; cursor:pointer; background:none; display:inline-flex; align-items:center; gap:5px;">
@@ -1073,10 +1100,10 @@ async function openDetail(moment) {
         </button>` : ''}
         ${moment.media_url ? `
             <div style="margin:0.8rem 0; border:1px solid var(--outline);">
-                <img src="${moment.media_url}" alt="${moment.title}"
+                <img src="${esc(moment.media_url)}" alt="${esc(moment.title)}"
                      style="width:100%; max-height:320px; object-fit:cover; display:block;"/>
             </div>` : ''}
-        ${moment.body ? `<p class="detail-body">${moment.body}</p>` : ''}
+        ${moment.body ? `<p class="detail-body">${esc(moment.body)}</p>` : ''}
 
         <div class="reactions-row" id="detailReactions">
             ${REACTIONS.map(r => {
@@ -1155,8 +1182,8 @@ async function loadComments(momentId) {
 
         container.innerHTML = comments.map(c => `
             <div class="comment-item">
-                <p class="comment-author">${c.first_name} ${c.last_name}</p>
-                <p class="comment-text">${c.body}</p>
+                <p class="comment-author">${esc(c.first_name)} ${esc(c.last_name)}</p>
+                <p class="comment-text">${esc(c.body)}</p>
             </div>
         `).join('');
 
@@ -1180,7 +1207,7 @@ async function sendComment(momentId) {
     try {
         const res = await fetch(`/api/moments/${momentId}/comments`, {
             method:      'POST',
-            headers:     { 'Content-Type': 'application/json' },
+            headers:     { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
             credentials: 'include',
             body:        JSON.stringify({ body }),
         });
@@ -1208,7 +1235,7 @@ async function toggleReaction(emojiType, moment) {
     try {
         const res = await fetch(`/api/moments/${moment.id}/reactions`, {
             method,
-            headers:     { 'Content-Type': 'application/json' },
+            headers:     { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
             credentials: 'include',
             body:        JSON.stringify({ emoji_type: emojiType }),
         });
@@ -1327,8 +1354,9 @@ document.getElementById('addMomentForm').addEventListener('submit', async (e) =>
         const res = await fetch(`/api/children/${activeChildId}/moments`, {
             method:      'POST',
             credentials: 'include',
+            // Content-Type intentionat omis — browser seteaza multipart/form-data cu boundary corect
+            headers:     { 'X-CSRF-Token': await getCsrfToken() },
             body:        fd,
-            // headers intentionat omis — browser seteaza Content-Type: multipart/form-data cu boundary
         });
         const data = await res.json();
 
@@ -1353,7 +1381,11 @@ document.getElementById('addMomentForm').addEventListener('submit', async (e) =>
 
 // Logout
 document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': await getCsrfToken() },
+        credentials: 'include',
+    });
     window.location.href = '/login';
 });
 

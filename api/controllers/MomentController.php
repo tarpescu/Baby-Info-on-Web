@@ -24,6 +24,7 @@ class MomentController extends Controller
     public function store(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
         $this->requireWritePermission($childId);
 
@@ -103,6 +104,7 @@ class MomentController extends Controller
     public function destroy(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $momentId = (int) ($params['id'] ?? 0);
 
         $model = new MomentModel();

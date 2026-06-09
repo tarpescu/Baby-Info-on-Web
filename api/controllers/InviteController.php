@@ -20,6 +20,7 @@ class InviteController extends Controller
     public function store(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
         $this->requireWritePermission($childId);
 

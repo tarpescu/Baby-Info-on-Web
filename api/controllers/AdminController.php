@@ -49,6 +49,7 @@ class AdminController extends Controller
     public function ban(array $params): void
     {
         $this->requireSuperAdmin();
+        $this->requireCsrf();
         $targetId = (int) ($params['id'] ?? 0);
 
         $model = new UserModel();
@@ -77,6 +78,7 @@ class AdminController extends Controller
     public function unban(array $params): void
     {
         $this->requireSuperAdmin();
+        $this->requireCsrf();
         $targetId = (int) ($params['id'] ?? 0);
 
         $model = new UserModel();

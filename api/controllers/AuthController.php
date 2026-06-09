@@ -17,8 +17,21 @@ use App\Models\UserModel;
 
 class AuthController extends Controller
 {
+    /**
+     * GET /api/auth/csrf
+     * Genereaza (sau returneaza din sesiune) un token CSRF.
+     * Nu necesita autentificare — este apelat inainte de login/register.
+     *
+     * @return void Raspuns JSON: { "token": "..." }
+     */
+    public function csrf(array $params): void
+    {
+        Response::json(['token' => Security::generateCsrfToken()]);
+    }
+
     public function login(array $params): void
     {
+        $this->requireCsrf();
         $body = $this->request->body;
         $email = $body['email'] ?? '';
         $password = $body['password'] ?? '';
@@ -67,6 +80,7 @@ class AuthController extends Controller
      */
     public function register(array $params): void
     {
+        $this->requireCsrf();
         $body = $this->request->body;
         $firstName   = $body['first_name'] ?? '';
         $lastName    = $body['last_name'] ?? '';

@@ -19,11 +19,12 @@ class Router
 
     private function registerRoutes(): void
     {
-        $this->add('POST', '/api/auth/login', 'AuthController', 'login');
-        $this->add('POST', '/api/auth/logout', 'AuthController', 'logout');
-        $this->add('GET', '/api/auth/me', 'AuthController', 'me');
+        $this->add('GET',  '/api/auth/csrf',     'AuthController', 'csrf');
+        $this->add('POST', '/api/auth/login',    'AuthController', 'login');
+        $this->add('POST', '/api/auth/logout',   'AuthController', 'logout');
+        $this->add('GET',  '/api/auth/me',       'AuthController', 'me');
         $this->add('POST', '/api/auth/register', 'AuthController', 'register');
-        $this->add('POST', '/api/auth/reset', 'AuthController', 'reset');
+        $this->add('POST', '/api/auth/reset',    'AuthController', 'reset');
 
         $this->add('GET', '/api/children', 'ChildController', 'index');
         $this->add('POST', '/api/children', 'ChildController', 'store');

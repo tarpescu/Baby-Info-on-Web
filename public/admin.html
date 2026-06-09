@@ -295,6 +295,17 @@ function esc(s) {
     ));
 }
 
+let _csrfToken = null;
+async function getCsrfToken() {
+    if (_csrfToken) return _csrfToken;
+    try {
+        const r = await fetch('/api/auth/csrf', { credentials: 'include' });
+        const d = await r.json();
+        _csrfToken = d.token || '';
+    } catch { _csrfToken = ''; }
+    return _csrfToken;
+}
+
 /** Toast scurt (mesaj de succes/eroare). */
 function toast(msg, isError = false) {
     const t = document.getElementById('toast');
@@ -415,7 +426,7 @@ async function handleUserAction(btn) {
         const res = await fetch(`/api/admin/users/${id}/${action}`, {
             method: 'POST',
             credentials: 'include',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
             body: JSON.stringify(action === 'ban' ? { reason: 'Banned from admin panel' } : {}),
         });
         if (!res.ok) {
