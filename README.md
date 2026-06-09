@@ -4,20 +4,37 @@ A web platform for families to manage resources related to raising a child — f
 
 ---
 
+## Demo
+
+> 🎬 **Video demo:** _link disponibil după prezentare_
+
+---
+
+## Authors
+
+| Nume | Contribuții |
+|------|-------------|
+| **Romilă Raluca** | Autentificare (login/register/logout/CSRF/reset parola), profil copil + upload foto, familie + invitații, feeding/sleep/growth/medical logs, galerie (momente + upload media), comentarii, reacții, timeline, REST API v1 Bearer token, arhitectura core (Router, AuthMiddleware, Security, SessionManager, Response) |
+| **Tarpescu Sergiu** | Admin panel (statistici, ban/unban, stocare), export CSV+JSON, import CSV+JSON, RSS 2.0 feed, relații sociale + interacțiuni, pagina publică `/share/{token}`, StorageService, CsvService, JsonService, RssService, MediaModel, PasswordResetModel |
+
+---
+
 ## Tech Stack
 
-- **Backend:** PHP 8.2 (vanilla, no frameworks) — MVC architecture with Composer autoloader
-- **Database:** PostgreSQL 15 — PDO with prepared statements
-- **Frontend:** HTML5, CSS3 (Grid + Flexbox), vanilla JavaScript — `fetch()` for all async calls
-- **Dev server:** PHP built-in server via `router.php`
+- **Backend:** PHP 8.2 (vanilla, fără framework) — arhitectură MVC cu Composer autoloader (PSR-4)
+- **Database:** PostgreSQL 16 — PDO cu prepared statements exclusiv
+- **Frontend:** HTML5 + CSS3 separat per pagină (`public/css/`) + JavaScript vanilla — `fetch()` pentru toate apelurile asincrone
+- **Autentificare:** Sesiune PHP (frontend) + Bearer token (REST API v1)
+- **Securitate:** CSRF double-submit cookie, XSS escaping, bcrypt cost=12, fișiere în afara webroot
+- **Dev server:** `php -S localhost:8000 router.php`
 
 ---
 
 ## Setup
 
 ### Requirements
-- PHP 8.2+
-- PostgreSQL 15+ (running on port 5433)
+- PHP 8.2+ (cu extensiile `pdo_pgsql`, `mbstring`, `fileinfo`)
+- PostgreSQL 16 (port 5433 în configurația implicită)
 - Composer
 
 ### Installation
@@ -26,19 +43,19 @@ A web platform for families to manage resources related to raising a child — f
 git clone https://github.com/tarpescu/Baby-Info-on-Web
 cd Baby-Info-on-Web
 composer install
+cp .env.example .env
+# Editează .env cu credențialele tale PostgreSQL
 ```
 
 ### Database
 
-Create the database and run the schema:
-
 ```bash
-psql -U postgres -p 5433 -c "CREATE DATABASE babyinfo;"
-psql -U postgres -p 5433 -d babyinfo -f database/schema.sql
-psql -U postgres -p 5433 -d babyinfo -f database/populare.sql   # optional seed data
+# Windows — calea completă:
+"C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -p 5433 -c "CREATE DATABASE babyinfo;"
+"C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -p 5433 -d babyinfo -f database/schema.sql
+"C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -p 5433 -d babyinfo -f database/populare.sql
+# Parola pentru datele de test: password
 ```
-
-Edit `api/config/database.php` if your credentials differ from the defaults (`postgres` / `admin`).
 
 ### Run
 
@@ -46,7 +63,8 @@ Edit `api/config/database.php` if your credentials differ from the defaults (`po
 php -S localhost:8000 router.php
 ```
 
-Open `http://localhost:8000`.
+Aplicația e disponibilă la `http://localhost:8000`.  
+Cont de test: `mirabelapopescu@gmail.com` / `test123`
 
 ---
 
@@ -602,5 +620,7 @@ POST   /api/v1/admin/users/{id}/unban
 
 ## Authors
 
-- **Romila Raluca** — authentication, children, feeding/sleep/growth, timeline, gallery frontend, dashboard, invite system, router, REST API v1 Bearer token
-- **Tarpescu Sergiu** — relationships, interactions, medical, admin panel, export/import, RSS, services (CSV, JSON, RSS, Storage, Upload)
+| Nume | Contribuții |
+|------|-------------|
+| **Romilă Raluca** | Autentificare (login/register/logout/CSRF/reset), profil copil + upload foto, familie + invitații, feeding/sleep/growth/medical logs, galerie (momente + upload media), comentarii, reacții, timeline, REST API v1 Bearer token, arhitectura core (Router, AuthMiddleware, Security, SessionManager, Response, Controller) |
+| **Tarpescu Sergiu** | Admin panel (statistici, ban/unban, stocare disc), export CSV+JSON, import CSV+JSON, RSS 2.0 feed, relații sociale + interacțiuni, pagina publică `/share/{token}` cu Open Graph, StorageService, CsvService, JsonService, RssService, MediaModel, PasswordResetModel |

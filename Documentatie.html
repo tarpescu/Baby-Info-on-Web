@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Info - Documentație Proiect TW</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            background-color: #fcfcfc;
+        }
+        header { text-align: center; margin-bottom: 3rem; }
+        h1 { color: #2c3e50; border-bottom: 2px solid #3498db; padding-bottom: 0.5rem; }
+        h2 { color: #2980b9; margin-top: 2.5rem; border-bottom: 1px solid #eee; padding-bottom: 0.3rem; }
+        h3 { color: #34495e; }
+        .authors { font-style: italic; color: #555; margin-bottom: 1rem; }
+        .affiliation { font-weight: bold; }
+        section { margin-bottom: 2rem; }
+        figure { text-align: center; margin: 2rem 0; padding: 1rem; background: #fff; border: 1px solid #ddd; border-radius: 8px; }
+        figcaption { font-style: italic; color: #777; margin-top: 0.5rem; }
+        code { background-color: #f4f4f4; padding: 0.2rem 0.4rem; border-radius: 4px; font-family: monospace; }
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; margin-top: 1rem; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        a { color: #3498db; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Baby Info - Arhitectură și Specificații</h1>
+    <div class="authors">
+        <p>Dezvoltat de: <strong>Romila Raluca</strong> și <strong>Tarpescu Sergiu</strong></p>
+        <p class="affiliation">Facultatea de Informatică, Universitatea "Alexandru Ioan Cuza" din Iași</p>
+    </div>
+    <div class="links">
+        <p>Cod sursă: <a href="https://github.com/tarpescu/Baby-Info-on-Web" target="_blank">GitHub Repository</a></p>
+    </div>
+</header>
+
+<article>
+    <section id="introducere">
+        <h2>1. Introducere & Motivație</h2>
+        <p><strong>Baby Info</strong> este o platformă web orientată către familii, concepută pentru a centraliza și gestiona resursele și informațiile necesare creșterii unui copil (de la naștere până la pubertate). Aplicația facilitează monitorizarea alimentației, a somnului, istoricului medical, dar și păstrarea momentelor importante într-o galerie multimedia organizată cronologic.</p>
+        <p>Proiectul respectă cu strictețe cerințele tehnice impuse: partea de backend este dezvoltată exclusiv folosind <code>PHP 8.2 (vanilla)</code>, gestionarea datelor este realizată printr-un sistem relațional <code>PostgreSQL 16</code>, iar componenta de frontend este construită din elemente standard <code>HTML5</code>, <code>CSS3</code> și <code>JavaScript vanilla</code>, renunțând complet la framework-uri.</p>
+    </section>
+
+    <section id="ui-ux-design">
+        <h2>2. Design UI/UX (Design Resources)</h2>
+        <p>Interfața utilizatorului a fost proiectată punând accent pe claritate, accesibilitate și viteză de încărcare, respectând principiile designului web responsiv. Nu au fost utilizate librării sau framework-uri CSS externe (precum Bootstrap sau Tailwind).</p>
+        <ul>
+            <li><strong>Layout Responsiv:</strong> Arhitectura vizuală a paginilor este construită folosind <code>CSS Grid</code> pentru definirea macro-structurilor (de exemplu, împărțirea paginii în sidebar și conținut principal) și <code>CSS Flexbox</code> pentru alinierea elementelor interne ale componentelor (carduri, formulare, liste). Media queries asigură fluiditatea pe ecrane de dimensiuni reduse (mobile-first approach).</li>
+            <li><strong>Cromatică și Tematică:</strong> Aplicația utilizează o paletă de culori blânde, adaptabile (ex: tematici specifice per copil) care să ofere o experiență de utilizare calmă, esențială pentru părinți. Au fost folosite variabile CSS (Custom Properties) pentru a permite schimbarea temelor în timp real.</li>
+            <li><strong>Interacțiune Asincronă:</strong> Pentru a oferi o experiență de tip SPA (Single Page Application) parțială, interacțiunile de bază (adaugare înregistrări, like-uri la momente, comentarii) se fac fără reîncărcarea paginii, comunicând cu backend-ul exclusiv prin <code>Fetch API</code>.</li>
+        </ul>
+    </section>
+
+    <section id="arhitectura-c4">
+        <h2>3. Arhitectura Sistemului (Servicii Web)</h2>
+        <p>Arhitectura aplicației urmează paradigma MVC (Model-View-Controller) pe server și expune un REST API robust. Comunicarea între client (browser) și server se face strict în mod asincron (AJAX via Fetch API).</p>
+
+        <p>Fluxul principal de date este următorul:</p>
+        <ol>
+            <li>Clientul trimite o cerere HTTP (GET/POST/PUT/DELETE) cu datele de autentificare (Cookie de sesiune sau Bearer Token pentru v1).</li>
+            <li><code>Router</code>-ul PHP interceptează cererea, o trece prin <code>AuthMiddleware</code> (și alte filtre de securitate) și o trimite Controller-ului corespunzător (ex: <code>FeedingController</code>, <code>MomentController</code>).</li>
+            <li>Controller-ul validează datele de intrare, interacționează cu clasele <code>Model</code> pentru a citi/scrie în baza de date și returnează răspunsul sub formă de JSON.</li>
+        </ol>
+
+        <figure>
+            <img src="diagrama_c4_l2.png" alt="C4 Container Diagram" style="max-width: 100%; height: auto;">            <figcaption>Figura 1: Arhitectura Containerelor (C4 Level 2) - Componentele principale ale aplicației Baby Info.</figcaption>
+        </figure>
+
+        <figure>
+            <img src="diagrama_c4_l3.png" alt="C4 Component Diagram" style="max-width: 100%; height: auto;">            <figcaption>Figura 2: Arhitectura Componentelor Backend (C4 Level 3) - Distribuția internă a claselor PHP.</figcaption>
+        </figure>
+    </section>
+
+    <section id="modelarea-datelor">
+        <h2>4. Modelarea Datelor și Persistența</h2>
+        <p>Toate informațiile sunt stocate într-o bază de date relațională <strong>PostgreSQL 16</strong>. Schema este puternic normalizată pentru a asigura integritatea datelor și suportă concepte de multi-tenancy (familii multiple, mai mulți copii per familie, permisiuni specifice).</p>
+        <p>Aplicația definește 15 tabele principale, printre care se numără: <code>users</code>, <code>children</code>, <code>family_members</code>, <code>feedings</code>, <code>sleep_logs</code>, <code>growth</code>, <code>moments</code>, <code>media</code>, și <code>medical_records</code>. Legăturile dintre tabele folosesc constrângeri de tip <code>FOREIGN KEY</code> cu acțiuni <code>ON DELETE CASCADE</code> unde este cazul (ex: ștergerea unui copil șterge și istoricul său de somn).</p>
+        <p>Interacțiunea cu baza de date este complet izolată în interiorul claselor din directorul <code>models/</code> și este implementată folosind exclusiv extensia PHP <strong>PDO (PHP Data Objects)</strong>.</p>
+    </section>
+
+    <section id="securitate-functionalitati">
+        <h2>5. Securitate și Funcționalități Avansate</h2>
+        <p>Fiind o aplicație care prelucrează date sensibile despre minori, au fost implementate multiple straturi de securitate:</p>
+        <ul>
+            <li><strong>Prevenirea SQL Injection:</strong> Utilizarea exclusivă a interogărilor pregătite (<em>Prepared Statements</em>) în PDO. Interpolarea string-urilor în SQL este strict interzisă.</li>
+            <li><strong>Protecție XSS (Cross-Site Scripting):</strong> Orice dată provenită din baza de date și afișată în paginile HTML server-rendered este trecută prin funcția <code>htmlspecialchars()</code>. Pentru API-ul JSON, clienții front-end sunt instruiți să folosească `textContent` în loc de `innerHTML`.</li>
+            <li><strong>Protecție CSRF:</strong> Cererile state-changing (POST, PUT, DELETE) realizate prin sesiune necesită un token CSRF (mecanism double-submit cookie).</li>
+            <li><strong>Upload-uri sigure:</strong> Fișierele multimedia și documentele medicale atașate sunt stocate fizic pe disc <strong>în afara rădăcinii web (webroot)</strong>. Verificarea tipului de fișier nu se bazează pe extensie, ci pe citirea byte-ilor folosind <code>finfo_file()</code>. Fișierele sunt servite clientului printr-un script PHP dedicat, doar după verificarea permisiunilor (ex: <code>StorageService</code>).</li>
+            <li><strong>Criptare parole:</strong> Se folosește algoritmul bcrypt (<code>password_hash</code> cu cost de 12).</li>
+        </ul>
+        <p>Pe lângă facilitățile de bază (CRUD pentru entități), aplicația implementează un modul complex de <strong>Import/Export date</strong>. Părinții pot descărca profilul complet al copilului în format <code>JSON</code> sau o arhivă ZIP cu tabele <code>CSV</code> (procesat cu <code>CsvService</code> și <code>JsonService</code>). De asemenea, platforma expune un feed public și valid <strong>RSS 2.0</strong> pentru momentele din galerie marcate ca fiind "shareable".</p>
+    </section>
+
+    <section id="demo">
+        <h2>6. Film Demonstrativ</h2>
+        <p>Mai jos se regăsește un videoclip de prezentare ce ilustrează principalele fluxuri de utilizare ale platformei Baby Info .</p>
+        <div class="video-container">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/LINK_DEMO_AICI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+    </section>
+</article>
+
+</body>
+</html>
