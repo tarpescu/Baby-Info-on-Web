@@ -18,7 +18,7 @@ use App\Models\MomentModel;
 class ShareController extends Controller
 {
     private const TYPE_LABEL = [
-        'milestone' => 'Milestone', 'food' => 'Food', 'medical' => 'Medical',
+        'food' => 'Food', 'medical' => 'Medical',
         'photo' => 'Photo', 'friends' => 'Friends', 'sleep' => 'Sleep',
         'voice' => 'Voice', 'other' => 'Other',
     ];

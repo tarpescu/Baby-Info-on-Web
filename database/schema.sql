@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS moments (
                                        id          SERIAL PRIMARY KEY,
                                        child_id    INTEGER NOT NULL REFERENCES children(id) ON DELETE CASCADE,
                                        logged_by   INTEGER NOT NULL REFERENCES users(id),
-                                       type        TEXT    NOT NULL CHECK(type IN ('milestone','food','medical','photo','friends','sleep','voice','other')),
+                                       type        TEXT    NOT NULL CHECK(type IN ('food','medical','photo','friends','sleep','voice','other')),
                                        title       TEXT    NOT NULL,
                                        body        TEXT,
                                        is_pinned   INTEGER NOT NULL DEFAULT 0,

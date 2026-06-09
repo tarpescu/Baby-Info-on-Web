@@ -252,30 +252,30 @@ INSERT INTO growth (child_id, logged_by, weight_kg, height_cm, measured_at) VALU
 
 -- MOMENTS
 INSERT INTO moments (child_id, logged_by, type, title, body, is_pinned, is_shared, happened_at) VALUES
-(1,1,'milestone','Prima data cand a tarât','Mila a tarât pentru prima dată! A petrecut 4 minute împingându-se înapoi pe covor, s-a uitat în jur de parcă ar fi zis wait, asta-i direcția greșită.',1,1,NOW() - INTERVAL '1 days'),
+(1,1,'other','Prima data cand a tarât','Mila a tarât pentru prima dată! A petrecut 4 minute împingându-se înapoi pe covor, s-a uitat în jur de parcă ar fi zis wait, asta-i direcția greșită.',1,1,NOW() - INTERVAL '1 days'),
 (1,2,'food','A incercat morcov piure','Trei lingurițe complete înainte să refuze politicos. Are opinii acum.',0,0,NOW() - INTERVAL '2 days'),
 (1,1,'medical','Control 7 luni — Dr. Popescu','Greutate 8.4kg percentila 62, înălțime 68cm. Toate vaccinurile la zi.',0,1,NOW() - INTERVAL '5 days'),
 (1,2,'photo','Prima baie in cada mare','Pură bucurie. A bătut atât de tare din picioare că podeaua băii a luat și ea un duș.',0,1,NOW() - INTERVAL '7 days'),
-(1,1,'milestone','A stat in sezut fara sprijin','30 de secunde! Apoi a căzut ușor pe câine, care a acceptat situația cu demnitate.',1,1,NOW() - INTERVAL '10 days'),
+(1,1,'other','A stat in sezut fara sprijin','30 de secunde! Apoi a căzut ușor pe câine, care a acceptat situația cu demnitate.',1,1,NOW() - INTERVAL '10 days'),
 (1,2,'friends','A cunoscut-o pe Sofia','Prima întâlnire cu Sofia Popescu. S-au privit în tăcere 5 minute.',0,1,NOW() - INTERVAL '12 days'),
 (1,1,'voice','A zis ceva care semana cu mama','Înregistrare atașată. Lingviștii sunt bineveniți.',0,0,NOW() - INTERVAL '14 days'),
-(1,1,'milestone','Primii dinti','Primul dinte a apărut în sfârșit. Multe bave și zâmbete strâmbe.',1,1,NOW() - INTERVAL '20 days'),
+(1,1,'other','Primii dinti','Primul dinte a apărut în sfârșit. Multe bave și zâmbete strâmbe.',1,1,NOW() - INTERVAL '20 days'),
 (1,2,'food','Prima gustare cu ovaz','A mâncat ovăz cu banană. Fața a zis nu, dar lingurița s-a golit.',0,0,NOW() - INTERVAL '25 days'),
-(1,1,'milestone','Prima noapte de 6 ore','A dormit 6 ore consecutive! Am stat amândoi treji să o urmărim pe monitor.',1,1,NOW() - INTERVAL '30 days'),
+(1,1,'other','Prima noapte de 6 ore','A dormit 6 ore consecutive! Am stat amândoi treji să o urmărim pe monitor.',1,1,NOW() - INTERVAL '30 days'),
 (1,1,'photo','Prima plimbare in parc','Soare, 20 grade, prima plimbare serioasă în parcul de lângă casă.',0,1,NOW() - INTERVAL '35 days'),
 (1,2,'medical','Vaccin PCV doza 2','Fara reactii adverse. A plâns 30 secunde exact, apoi a adormit.',0,0,NOW() - INTERVAL '40 days'),
-(2,1,'milestone','Primii pasi singur','Alex a facut 5 pasi singur astazi! A cazut la al 6-lea dar a ras.',1,1,NOW() - INTERVAL '30 days'),
+(2,1,'other','Primii pasi singur','Alex a facut 5 pasi singur astazi! A cazut la al 6-lea dar a ras.',1,1,NOW() - INTERVAL '30 days'),
 (2,2,'food','Mananca singur cu lingura','Jumatate ajunge in gura, jumatate pe tricou. Progres!',0,1,NOW() - INTERVAL '45 days'),
-(2,1,'milestone','Primul cuvant clar','Alex a zis clar apa astazi. Nu mama, nu tata. Apa.',0,1,NOW() - INTERVAL '60 days'),
-(3,6,'milestone','Prima zambire sociala','Sofia a zambit pentru prima data la mama! Nu era gaze, era real.',1,1,NOW() - INTERVAL '60 days'),
+(2,1,'other','Primul cuvant clar','Alex a zis clar apa astazi. Nu mama, nu tata. Apa.',0,1,NOW() - INTERVAL '60 days'),
+(3,6,'other','Prima zambire sociala','Sofia a zambit pentru prima data la mama! Nu era gaze, era real.',1,1,NOW() - INTERVAL '60 days'),
 (3,7,'photo','Sofia la 3 luni','Cea mai serioasa fata din lume. Analizeaza totul.',0,1,NOW() - INTERVAL '72 days'),
-(4,11,'milestone','A rostit primul cuvant','Luca a zis clar papa astazi. Tata a plans.',1,1,NOW() - INTERVAL '15 days'),
+(4,11,'other','A rostit primul cuvant','Luca a zis clar papa astazi. Tata a plans.',1,1,NOW() - INTERVAL '15 days'),
 (4,12,'food','Prima pizza zdrobita','Am zdrobit putin pizza cu rosii. A mancat tot.',0,0,NOW() - INTERVAL '20 days'),
-(6,16,'milestone','Ridica capul singur','David ridica capul 45 grade la tummy time. Campion!',0,1,NOW() - INTERVAL '8 days'),
-(7,21,'milestone','Prima reactie la muzica','Sara s-a oprit din plans cand a auzit Vivaldi. Om de cultura.',1,1,NOW() - INTERVAL '5 days'),
-(10,31,'milestone','A urcat singur scarile','Victor a urcat toate cele 12 trepte singur. Jos si sus si jos si sus.',0,1,NOW() - INTERVAL '3 days'),
+(6,16,'other','Ridica capul singur','David ridica capul 45 grade la tummy time. Campion!',0,1,NOW() - INTERVAL '8 days'),
+(7,21,'other','Prima reactie la muzica','Sara s-a oprit din plans cand a auzit Vivaldi. Om de cultura.',1,1,NOW() - INTERVAL '5 days'),
+(10,31,'other','A urcat singur scarile','Victor a urcat toate cele 12 trepte singur. Jos si sus si jos si sus.',0,1,NOW() - INTERVAL '3 days'),
 (12,36,'photo','Patrick zambeste','Prima fotografie in care zambeste cu adevarat.',1,1,NOW() - INTERVAL '10 days'),
-(14,46,'milestone','Prima zi la cresa','Rares a intrat singur la cresa fara sa planga. Noi am plans.',1,1,NOW() - INTERVAL '45 days');
+(14,46,'other','Prima zi la cresa','Rares a intrat singur la cresa fara sa planga. Noi am plans.',1,1,NOW() - INTERVAL '45 days');
 
 -- MEDICAL RECORDS
 INSERT INTO medical_records (child_id, logged_by, type, title, doctor_name, clinic_name, date_at, next_date) VALUES

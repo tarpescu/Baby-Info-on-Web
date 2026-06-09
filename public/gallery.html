@@ -75,7 +75,7 @@
             border-bottom: 1px solid var(--outline);
         }
         .nav-logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); transform: rotate(-1deg); display:inline-block; font-family: 'Special Elite', cursive; }
-        .nav-links { display: flex; gap: 2rem; font-family: 'Bricolage Grotesque', sans-serif; }
+        .nav-links { display: flex; gap: 2rem; font-family: 'Bricolage Grotesque', sans-serif; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
         .nav-links a { font-weight: bold; color: var(--text-muted); transition: color 0.2s; }
         .nav-links a.active { color: var(--secondary); text-decoration: underline; text-decoration-style: wavy; }
         .nav-links a:hover { color: var(--secondary); }
@@ -656,8 +656,11 @@
         }
         .nav-item span.label { font-size: 0.64rem; font-weight: bold; margin-top: 2px; white-space: nowrap; font-family: 'Bricolage Grotesque', sans-serif; }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1150px) {
             .navbar .nav-links { display: none; }
+            .navbar { flex-wrap: nowrap; justify-content: space-between; padding: 0.8rem 1rem; }
+            .nav-logo { white-space: nowrap; }
+            .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
             .mobile-bottom-nav { display: flex; }
             .fab { bottom: 90px; right: 1.5rem; }
             .gallery-content { padding: 0 1rem; }
@@ -675,12 +678,10 @@
         <a href="/dashboard">Journal</a>
         <a href="/gallery" class="active">Gallery</a>
         <a href="/medical">Medical</a>
-        <a href="/milestones">Milestones</a>
         <a href="/family">Family</a>
         <a href="/admin" id="adminNavLink" style="display:none;">Admin</a>
     </div>
     <div class="nav-actions">
-        <span id="userGreeting" class="font-typewriter" style="font-size:0.85rem; color:var(--text-muted);"></span>
         <select id="childSelector" style="display:none;" title="Select child"></select>
         <button id="logoutBtn" class="font-typewriter">Log Out</button>
     </div>
@@ -704,7 +705,6 @@
     <button class="filter-chip" data-type="photo">📷 Photos</button>
     <button class="filter-chip" data-type="video">🎬 Video</button>
     <button class="filter-chip" data-type="audio">🎵 Audio</button>
-    <button class="filter-chip" data-type="milestone">⭐ Milestones</button>
     <button class="filter-chip" data-type="note">📝 Notes</button>
 </div>
 
@@ -726,10 +726,6 @@
     <a href="/medical" class="nav-item">
         <span class="material-symbols-outlined">medical_services</span>
         <span class="label">Medical</span>
-    </a>
-    <a href="/milestones" class="nav-item">
-        <span class="material-symbols-outlined">auto_awesome</span>
-        <span class="label">Milestones</span>
     </a>
     <a href="/family" class="nav-item">
         <span class="material-symbols-outlined">groups</span>
@@ -767,7 +763,6 @@
                     <option value="photo">📷 Photo</option>
                     <option value="video">🎬 Video</option>
                     <option value="audio">🎵 Audio</option>
-                    <option value="milestone">⭐ Milestone</option>
                     <option value="note">📝 Note</option>
                 </select>
             </div>
@@ -851,7 +846,6 @@ const TYPE_COLORS = {
     photo:     '#f0e6e6',
     video:     '#d8e2dc',
     audio:     '#e9edc9',
-    milestone: '#fef3cd',
     note:      '#eee7db',
 };
 
@@ -859,7 +853,6 @@ const TYPE_ICONS = {
     photo:     'photo_camera',
     video:     'videocam',
     audio:     'mic',
-    milestone: 'auto_awesome',
     note:      'edit_note',
 };
 
@@ -1436,8 +1429,6 @@ async function init() {
     const meRes = await fetch('/api/auth/me', { credentials: 'include' });
     if (!meRes.ok) { window.location.href = '/login'; return; }
     currentUser = await meRes.json();
-
-    document.getElementById('userGreeting').textContent = `Hello, ${currentUser.first_name}!`;
 
     // Afiseaza link-ul Admin (sus + meniul de jos) doar pentru super-admini
     if (currentUser.is_superadmin) {

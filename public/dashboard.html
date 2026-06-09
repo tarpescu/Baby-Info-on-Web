@@ -98,17 +98,11 @@
         }
 
         .nav-logo { font-size: 1.5rem; font-weight: bold; color: var(--primary); transform: rotate(-1deg); display:inline-block; }
-        .nav-links { display: flex; gap: 2rem; }
+        .nav-links { display: flex; gap: 2rem; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
         .nav-links a { font-weight: bold; color: var(--text-muted); transition: color 0.2s; }
         .nav-links a.active { color: var(--secondary); text-decoration: underline; text-decoration-style: wavy; }
         .nav-links a:hover { color: var(--secondary); }
         .nav-actions { display: flex; gap: 1rem; align-items: center; color: var(--primary); }
-
-        #userGreeting {
-            font-family: 'Caveat', cursive;
-            font-size: 1.2rem;
-            color: var(--text-muted);
-        }
 
         #logoutBtn {
             font-family: 'Special Elite', cursive;
@@ -349,7 +343,7 @@
         .toast.show { opacity: 1; }
 
         /* Card: Growth */
-        .card-milestones {
+        .card-growth {
             background: var(--surface-white);
             transform: rotate(-2deg);
             min-height: 280px;
@@ -585,9 +579,12 @@
         }
         .invite-copy-btn:hover { color: var(--primary); }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1150px) {
             .dashboard-container { grid-template-columns: 1fr; gap: 2rem; padding: 1rem; }
             .navbar .nav-links { display: none; }
+            .navbar { flex-wrap: wrap; justify-content: space-between; padding: 0.8rem 1rem; }
+            .nav-logo { white-space: nowrap; }
+            .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
             .bg-loose-paper { display: none; }
             .small-polaroid-wrapper { display: none; }
             .bento-grid { grid-template-columns: 1fr; }
@@ -606,12 +603,10 @@
         <a href="/dashboard" class="active">Journal</a>
         <a href="/gallery">Gallery</a>
         <a href="/medical">Medical</a>
-        <a href="/milestones">Milestones</a>
         <a href="/family">Family</a>
         <a href="/admin" id="adminNavLink" style="display:none;">Admin</a>
     </div>
     <div class="nav-actions">
-        <span id="userGreeting"></span>
         <select id="childSelector" style="display:none;" title="Select child"></select>
         <button id="inviteBtn" title="Invite a family member">
             <span class="material-symbols-outlined">person_add</span>
@@ -659,10 +654,6 @@
     <a href="/medical" class="nav-item">
         <span class="material-symbols-outlined">medical_services</span>
         <span class="label font-label">Medical</span>
-    </a>
-    <a href="/milestones" class="nav-item">
-        <span class="material-symbols-outlined">auto_awesome</span>
-        <span class="label font-label">Milestones</span>
     </a>
     <a href="/family" class="nav-item">
         <span class="material-symbols-outlined">groups</span>
@@ -976,9 +967,6 @@ async function init() {
     if (!meRes.ok) { window.location.href = '/login'; return; }
     currentUser = await meRes.json();
 
-    document.getElementById('userGreeting').textContent =
-        `Hello, ${currentUser.first_name}!`;
-
     // Afiseaza link-ul Admin (sus + meniul de jos) doar pentru super-admini
     if (currentUser.is_superadmin) {
         document.getElementById('adminNavLink').style.display = '';
@@ -1107,7 +1095,7 @@ function renderDashboardColumn(child) {
             </div>
 
             <!-- Growth card -->
-            <div class="scrap-card card-milestones torn-edge">
+            <div class="scrap-card card-growth torn-edge">
                 <svg class="push-pin-svg" fill="currentColor" viewBox="0 0 24 24">
                     <circle cx="12" cy="9" r="6"/>
                     <line x1="12" y1="15" x2="12" y2="24" stroke="currentColor" stroke-width="2"/>

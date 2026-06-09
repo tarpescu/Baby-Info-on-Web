@@ -65,12 +65,11 @@
             z-index: 50;
         }
         .nav-logo  { font-family: 'Special Elite', cursive; font-size: 1.5rem; font-weight: bold; color: var(--primary); transform: rotate(-1deg); display: inline-block; }
-        .nav-links { display: flex; gap: 2rem; }
+        .nav-links { display: flex; gap: 2rem; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); }
         .nav-links a { font-family: 'Special Elite', cursive; font-size: 0.9rem; color: var(--text-muted); transition: color 0.2s; }
         .nav-links a.active { color: var(--secondary); text-decoration: underline; text-decoration-style: wavy; }
         .nav-links a:hover  { color: var(--secondary); }
         .nav-actions { display: flex; gap: 1rem; align-items: center; }
-        #userGreeting { font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--text-muted); }
         #childSelector {
             font-family: 'Special Elite', cursive; font-size: 0.9rem;
             background: var(--surface-container); border: 1px dashed var(--outline);
@@ -504,8 +503,11 @@
         .spin { display: inline-block; animation: spin 1.2s linear infinite; }
 
         /* ── Responsive ──────────────────────────────────────────────── */
-        @media (max-width: 768px) {
+        @media (max-width: 1150px) {
             .nav-links { display: none; }
+            .navbar { flex-wrap: nowrap; justify-content: space-between; padding: 0.8rem 1rem; }
+            .nav-logo { white-space: nowrap; }
+            .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
             .mobile-bottom-nav { display: flex; }
             .board-grid {
                 grid-template-columns: 1fr;
@@ -525,12 +527,10 @@
         <a href="/dashboard">Journal</a>
         <a href="/gallery">Gallery</a>
         <a href="/medical">Medical</a>
-        <a href="/milestones">Milestones</a>
         <a href="/family" class="active">Family</a>
         <a href="/admin" id="adminNavLink" style="display:none;">Admin</a>
     </nav>
     <div class="nav-actions">
-        <span id="userGreeting" class="font-handwritten"></span>
         <select id="childSelector" title="Select child" style="display:none;"></select>
         <button id="logoutBtn" class="font-typewriter">Log Out</button>
     </div>
@@ -700,13 +700,13 @@
         <span class="material-symbols-outlined">photo_library</span>
         <span>Gallery</span>
     </a>
-    <a href="/family" class="nav-item active">
-        <span class="material-symbols-outlined">groups</span>
-        <span>Family</span>
-    </a>
     <a href="/medical" class="nav-item">
         <span class="material-symbols-outlined">medical_services</span>
         <span>Medical</span>
+    </a>
+        <a href="/family" class="nav-item active">
+        <span class="material-symbols-outlined">groups</span>
+        <span>Family</span>
     </a>
     <a href="/admin" class="nav-item" id="adminBottomNav" style="display:none;">
         <span class="material-symbols-outlined">admin_panel_settings</span>
@@ -1049,8 +1049,6 @@ async function init() {
     const meRes = await fetch('/api/auth/me', { credentials: 'include' });
     if (!meRes.ok) { window.location.href = '/login'; return; }
     currentUser = await meRes.json();
-
-    document.getElementById('userGreeting').textContent = `Hello, ${currentUser.first_name}!`;
 
     // Show admin links for superadmins
     if (currentUser.is_superadmin) {

@@ -279,7 +279,7 @@ Validate an invite token. Returns child name and assigned permission.
 ### Timeline & Moments
 
 #### `GET /api/children/{id}/timeline`
-Chronological list of moments. Query params: `?type=photo|video|audio|milestone|note`, `?limit=50`, `?offset=0`.
+Chronological list of moments. Query params: `?type=photo|video|audio|note`, `?limit=50`, `?offset=0`.
 
 Each moment includes `comments` count and `reactions` array.
 

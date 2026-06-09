@@ -39,7 +39,7 @@ class CsvService
         'moments' => [
             'required' => ['child_id', 'type', 'title'],
             'enums'    => [
-                'type' => ['milestone', 'food', 'medical', 'photo', 'friends', 'sleep', 'voice', 'other'],
+                'type' => ['food', 'medical', 'photo', 'friends', 'sleep', 'voice', 'other'],
             ],
         ],
     ];
