@@ -98,6 +98,9 @@ class MomentController extends Controller
         if (str_starts_with($mime, 'audio/')) {
             return 'audio';
         }
+        if (str_starts_with($mime, 'text/')) {
+            return 'document';
+        }
         return 'photo';
     }
 

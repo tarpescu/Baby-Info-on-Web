@@ -35,6 +35,9 @@ class GrowthController extends Controller
         $this->requireWritePermission($childId);
 
         $body = $this->request->body;
+        if (!empty($body['measured_at']) && strtotime($body['measured_at']) > time()) {
+            Response::error('Data nu poate fi în viitor.', 400);
+        }
 
         $model = new GrowthModel();
         $id = $model->create([

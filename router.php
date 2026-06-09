@@ -27,7 +27,24 @@ if (str_starts_with($uri, '/uploads/')) {
 // fisierul din document root (/), nu din /public/. Servim manual cu readfile().
 $file = __DIR__ . '/public' . $uri;
 if (file_exists($file) && is_file($file)) {
-    $mime = mime_content_type($file) ?: 'application/octet-stream';
+    $extMap = [
+        'css'  => 'text/css',
+        'js'   => 'application/javascript',
+        'html' => 'text/html',
+        'json' => 'application/json',
+        'png'  => 'image/png',
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'gif'  => 'image/gif',
+        'svg'  => 'image/svg+xml',
+        'webp' => 'image/webp',
+        'ico'  => 'image/x-icon',
+        'woff' => 'font/woff',
+        'woff2'=> 'font/woff2',
+        'ttf'  => 'font/ttf',
+    ];
+    $ext  = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+    $mime = $extMap[$ext] ?? (mime_content_type($file) ?: 'application/octet-stream');
     header('Content-Type: ' . $mime);
     header('Content-Length: ' . filesize($file));
     readfile($file);
