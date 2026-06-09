@@ -488,7 +488,119 @@ Disk usage breakdown by media type, plus detection of orphan files.
 
 ---
 
+---
+
+## REST API v1 — Bearer Token Authentication
+
+All endpoints above also exist under `/api/v1/` and accept **Bearer token** authentication instead of session cookies. This is the standard integration path for external clients, mobile apps, or scripts.
+
+### How it works
+
+1. **Get a token** — exchange credentials for a Bearer token:
+
+```http
+POST /api/v1/auth/token
+Content-Type: application/json
+
+{
+  "email": "ana@example.com",
+  "password": "secret123",
+  "name": "My script",
+  "expires_days": 30
+}
+```
+
+Response `201`:
+```json
+{
+  "token": "a3f2c8...64hexchars",
+  "token_type": "Bearer",
+  "expires_in": 2592000,
+  "user_id": 1,
+  "name": "My script"
+}
+```
+
+2. **Use the token** — include it in every subsequent request:
+
+```http
+GET /api/v1/children
+Authorization: Bearer a3f2c8...64hexchars
+```
+
+3. **Revoke** — invalidate all tokens for the current user:
+
+```http
+DELETE /api/v1/auth/token
+Authorization: Bearer a3f2c8...64hexchars
+```
+
+### Token security
+
+- The raw token is returned only once at creation; only its `SHA-256` hash is stored in the database.
+- Tokens have a configurable expiry (`expires_days`; `0` = no expiry).
+- Banned accounts cannot use their tokens even if unexpired.
+
+### Available API v1 endpoints
+
+All endpoints from the session-based `/api/` exist at `/api/v1/` with identical request/response formats.
+
+| Prefix | Auth method |
+|--------|-------------|
+| `/api/` | Session cookie (`credentials: 'include'` in fetch) |
+| `/api/v1/` | `Authorization: Bearer <token>` header |
+
+Quick reference for v1:
+
+```
+POST   /api/v1/auth/token                        — issue token
+DELETE /api/v1/auth/token                        — revoke all tokens
+GET    /api/v1/auth/tokens                       — list active tokens
+
+GET    /api/v1/children                          — list children
+POST   /api/v1/children                          — add child
+GET    /api/v1/children/{id}                     — get child
+PUT    /api/v1/children/{id}                     — update child
+DELETE /api/v1/children/{id}                     — delete child
+
+GET    /api/v1/children/{id}/feedings            — feeding log
+POST   /api/v1/children/{id}/feedings
+GET    /api/v1/children/{id}/sleep               — sleep log
+POST   /api/v1/children/{id}/sleep
+GET    /api/v1/children/{id}/growth              — growth measurements
+POST   /api/v1/children/{id}/growth
+GET    /api/v1/children/{id}/medical             — medical records
+POST   /api/v1/children/{id}/medical
+
+GET    /api/v1/children/{id}/timeline            — chronological feed
+POST   /api/v1/children/{id}/moments             — add moment
+DELETE /api/v1/moments/{id}
+GET    /api/v1/moments/{id}/comments
+POST   /api/v1/moments/{id}/comments
+POST   /api/v1/moments/{id}/reactions
+DELETE /api/v1/moments/{id}/reactions
+
+GET    /api/v1/children/{id}/relationships
+POST   /api/v1/children/{id}/relationships
+PUT    /api/v1/relationships/{id}
+DELETE /api/v1/relationships/{id}
+GET    /api/v1/children/{id}/interactions
+POST   /api/v1/relationships/{id}/interactions
+
+GET    /api/v1/children/{id}/export/json
+GET    /api/v1/children/{id}/export/csv
+POST   /api/v1/import/json
+POST   /api/v1/import/csv
+
+GET    /api/v1/admin/stats                       — super-admin only
+GET    /api/v1/admin/users
+POST   /api/v1/admin/users/{id}/ban
+POST   /api/v1/admin/users/{id}/unban
+```
+
+---
+
 ## Authors
 
-- **Romila Raluca** — authentication, children, feeding/sleep/growth, timeline, gallery frontend, dashboard, invite system, router
+- **Romila Raluca** — authentication, children, feeding/sleep/growth, timeline, gallery frontend, dashboard, invite system, router, REST API v1 Bearer token
 - **Tarpescu Sergiu** — relationships, interactions, medical, admin panel, export/import, RSS, services (CSV, JSON, RSS, Storage, Upload)

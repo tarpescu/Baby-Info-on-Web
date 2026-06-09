@@ -358,6 +358,33 @@ function relativeTime(iso) {
 }
 
 /**
+ * Escapeaza un string pentru inserare sigura in innerHTML.
+ * Previne XSS: &, <, >, ", ' sunt inlocuite cu entitati HTML.
+ * @param {*} val
+ * @returns {string}
+ */
+function esc(val) {
+    const d = document.createElement('div');
+    d.textContent = String(val ?? '');
+    return d.innerHTML;
+}
+
+/**
+ * CSRF helper — fetches token once, caches it in memory.
+ * @returns {Promise<string>}
+ */
+let _csrfToken = null;
+async function getCsrfToken() {
+    if (_csrfToken) return _csrfToken;
+    try {
+        const r = await fetch('/api/auth/csrf', { credentials: 'include' });
+        const d = await r.json();
+        _csrfToken = d.token || '';
+    } catch { _csrfToken = ''; }
+    return _csrfToken;
+}
+
+/**
  * Returneaza culoarea de fundal a avatar-ului copilului.
  */
 function avatarBg(color) {
@@ -369,7 +396,11 @@ function avatarBg(color) {
 }
 
 document.getElementById('logoutBtn').addEventListener('click', async () => {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+    await fetch('/api/auth/logout', {
+        method: 'POST',
+        headers: { 'X-CSRF-Token': await getCsrfToken() },
+        credentials: 'include',
+    });
     window.location.href = '/login';
 });
 
@@ -463,9 +494,12 @@ function renderHero(child) {
     const age     = calcAge(child.date_of_birth);
     const today   = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 
+    const safeName    = esc(name);
+    const safePhotoUrl = esc(child.photo_url || '');
+
     const avatarHtml = child.photo_url
         ? `<div class="avatar-photo-wrapper" id="avatarClick" title="Click to change photo">
-               <img src="${child.photo_url}" alt="${name}">
+               <img src="${safePhotoUrl}" alt="${safeName}">
            </div>`
         : `<div class="avatar-placeholder" id="avatarClick" style="background:${bg};" title="Click to add photo">
                ${child.gender === 'F' ? '👧' : child.gender === 'M' ? '👦' : '👶'}
@@ -478,7 +512,7 @@ function renderHero(child) {
             <div class="washi-tape"></div>
             <div class="polaroid">
                 ${avatarHtml}
-                <p class="polaroid-caption font-handwritten">${name}</p>
+                <p class="polaroid-caption font-handwritten">${safeName}</p>
             </div>
             <div class="random-scrap torn-edge" id="scrapNote">
                 <p class="date font-typewriter">DATE: ${today}</p>
@@ -489,8 +523,8 @@ function renderHero(child) {
 }
 
 function renderDashboardColumn(child) {
-    const name = child.first_name;
-    const age  = calcAge(child.date_of_birth);
+    const name = esc(child.first_name);
+    const age  = esc(calcAge(child.date_of_birth));
 
     document.getElementById('dashboardColumn').innerHTML = `
         <div class="dashboard-header">

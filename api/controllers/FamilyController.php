@@ -29,6 +29,7 @@ class FamilyController extends Controller
     public function updatePermission(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
         $this->requireWritePermission($childId);
 
@@ -53,6 +54,7 @@ class FamilyController extends Controller
     public function removeMember(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
         $this->requireWritePermission($childId);
 

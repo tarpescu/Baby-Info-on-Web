@@ -30,6 +30,7 @@ class RelationshipController extends Controller
     public function store(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
         $this->requireWritePermission($childId);
 
@@ -57,6 +58,7 @@ class RelationshipController extends Controller
     public function update(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $id = (int) ($params['id'] ?? 0);
 
         $model = new RelationshipModel();
@@ -86,6 +88,7 @@ class RelationshipController extends Controller
     public function destroy(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $id = (int) ($params['id'] ?? 0);
 
         $model = new RelationshipModel();

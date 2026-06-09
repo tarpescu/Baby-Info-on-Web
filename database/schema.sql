@@ -216,6 +216,20 @@ CREATE INDEX IF NOT EXISTS idx_growth_child      ON growth(child_id, measured_at
 CREATE INDEX IF NOT EXISTS idx_family_child      ON family_members(child_id);
 CREATE INDEX IF NOT EXISTS idx_relationships_ch  ON relationships(child_id);
 
+-- ── API Tokens (Bearer auth pentru REST API v1) ──
+CREATE TABLE IF NOT EXISTS api_tokens (
+    id           SERIAL PRIMARY KEY,
+    user_id      INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    token_hash   VARCHAR(64) NOT NULL UNIQUE,
+    name         VARCHAR(100) NOT NULL DEFAULT 'Default',
+    created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    expires_at   TIMESTAMP,
+    last_used_at TIMESTAMP,
+    revoked      BOOLEAN NOT NULL DEFAULT FALSE
+);
+CREATE INDEX IF NOT EXISTS idx_api_tokens_hash    ON api_tokens(token_hash);
+CREATE INDEX IF NOT EXISTS idx_api_tokens_user    ON api_tokens(user_id);
+
 -- Indecși noi pentru funcționalitățile adăugate
 CREATE INDEX IF NOT EXISTS idx_invitations_token ON invitations(token);
 CREATE INDEX IF NOT EXISTS idx_comments_moment ON comments(moment_id);

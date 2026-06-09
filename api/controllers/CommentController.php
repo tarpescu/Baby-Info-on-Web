@@ -38,6 +38,7 @@ class CommentController extends Controller
     public function store(array $params): void
     {
         $this->requireAuth();
+        $this->requireCsrf();
         $momentId = (int) ($params['id'] ?? 0);
 
         $momentModel = new MomentModel();

@@ -14,15 +14,17 @@ class Router
     public function __construct()
     {
         $this->registerRoutes();
+        $this->registerV1Routes();
     }
 
     private function registerRoutes(): void
     {
-        $this->add('POST', '/api/auth/login', 'AuthController', 'login');
-        $this->add('POST', '/api/auth/logout', 'AuthController', 'logout');
-        $this->add('GET', '/api/auth/me', 'AuthController', 'me');
+        $this->add('GET',  '/api/auth/csrf',     'AuthController', 'csrf');
+        $this->add('POST', '/api/auth/login',    'AuthController', 'login');
+        $this->add('POST', '/api/auth/logout',   'AuthController', 'logout');
+        $this->add('GET',  '/api/auth/me',       'AuthController', 'me');
         $this->add('POST', '/api/auth/register', 'AuthController', 'register');
-        $this->add('POST', '/api/auth/reset', 'AuthController', 'reset');
+        $this->add('POST', '/api/auth/reset',    'AuthController', 'reset');
 
         $this->add('GET', '/api/children', 'ChildController', 'index');
         $this->add('POST', '/api/children', 'ChildController', 'store');
@@ -82,6 +84,70 @@ class Router
         $this->add('GET', '/api/admin/storage', 'AdminController', 'storage');
     }
 
+    /**
+     * Inregistreaza rutele REST API v1 cu autentificare Bearer token.
+     * Aceleasi controllere ca la /api/ — autentificarea e rezolvata transparent
+     * de AuthMiddleware::resolveBearer() apelata in dispatch().
+     */
+    private function registerV1Routes(): void
+    {
+        // Token management
+        $this->add('POST',   '/api/v1/auth/token',  'ApiTokenController', 'issue');
+        $this->add('DELETE', '/api/v1/auth/token',  'ApiTokenController', 'revoke');
+        $this->add('GET',    '/api/v1/auth/tokens', 'ApiTokenController', 'list');
+
+        // Children
+        $this->add('GET',    '/api/v1/children',            'ChildController', 'index');
+        $this->add('POST',   '/api/v1/children',            'ChildController', 'store');
+        $this->add('GET',    '/api/v1/children/{id}',       'ChildController', 'show');
+        $this->add('PUT',    '/api/v1/children/{id}',       'ChildController', 'update');
+        $this->add('DELETE', '/api/v1/children/{id}',       'ChildController', 'destroy');
+
+        // Feeding, Sleep, Growth
+        $this->add('GET',  '/api/v1/children/{id}/feedings', 'FeedingController', 'index');
+        $this->add('POST', '/api/v1/children/{id}/feedings', 'FeedingController', 'store');
+        $this->add('GET',  '/api/v1/children/{id}/sleep',    'SleepController',   'index');
+        $this->add('POST', '/api/v1/children/{id}/sleep',    'SleepController',   'store');
+        $this->add('GET',  '/api/v1/children/{id}/growth',   'GrowthController',  'index');
+        $this->add('POST', '/api/v1/children/{id}/growth',   'GrowthController',  'store');
+
+        // Medical
+        $this->add('GET',  '/api/v1/children/{id}/medical', 'MedicalController', 'index');
+        $this->add('POST', '/api/v1/children/{id}/medical', 'MedicalController', 'store');
+
+        // Moments, Timeline, Comments, Reactions
+        $this->add('GET',    '/api/v1/children/{id}/timeline',   'TimelineController', 'index');
+        $this->add('POST',   '/api/v1/children/{id}/moments',    'MomentController',   'store');
+        $this->add('DELETE', '/api/v1/moments/{id}',             'MomentController',   'destroy');
+        $this->add('GET',    '/api/v1/moments/{id}/comments',    'CommentController',  'index');
+        $this->add('POST',   '/api/v1/moments/{id}/comments',    'CommentController',  'store');
+        $this->add('POST',   '/api/v1/moments/{id}/reactions',   'ReactionController', 'store');
+        $this->add('DELETE', '/api/v1/moments/{id}/reactions',   'ReactionController', 'destroy');
+
+        // Relationships & Interactions
+        $this->add('GET',    '/api/v1/children/{id}/relationships',     'RelationshipController', 'index');
+        $this->add('POST',   '/api/v1/children/{id}/relationships',     'RelationshipController', 'store');
+        $this->add('PUT',    '/api/v1/relationships/{id}',              'RelationshipController', 'update');
+        $this->add('DELETE', '/api/v1/relationships/{id}',              'RelationshipController', 'destroy');
+        $this->add('GET',    '/api/v1/children/{id}/interactions',      'InteractionController',  'index');
+        $this->add('POST',   '/api/v1/relationships/{id}/interactions', 'InteractionController',  'store');
+
+        // Export / Import
+        $this->add('GET',  '/api/v1/children/{id}/export/json', 'ExportController', 'json');
+        $this->add('GET',  '/api/v1/children/{id}/export/csv',  'ExportController', 'csv');
+        $this->add('POST', '/api/v1/import/json',               'ImportController', 'json');
+        $this->add('POST', '/api/v1/import/csv',                'ImportController', 'csv');
+
+        // Family
+        $this->add('GET', '/api/v1/children/{id}/family', 'FamilyController', 'index');
+
+        // Admin
+        $this->add('GET', '/api/v1/admin/stats',              'AdminController', 'stats');
+        $this->add('GET', '/api/v1/admin/users',              'AdminController', 'users');
+        $this->add('POST', '/api/v1/admin/users/{id}/ban',    'AdminController', 'ban');
+        $this->add('POST', '/api/v1/admin/users/{id}/unban',  'AdminController', 'unban');
+    }
+
     private function add(string $method, string $path, string $controller, string $action): void
     {
         $this->routes[$method][$path] = ['controller' => $controller, 'action' => $action];
@@ -89,6 +155,9 @@ class Router
 
     public function dispatch(): void
     {
+        // Rezolva Bearer token inainte de orice controller (REST API v1)
+        AuthMiddleware::resolveBearer();
+
         $request = new Request();
         $method = $request->method;
         $uri = $request->uri;

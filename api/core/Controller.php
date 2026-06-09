@@ -7,6 +7,9 @@ declare(strict_types=1);
 
 namespace App\Core;
 
+use App\Core\Security;
+use App\Core\AuthMiddleware;
+
 abstract class Controller
 {
     protected Request $request;
@@ -46,6 +49,26 @@ abstract class Controller
 
         if (!$stmt->fetch()) {
             Response::error('Access denied to this child', 403);
+        }
+    }
+
+    /**
+     * Verifica prezenta si validitatea token-ului CSRF (header X-CSRF-Token).
+     * Ignorata pentru cererile cu Bearer token (API v1) — acestea sunt CSRF-safe
+     * prin definitie, deoarece token-ul nu este trimis automat de browser.
+     *
+     * @return void
+     */
+    protected function requireCsrf(): void
+    {
+        // Bearer token requests sunt CSRF-safe — nu necesita validare
+        if (AuthMiddleware::hasBearerAuth()) {
+            return;
+        }
+
+        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        if (!Security::validateCsrfToken($token)) {
+            Response::error('Invalid or missing CSRF token', 403);
         }
     }
 

@@ -52,16 +52,32 @@ class SessionManager
 
     public static function userId(): ?int
     {
+        // Bearer token auth (REST API v1)
+        $bearerId = AuthMiddleware::bearerUserId();
+        if ($bearerId !== null) {
+            return $bearerId;
+        }
+        // Session auth (frontend)
         return self::get('user_id') ? (int) self::get('user_id') : null;
     }
 
     public static function isAuthenticated(): bool
     {
+        // Bearer token auth (REST API v1)
+        if (AuthMiddleware::hasBearerAuth()) {
+            return true;
+        }
+        // Session auth (frontend)
         return self::has('user_id') && self::get('user_id') !== null;
     }
 
     public static function isSuperAdmin(): bool
     {
+        // Bearer token auth (REST API v1)
+        if (AuthMiddleware::hasBearerAuth()) {
+            return AuthMiddleware::bearerIsSuperAdmin();
+        }
+        // Session auth (frontend)
         return self::get('is_superadmin') === true;
     }
 }

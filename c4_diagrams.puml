@@ -1,0 +1,194 @@
+
+' DIAGRAMA 1 — C4 Level 1: System Context
+
+
+@startuml C4_L1_Context
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Baby Info — System Context
+
+Person(parent, "Parinte / Co-Parinte", "Gestioneaza profiluri copii,\nlogheaza hrana, somn, sanatate,\nincarca media, invite alti membri")
+Person(caregiver, "Caregiver / Viewer", "Acces read-only la galeria\nmomentelor partajate")
+Person(admin, "Administrator", "Gestioneaza useri, familii,\nstatistici, import/export date")
+
+System(babyinfo, "Baby Info", "Aplicatie web pentru familii\ncare urmaresc cresterea copilului:\nprofiluri, media, sanatate, timeline,\nhrana, somn, relatii sociale")
+
+System_Ext(email, "Serviciu Email", "Trimitere link-uri reset\nparola si invitatii familie\n(stub in implementare curenta)")
+System_Ext(browser, "Browser Web", "Chrome / Firefox / Safari\nRuleaza interfata HTML+JS")
+
+Rel(parent, babyinfo, "Foloseste", "HTTPS / fetch()")
+Rel(caregiver, babyinfo, "Vizualizeaza galeria", "HTTPS / fetch()")
+Rel(admin, babyinfo, "Administreaza", "HTTPS / fetch()")
+Rel(babyinfo, email, "Trimite email-uri", "SMTP")
+Rel(browser, babyinfo, "Incarca pagini si apeleaza API", "HTTP/HTTPS")
+
+@enduml
+
+
+' DIAGRAMA 2 — C4 Level 2: Container
+
+@startuml C4_L2_Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Baby Info — Container Diagram
+
+Person(parent, "Parinte / Co-Parinte")
+Person(caregiver, "Caregiver / Viewer")
+Person(admin, "Administrator")
+
+System_Boundary(babyinfo, "Baby Info") {
+
+    Container(frontend, "Frontend SPA", "HTML5 + CSS3 + JavaScript", "Interfata web servita din /public/.\nPagini: landing, login, register,\ndashboard, gallery, medical,\nfamily, admin, join, forgot-password.\nFace cereri REST cu fetch().")
+
+    Container(api, "PHP API Backend", "PHP 8 (vanilla, MVC)", "Gestioneaza toata logica de business.\nRouter + Controllers + Models + Services.\nSession-based auth + Bearer token.\nExpune endpoint-uri la /api/*")
+
+    ContainerDb(db, "PostgreSQL", "PostgreSQL 15, port 5433", "Baza de date relationala.\nStocheaza: useri, familii, copii,\nhrana, somn, media, sanatate,\nmomente, comentarii, reactii,\nrelatii, invitatii")
+
+    Container(storage, "File Storage", "Disk (outside webroot)", "Fisiere uploadate: poze, video,\naudio, documente PDF.\nAccesate prin /api/serve_media.php")
+
+    Container(rss, "RSS Feed", "PHP (RssService + RssController)", "Feed RSS 2.0 per copil\nla /api/rss/{child_id}.rss")
+}
+
+Rel(parent, frontend, "Foloseste", "HTTPS")
+Rel(caregiver, frontend, "Vizualizeaza", "HTTPS")
+Rel(admin, frontend, "Administreaza", "HTTPS")
+
+Rel(frontend, api, "Apeleaza", "fetch() / HTTPS JSON")
+Rel(api, db, "Citeste/Scrie", "PDO / PostgreSQL")
+Rel(api, storage, "Salveaza/Citeste fisiere", "fopen / finfo")
+Rel(api, rss, "Genereaza feed", "PHP include")
+Rel(frontend, rss, "Subscrie", "RSS 2.0 / XML")
+
+@enduml
+
+
+' DIAGRAMA 3 — C4 Level 3: Component (PHP API Backend)
+
+@startuml C4_L3_Component_API
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Baby Info — Component Diagram: PHP API Backend
+
+Container_Ext(frontend, "Frontend", "HTML/JS", "Trimite cereri HTTP")
+ContainerDb_Ext(db, "PostgreSQL", "DB")
+Container_Ext(storage, "File Storage", "Disk")
+
+Container_Boundary(api, "PHP API Backend") {
+
+    ' ---- CORE ----
+    Component(router, "Router", "core/Router.php", "Parseaza URL-ul si dispatcha\ncererea catre controller-ul corect")
+    Component(app, "App", "core/App.php", "Bootstrap: incarca configuratia,\ninitializeaza router-ul, porneste sesiunea")
+    Component(authMiddleware, "AuthMiddleware", "core/AuthMiddleware.php", "Verifica sesiunea PHP sau\nBearer token pentru API")
+    Component(security, "Security", "core/Security.php", "Genereaza/valideaza CSRF tokens,\nXSS escaping, sanitizare input")
+    Component(sessionMgr, "SessionManager", "core/SessionManager.php", "Start/destroy sesiune,\nregenerare ID la login")
+
+    ' ---- CONTROLLERS ----
+    Component(authCtrl, "AuthController", "controllers/AuthController.php", "Register, Login, Logout,\nForgot/Reset Password")
+    Component(childCtrl, "ChildController", "controllers/ChildController.php", "CRUD copii, upload foto profil,\nfeedings/sleep/growth per copil")
+    Component(familyCtrl, "FamilyController", "controllers/FamilyController.php", "CRUD familie, membrii,\ngestionare permisiuni (owner/coparent/caregiver/viewer)")
+    Component(inviteCtrl, "InviteController", "controllers/InviteController.php", "Generare/validare token invitatie\npentru join familie")
+    Component(momentCtrl, "MomentController", "controllers/MomentController.php", "CRUD momente galerie,\nupload media atasat")
+    Component(feedingCtrl, "FeedingController", "controllers/FeedingController.php", "Log hrana: tip (san/biberon/solid),\ncantitate, ora")
+    Component(sleepCtrl, "SleepController", "controllers/SleepController.php", "Log somn/trezire cu\ntimestamp si durata")
+    Component(growthCtrl, "GrowthController", "controllers/GrowthController.php", "Log greutate/inaltime\nper data")
+    Component(medicalCtrl, "MedicalController", "controllers/MedicalController.php", "Vizite doctor, vaccinuri,\nmedicatie, alergii, PDF-uri")
+    Component(relCtrl, "RelationshipController", "controllers/RelationshipController.php", "Relatii sociale intre copii\n(veri, colegi, prieteni)")
+    Component(timelineCtrl, "TimelineController", "controllers/TimelineController.php", "Feed cronologic mixt:\nmomente, medical, milestones")
+    Component(shareCtrl, "ShareController", "controllers/ShareController.php", "URL public per moment,\ngestionare is_shared flag")
+    Component(commentCtrl, "CommentController", "controllers/CommentController.php", "CRUD comentarii pe momente")
+    Component(reactionCtrl, "ReactionController", "controllers/ReactionController.php", "Reactii emoji pe momente")
+    Component(rssCtrl, "RssController", "controllers/RssController.php", "Genereaza feed RSS 2.0\nper copil")
+    Component(exportCtrl, "ExportController", "controllers/ExportController.php", "Export CSV (hrana, medical,\ncopii) si JSON (profil complet)")
+    Component(importCtrl, "ImportController", "controllers/ImportController.php", "Import CSV si JSON\npentru date copii")
+    Component(adminCtrl, "AdminController", "controllers/AdminController.php", "Dashboard admin: useri,\nfamilii, statistici globale")
+
+    ' ---- SERVICES ----
+    Component(storageSvc, "StorageService", "services/StorageService.php", "Salveaza/sterge fisiere pe disk\nin afara webroot-ului")
+    Component(uploadSvc, "UploadService", "services/UploadService.php", "Valideaza MIME cu finfo_file(),\nwhitelist extensii, rename securizat")
+    Component(csvSvc, "CsvService", "services/CsvService.php", "Generare/parsare CSV\npentru export/import")
+    Component(jsonSvc, "JsonService", "services/JsonService.php", "Serializare/deserializare JSON\npentru backup profil copil")
+    Component(rssSvc, "RssService", "services/RssService.php", "Construieste XML RSS 2.0\nvalid din date DB")
+    Component(inviteTokenSvc, "InviteTokenService", "services/InviteTokenService.php", "Generare token unic,\nexpirare, marcare folosit")
+
+    ' ---- MODELS ----
+    Component(userModel, "UserModel", "models/UserModel.php", "CRUD useri, hash parola\ncu PASSWORD_BCRYPT")
+    Component(childModel, "ChildModel", "models/ChildModel.php", "CRUD copii + JOIN\npe family_members cu permisiuni")
+    Component(familyModel, "FamilyModel", "models/FamilyModel.php", "CRUD familii si membrii,\nroluri si permisiuni")
+    Component(feedingModel, "FeedingModel", "models/FeedingModel.php", "CRUD log-uri hrana,\nstatistici zilnice")
+    Component(sleepModel, "SleepModel", "models/SleepModel.php", "CRUD log-uri somn,\ncalcul durata")
+    Component(growthModel, "GrowthModel", "models/GrowthModel.php", "CRUD masuratori crestere")
+    Component(momentModel, "MomentModel", "models/MomentModel.php", "CRUD momente galerie,\nfiltrare dupa luna/tag/is_shared")
+    Component(mediaModel, "MediaModel", "models/MediaModel.php", "Metadata fisiere media\n(path, MIME, tip)")
+    Component(medicalModel, "MedicalModel", "models/MedicalModel.php", "Vizite, vaccinuri,\nmedicatie, alergii, documente")
+    Component(relModel, "RelationshipModel", "models/RelationshipModel.php", "Relatii sociale intre copii")
+    Component(inviteModel, "InviteModel", "models/InviteModel.php", "Token-uri invitatie familie")
+    Component(commentModel, "CommentModel", "models/CommentModel.php", "Comentarii per moment")
+    Component(reactionModel, "ReactionModel", "models/ReactionModel.php", "Reactii per moment")
+}
+
+' External flows
+Rel(frontend, router, "HTTP Request", "JSON / multipart")
+Rel(router, authMiddleware, "Verifica autentificarea")
+Rel(authMiddleware, authCtrl, "Dispatch dupa ruta")
+Rel(authMiddleware, childCtrl, "Dispatch dupa ruta")
+Rel(authMiddleware, familyCtrl, "Dispatch dupa ruta")
+Rel(authMiddleware, momentCtrl, "Dispatch dupa ruta")
+Rel(authMiddleware, exportCtrl, "Dispatch dupa ruta")
+Rel(authMiddleware, adminCtrl, "Dispatch dupa ruta")
+
+' Controllers -> Models
+Rel(authCtrl, userModel, "Foloseste")
+Rel(childCtrl, childModel, "Foloseste")
+Rel(childCtrl, feedingModel, "Foloseste")
+Rel(childCtrl, sleepModel, "Foloseste")
+Rel(childCtrl, growthModel, "Foloseste")
+Rel(familyCtrl, familyModel, "Foloseste")
+Rel(inviteCtrl, inviteModel, "Foloseste")
+Rel(inviteCtrl, inviteTokenSvc, "Foloseste")
+Rel(momentCtrl, momentModel, "Foloseste")
+Rel(momentCtrl, mediaModel, "Foloseste")
+Rel(momentCtrl, uploadSvc, "Foloseste")
+Rel(momentCtrl, storageSvc, "Foloseste")
+Rel(medicalCtrl, medicalModel, "Foloseste")
+Rel(relCtrl, relModel, "Foloseste")
+Rel(timelineCtrl, momentModel, "Foloseste")
+Rel(timelineCtrl, medicalModel, "Foloseste")
+Rel(shareCtrl, momentModel, "Foloseste")
+Rel(commentCtrl, commentModel, "Foloseste")
+Rel(reactionCtrl, reactionModel, "Foloseste")
+Rel(rssCtrl, rssSvc, "Foloseste")
+Rel(rssSvc, momentModel, "Citeste momente")
+Rel(exportCtrl, csvSvc, "Foloseste")
+Rel(exportCtrl, jsonSvc, "Foloseste")
+Rel(importCtrl, csvSvc, "Foloseste")
+Rel(importCtrl, jsonSvc, "Foloseste")
+Rel(adminCtrl, userModel, "Citeste/Modifica")
+Rel(adminCtrl, familyModel, "Citeste/Modifica")
+Rel(adminCtrl, childModel, "Citeste/Modifica")
+
+' Models -> DB
+Rel(userModel, db, "PDO / SQL")
+Rel(childModel, db, "PDO / SQL")
+Rel(familyModel, db, "PDO / SQL")
+Rel(feedingModel, db, "PDO / SQL")
+Rel(sleepModel, db, "PDO / SQL")
+Rel(growthModel, db, "PDO / SQL")
+Rel(momentModel, db, "PDO / SQL")
+Rel(mediaModel, db, "PDO / SQL")
+Rel(medicalModel, db, "PDO / SQL")
+Rel(relModel, db, "PDO / SQL")
+Rel(inviteModel, db, "PDO / SQL")
+Rel(commentModel, db, "PDO / SQL")
+Rel(reactionModel, db, "PDO / SQL")
+
+' Services -> Storage
+Rel(storageSvc, storage, "Fisiere pe disk")
+Rel(uploadSvc, storageSvc, "Deleaga salvarea")
+
+@enduml
