@@ -817,7 +817,7 @@ addChildForm.addEventListener('submit', async (e) => {
     try {
         const res  = await fetch('/api/children', {
             method:      'POST',
-            headers:     { 'Content-Type': 'application/json' },
+            headers:     { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
             credentials: 'include',
             body:        JSON.stringify(body),
         });
@@ -1147,7 +1147,7 @@ inviteForm.addEventListener('submit', async (e) => {
     try {
         const res = await fetch(`/api/children/${activeChildId}/invites`, {
             method:      'POST',
-            headers:     { 'Content-Type': 'application/json' },
+            headers:     { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
             credentials: 'include',
             body:        JSON.stringify({ email: email || null, permission }),
         });
