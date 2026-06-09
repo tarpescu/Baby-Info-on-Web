@@ -6,7 +6,7 @@ A web platform for families to manage resources related to raising a child — f
 
 ## Demo
 
-> 🎬 **Video demo:** _link disponibil după prezentare_
+> 🎬 **Video demo:** _https://youtu.be/X9zjE-OrN_s?si=ciJoiZa539SJ-sWx_
 
 ---
 

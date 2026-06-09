@@ -720,6 +720,7 @@ function initAvatarUpload() {
         try {
             const res = await fetch(`/api/children/${activeChildId}/photo`, {
                 method: 'POST',
+                headers: { 'X-CSRF-Token': await getCsrfToken() },
                 credentials: 'include',
                 body: formData,
                 // NU setam Content-Type — browser-ul adauga automat boundary pentru multipart
