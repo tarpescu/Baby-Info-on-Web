@@ -971,7 +971,7 @@ document.getElementById('feedingForm').addEventListener('submit', async e => {
     };
 
     const res = await fetch(`/api/children/${activeChildId}/feedings`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
         credentials: 'include', body: JSON.stringify(body),
     });
 
@@ -1012,7 +1012,7 @@ document.getElementById('sleepForm').addEventListener('submit', async e => {
     }
 
     const res = await fetch(`/api/children/${activeChildId}/sleep`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
         credentials: 'include', body: JSON.stringify(body),
     });
 
@@ -1059,7 +1059,7 @@ document.getElementById('growthForm').addEventListener('submit', async e => {
     }
 
     const res = await fetch(`/api/children/${activeChildId}/growth`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
         credentials: 'include', body: JSON.stringify(body),
     });
 

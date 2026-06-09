@@ -84,6 +84,24 @@
                     <input type="password" id="password" class="form-input" placeholder="min. 6 characters" required minlength="6">
                 </div>
 
+                <div class="form-group" style="margin-top:1rem;">
+                    <p style="font-family:'Special Elite',cursive; font-size:0.8rem; color:var(--text-muted); margin-bottom:0.8rem; text-transform:uppercase; letter-spacing:1px;">
+                        Security Questions <span style="text-transform:none; font-size:0.7rem;">(used to recover your password)</span>
+                    </p>
+                    <div class="form-group">
+                        <label for="secAnswer1">Numele primului tău animal de companie?</label>
+                        <input type="text" id="secAnswer1" class="form-input" placeholder="ex: Rex" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="secAnswer2">Care era porecla ta din copilărie?</label>
+                        <input type="text" id="secAnswer2" class="form-input" placeholder="ex: Bibi" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="secAnswer3">În ce oraș ai copilărit?</label>
+                        <input type="text" id="secAnswer3" class="form-input" placeholder="ex: Cluj" required>
+                    </div>
+                </div>
+
                 <div class="submit-section">
                     <button type="submit" id="joinBtn" class="ink-seal">
                         <span class="text">JOIN</span>
@@ -200,11 +218,14 @@
         errorBox.style.display = 'none';
 
         const payload = {
-            first_name:   document.getElementById('firstName').value.trim(),
-            last_name:    document.getElementById('lastName').value.trim(),
-            email:        document.getElementById('email').value.trim(),
-            password:     document.getElementById('password').value,
-            invite_token: inviteToken,
+            first_name:       document.getElementById('firstName').value.trim(),
+            last_name:        document.getElementById('lastName').value.trim(),
+            email:            document.getElementById('email').value.trim(),
+            password:         document.getElementById('password').value,
+            invite_token:     inviteToken,
+            security_answer_1: document.getElementById('secAnswer1').value.trim(),
+            security_answer_2: document.getElementById('secAnswer2').value.trim(),
+            security_answer_3: document.getElementById('secAnswer3').value.trim(),
         };
 
         joinBtn.querySelector('.text').textContent    = '...';
