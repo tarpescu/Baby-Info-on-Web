@@ -619,9 +619,3 @@ POST   /api/v1/admin/users/{id}/unban
 
 ---
 
-## Authors
-
-| Nume | Contribuții |
-|------|-------------|
-| **Romilă Raluca** | Autentificare (login/register/logout/CSRF/reset), profil copil + upload foto, familie + invitații, feeding/sleep/growth/medical logs, galerie (momente + upload media), comentarii, reacții, timeline, REST API v1 Bearer token, arhitectura core (Router, AuthMiddleware, Security, SessionManager, Response, Controller) |
-| **Tarpescu Sergiu** | Admin panel (statistici, ban/unban, stocare disc), export CSV+JSON, import CSV+JSON, RSS 2.0 feed, relații sociale + interacțiuni, pagina publică `/share/{token}` cu Open Graph, StorageService, CsvService, JsonService, RssService, MediaModel, PasswordResetModel |
