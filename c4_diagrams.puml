@@ -1,13 +1,5 @@
 
-' ============================================================
-' BABY INFO — Diagrame C4 (PlantUML)
-' Copiaza fiecare sectiune separat pe https://editor.plantuml.com
-' ============================================================
-
-
-' ============================================================
 ' DIAGRAMA 1 — C4 Level 1: System Context
-' ============================================================
 
 @startuml C4_L1_Context
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
@@ -34,9 +26,7 @@ Rel(browser, babyinfo, "Incarca pagini si apeleaza API", "HTTP/HTTPS")
 @enduml
 
 
-' ============================================================
 ' DIAGRAMA 2 — C4 Level 2: Container
-' ============================================================
 
 @startuml C4_L2_Container
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
@@ -75,9 +65,7 @@ Rel(frontend, rss, "Subscrie", "RSS 2.0 / XML")
 @enduml
 
 
-' ============================================================
 ' DIAGRAMA 3 — C4 Level 3: Component (PHP API Backend)
-' ============================================================
 
 @startuml C4_L3_Component_API
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
