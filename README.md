@@ -12,11 +12,12 @@ A web platform for families to manage resources related to raising a child — f
 
 ## Authors
 
-| Nume | Contribuții |
-|------|-------------|
-| **Romilă Raluca** | Autentificare (login/register/logout/CSRF/reset parola), profil copil + upload foto, familie + invitații, feeding/sleep/growth/medical logs, galerie (momente + upload media), comentarii, reacții, timeline, REST API v1 Bearer token, arhitectura core (Router, AuthMiddleware, Security, SessionManager, Response) |
-| **Tarpescu Sergiu** | Admin panel (statistici, ban/unban, stocare), export CSV+JSON, import CSV+JSON, RSS 2.0 feed, relații sociale + interacțiuni, pagina publică `/share/{token}`, StorageService, CsvService, JsonService, RssService, MediaModel, PasswordResetModel |
+## Authors
 
+| Nume                | Contribuții |
+|---------------------|-------------|
+| **Romila Raluca**   | Autentificare (login/register/logout/CSRF/reset parola), profil copil + upload foto, familie + invitații, feeding/sleep/growth logs, galerie (momente + upload media), comentarii, reacții, timeline, REST API v1 Bearer token, arhitectura core (Router, AuthMiddleware, Security, SessionManager, Response) |
+| **Tarpescu Sergiu** | Admin panel (backend complet + UI/frontend), pagina Medical Records (backend controller/model + frontend UI), MediaModel + integrare upload multipart, RSS Controller & Service (generare XML valid), export/import JSON și CSV (Zip archive), calcul spațiu disc (`StorageService`), relații sociale și interacțiuni (Models & Controllers), Password reset endpoint |
 ---
 
 ## Tech Stack
