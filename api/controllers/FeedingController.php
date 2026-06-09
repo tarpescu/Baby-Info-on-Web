@@ -39,6 +39,9 @@ class FeedingController extends Controller
         if (empty($body['type'])) {
             Response::error('Feeding type is required', 400);
         }
+        if (!empty($body['fed_at']) && strtotime($body['fed_at']) > time()) {
+            Response::error('Data nu poate fi în viitor.', 400);
+        }
 
         $model = new FeedingModel();
         $id = $model->create([
