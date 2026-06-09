@@ -202,6 +202,18 @@ const TYPE_ICONS = {
 };
 
 /**
+ * Escapeaza un string pentru inserare sigura in innerHTML.
+ * Previne XSS prin inlocuirea caracterelor speciale HTML cu entitati.
+ * @param {*} val
+ * @returns {string}
+ */
+function esc(val) {
+    const d = document.createElement('div');
+    d.textContent = String(val ?? '');
+    return d.innerHTML;
+}
+
+/**
  * Formateaza data in stil vintage.
  * @param {string} iso
  * @returns {string}
@@ -362,15 +374,15 @@ function buildPolaroid(moment) {
     const hasVisualMedia = moment.media_url && (moment.type === 'photo' || moment.type === 'video');
     let mediaZone;
     if (moment.media_url && moment.type === 'photo') {
-        mediaZone = `<img src="${moment.media_url}" alt="${moment.title}"
+        mediaZone = `<img src="${esc(moment.media_url)}" alt="${esc(moment.title)}"
                 style="width:100%; height:100%; object-fit:cover; display:block;"
-                onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined big-icon\\'>${placeholderIcon}</span><span class=\\'type-label\\'>${moment.type}</span>'"/>`;
+                onerror="this.parentElement.innerHTML='<span class=\\'material-symbols-outlined big-icon\\'>${placeholderIcon}</span><span class=\\'type-label\\'>${esc(moment.type)}</span>'"/>`;
     } else if (moment.media_url && moment.type === 'video') {
-        mediaZone = `<video src="${moment.media_url}" muted preload="metadata"
+        mediaZone = `<video src="${esc(moment.media_url)}" muted preload="metadata"
                 style="width:100%; height:100%; object-fit:cover; display:block;"></video>`;
     } else {
         mediaZone = `<span class="material-symbols-outlined big-icon">${placeholderIcon}</span>
-           <span class="type-label">${moment.type}</span>`;
+           <span class="type-label">${esc(moment.type)}</span>`;
     }
 
     wrap.innerHTML = `
@@ -382,7 +394,7 @@ function buildPolaroid(moment) {
                 ${mediaZone}
             </div>
 
-            <p class="polaroid-caption font-handwritten" title="${moment.title}">${moment.title}</p>
+            <p class="polaroid-caption font-handwritten" title="${esc(moment.title)}">${esc(moment.title)}</p>
 
             ${(moment.reactions && moment.reactions.length > 0) ? `
                 <div class="polaroid-reactions">${reactionEmojis}</div>
@@ -443,7 +455,7 @@ async function openDetail(moment) {
             <span class="material-symbols-outlined" style="font-size:1rem;">link</span> Copiază link public
         </button>` : ''}
         ${detailMedia}
-        ${moment.body ? `<p class="detail-body">${moment.body}</p>` : ''}
+        ${moment.body ? `<p class="detail-body">${esc(moment.body)}</p>` : ''}
 
         <div class="reactions-row" id="detailReactions">
             ${REACTIONS.map(r => {
