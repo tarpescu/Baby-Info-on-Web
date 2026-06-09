@@ -16,17 +16,56 @@ class Security
         return htmlspecialchars($text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
+    /**
+     * Genereaza (sau citeste) un token CSRF folosind double-submit cookie pattern.
+     * Token-ul este stocat intr-un cookie accesibil JS (non-HttpOnly) si
+     * returnat si in raspunsul JSON. Nu depinde de sesiunea PHP.
+     *
+     * @return string Token hex de 64 de caractere
+     */
     public static function generateCsrfToken(): string
     {
-        if (empty($_SESSION['csrf_token'])) {
-            $_SESSION['csrf_token'] = bin2hex(random_bytes(Constants::CSRF_TOKEN_LENGTH));
+        // Refoloseste token-ul din cookie daca exista deja
+        $token = $_COOKIE['csrf_token'] ?? '';
+
+        if (empty($token)) {
+            $token = bin2hex(random_bytes(Constants::CSRF_TOKEN_LENGTH));
+
+            // Seteaza cookie non-HttpOnly (JS trebuie sa il poata trimite ca header)
+            // SameSite=Strict previne trimiterea de pe alte origini
+            setcookie('csrf_token', $token, [
+                'expires'  => 0,        // Session cookie (dispare la inchiderea browserului)
+                'path'     => '/',
+                'samesite' => 'Strict',
+                'httponly' => false,    // Accesibil JS intentionat — necesar pentru double-submit
+                'secure'   => false,    // localhost nu foloseste HTTPS
+            ]);
+
+            // Actualizam superglobalul pentru cererea curenta
+            $_COOKIE['csrf_token'] = $token;
         }
-        return $_SESSION['csrf_token'];
+
+        return $token;
     }
 
+    /**
+     * Valideaza un token CSRF folosind double-submit cookie pattern.
+     * Compara valoarea din cookie-ul de request cu headerul X-CSRF-Token.
+     * Nu depinde de sesiunea PHP.
+     *
+     * @param  string|null $token Valoarea din headerul X-CSRF-Token
+     * @return bool True daca token-ul este valid
+     */
     public static function validateCsrfToken(?string $token): bool
     {
-        return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token ?? '');
+        if (empty($token)) {
+            return false;
+        }
+        $cookieToken = $_COOKIE['csrf_token'] ?? '';
+        if (empty($cookieToken)) {
+            return false;
+        }
+        return hash_equals($cookieToken, $token);
     }
 
     public static function sanitizeInput(string $input): string

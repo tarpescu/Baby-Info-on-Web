@@ -68,6 +68,8 @@ phpunit.xml
 #Fisiere locale
 CONTEXT.md
 .env
+composer.phar
+
 
 #Fișiere temporare
 *.tmp

@@ -1,5 +1,5 @@
 --  10 familii, 50 useri, 15 copii
---  Parola pentru toti: Test1234!
+--  Parola pentru toti: password
 
 -- USERS
 INSERT INTO users (id, first_name, last_name, email, password_hash, role, avatar_color) VALUES
