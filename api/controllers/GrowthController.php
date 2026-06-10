@@ -38,6 +38,22 @@ class GrowthController extends Controller
         if (!empty($body['measured_at']) && strtotime($body['measured_at']) > time()) {
             Response::error('Data nu poate fi în viitor.', 400);
         }
+        // Cel putin o masuratoare + range-uri valide (coloanele sunt NUMERIC(5,2))
+        $measures = ['weight_kg' => 200, 'height_cm' => 250, 'head_cm' => 100];
+        $hasAny = false;
+        foreach ($measures as $field => $max) {
+            $v = $body[$field] ?? null;
+            if ($v === null || $v === '') {
+                continue;
+            }
+            if (!is_numeric($v) || $v <= 0 || $v > $max) {
+                Response::error("Invalid value for {$field}", 400);
+            }
+            $hasAny = true;
+        }
+        if (!$hasAny) {
+            Response::error('At least one measurement is required', 400);
+        }
 
         $model = new GrowthModel();
         $id = $model->create([

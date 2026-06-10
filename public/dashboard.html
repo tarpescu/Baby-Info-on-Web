@@ -228,7 +228,7 @@
                         <select id="feedType" class="modal-select font-typewriter">
                             <option value="breast">Breastfeeding</option>
                             <option value="bottle">Bottle</option>
-                            <option value="solid">Solid food</option>
+                            <option value="solids">Solid food</option>
                         </select>
                     </div>
                     <div class="modal-field">
@@ -306,10 +306,6 @@
                 <div class="modal-field">
                     <label class="font-typewriter">Head circumference (cm)</label>
                     <input type="number" id="growthHead" class="modal-input font-typewriter" min="0" max="60" step="0.1" placeholder="44.5"/>
-                </div>
-                <div class="modal-field">
-                    <label class="font-typewriter">Notes</label>
-                    <input type="text" id="growthNotes" class="modal-input font-typewriter" placeholder="Optional..." maxlength="300"/>
                 </div>
                 <button type="submit" class="modal-submit font-typewriter" id="growthSubmit">Log Measurement</button>
             </form>
@@ -673,7 +669,7 @@ function updateScrapNote(feedings, sleeps) {
 
     if (feedings.length > 0) {
         const f = feedings[0];
-        if (f.type === 'solid' && f.food_desc) {
+        if (f.type === 'solids' && f.food_desc) {
             el.textContent = `Tried ${f.food_desc} today!`;
         } else if (f.type === 'breast') {
             el.textContent = `Last breastfed ${relativeTime(f.fed_at)}.`;
@@ -927,7 +923,7 @@ function updateFeedingFields() {
     const type = document.getElementById('feedType').value;
     document.getElementById('fieldDuration').style.display = type === 'breast'  ? '' : 'none';
     document.getElementById('fieldAmount').style.display   = type === 'bottle'  ? '' : 'none';
-    document.getElementById('fieldFood').style.display     = type === 'solid'   ? '' : 'none';
+    document.getElementById('fieldFood').style.display     = type === 'solids'  ? '' : 'none';
 }
 
 // Tab clicks
@@ -967,7 +963,7 @@ document.getElementById('feedingForm').addEventListener('submit', async e => {
         fed_at:       document.getElementById('feedAt').value,
         duration_min: type === 'breast' ? (parseInt(document.getElementById('feedDuration').value) || null) : null,
         amount_ml:    type === 'bottle' ? (parseInt(document.getElementById('feedAmount').value)   || null) : null,
-        food_desc:    type === 'solid'  ? (document.getElementById('feedFood').value.trim() || null) : null,
+        food_desc:    type === 'solids' ? (document.getElementById('feedFood').value.trim() || null) : null,
         notes:        document.getElementById('feedNotes').value.trim() || null,
     };
 
@@ -1043,7 +1039,6 @@ document.getElementById('growthForm').addEventListener('submit', async e => {
         weight_kg:   parseFloat(document.getElementById('growthWeight').value) || null,
         height_cm:   parseFloat(document.getElementById('growthHeight').value) || null,
         head_cm:     parseFloat(document.getElementById('growthHead').value)   || null,
-        notes:       document.getElementById('growthNotes').value.trim() || null,
     };
 
     if (!body.measured_at) {

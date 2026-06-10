@@ -40,6 +40,21 @@ class FeedingController extends Controller
         if (empty($body['type'])) {
             Response::error('Feeding type is required', 400);
         }
+        // Whitelist sincronizat cu CHECK-ul din DB — altfel CHECK violation => 500
+        if (!in_array($body['type'], ['breast', 'bottle', 'solids'], true)) {
+            Response::error('Invalid feeding type (breast, bottle or solids)', 400);
+        }
+        if (isset($body['side']) && $body['side'] !== null && !in_array($body['side'], ['L', 'R', 'both'], true)) {
+            Response::error('Invalid side value (L, R or both)', 400);
+        }
+        if (isset($body['duration_min']) && $body['duration_min'] !== null
+            && (!is_numeric($body['duration_min']) || $body['duration_min'] < 0 || $body['duration_min'] > 600)) {
+            Response::error('Invalid duration', 400);
+        }
+        if (isset($body['amount_ml']) && $body['amount_ml'] !== null
+            && (!is_numeric($body['amount_ml']) || $body['amount_ml'] < 0 || $body['amount_ml'] > 2000)) {
+            Response::error('Invalid amount', 400);
+        }
         if (!empty($body['fed_at']) && strtotime($body['fed_at']) > time()) {
             Response::error('Data nu poate fi în viitor.', 400);
         }

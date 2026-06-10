@@ -46,6 +46,17 @@ class SleepController extends Controller
         if (!empty($body['ended_at']) && strtotime($body['ended_at']) > time()) {
             Response::error('Data de sfârșit nu poate fi în viitor.', 400);
         }
+        // Whitelist sincronizat cu CHECK-ul din DB
+        if (isset($body['type']) && !in_array($body['type'], ['night', 'nap'], true)) {
+            Response::error('Invalid sleep type (night or nap)', 400);
+        }
+        if (isset($body['quality']) && $body['quality'] !== null
+            && (!is_numeric($body['quality']) || $body['quality'] < 1 || $body['quality'] > 5)) {
+            Response::error('Quality must be between 1 and 5', 400);
+        }
+        if (!empty($body['ended_at']) && strtotime($body['ended_at']) <= strtotime($body['started_at'])) {
+            Response::error('End time must be after start time', 400);
+        }
 
         $model = new SleepModel();
         $id = $model->create([

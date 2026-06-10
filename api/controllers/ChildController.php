@@ -81,6 +81,19 @@ class ChildController extends Controller
         $this->requireWritePermission($childId);
 
         $body = $this->request->body;
+
+        // Validare server-side — update() are aceleasi campuri obligatorii ca store()
+        $required = ['first_name', 'date_of_birth'];
+        foreach ($required as $field) {
+            if (empty($body[$field])) {
+                Response::error("Field {$field} is required", 400);
+            }
+        }
+        if (isset($body['gender']) && $body['gender'] !== null
+            && !in_array($body['gender'], ['M', 'F', 'other'], true)) {
+            Response::error('Invalid gender value', 400);
+        }
+
         $model = new ChildModel();
 
         $success = $model->update($childId, $body);
