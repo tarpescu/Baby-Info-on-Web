@@ -44,10 +44,54 @@ if ($full === false || !is_file($full) || !str_starts_with($full, $base . DIRECT
 }
 
 $mime = (new finfo(FILEINFO_MIME_TYPE))->file($full) ?: 'application/octet-stream';
+$size = filesize($full);
+
+// Suport HTTP Range (un singur interval) — necesar pentru seek in <video>/<audio>.
+$start = 0;
+$end   = $size - 1;
+$isPartial = false;
+
+if (isset($_SERVER['HTTP_RANGE']) && preg_match('/^bytes=(\d*)-(\d*)$/', $_SERVER['HTTP_RANGE'], $m)) {
+    if ($m[1] !== '') {
+        $start = (int) $m[1];
+        if ($m[2] !== '') {
+            $end = min((int) $m[2], $size - 1);
+        }
+    } elseif ($m[2] !== '') {
+        // Sufix: ultimii N bytes
+        $start = max(0, $size - (int) $m[2]);
+    }
+
+    if ($start > $end || $start >= $size) {
+        http_response_code(416);
+        header('Content-Range: bytes */' . $size);
+        exit;
+    }
+    $isPartial = true;
+}
+
+if ($isPartial) {
+    http_response_code(206);
+    header('Content-Range: bytes ' . $start . '-' . $end . '/' . $size);
+}
 
 header('Content-Type: ' . $mime);
-header('Content-Length: ' . filesize($full));
+header('Content-Length: ' . ($end - $start + 1));
+header('Accept-Ranges: bytes');
 header('X-Content-Type-Options: nosniff');
 header('Cache-Control: private, max-age=86400');
-readfile($full);
+
+// Streaming pe bucati (nu readfile) — nu incarca tot fisierul in memorie.
+$fh = fopen($full, 'rb');
+fseek($fh, $start);
+$remaining = $end - $start + 1;
+while ($remaining > 0 && !feof($fh)) {
+    $chunk = fread($fh, min(8192, $remaining));
+    if ($chunk === false) {
+        break;
+    }
+    echo $chunk;
+    $remaining -= strlen($chunk);
+}
+fclose($fh);
 exit;

@@ -27,7 +27,7 @@ A web platform for families to manage resources related to raising a child — f
 - **Frontend:** HTML5 + CSS3 separat per pagină (`public/css/`) + JavaScript vanilla — `fetch()` pentru toate apelurile asincrone
 - **Autentificare:** Sesiune PHP (frontend) + Bearer token (REST API v1)
 - **Securitate:** CSRF double-submit cookie, XSS escaping, bcrypt cost=12, fișiere în afara webroot
-- **Dev server:** `php -S localhost:8000 router.php`
+- **Dev server:** `php -S localhost:8000 -d upload_max_filesize=50M -d post_max_size=52M router.php` (flag-urile `-d` ridica limitele PHP de upload — fara ele, video-urile peste 2 MB sunt respinse)
 
 ---
 
@@ -61,7 +61,7 @@ cp .env.example .env
 ### Run
 
 ```bash
-php -S localhost:8000 router.php
+php -S localhost:8000 -d upload_max_filesize=50M -d post_max_size=52M router.php
 ```
 
 Aplicația e disponibilă la `http://localhost:8000`.  

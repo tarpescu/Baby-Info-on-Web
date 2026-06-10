@@ -13,7 +13,12 @@ class Constants
     public const APP_VERSION = '1.0.0';
     public const TIMEZONE = 'Europe/Bucharest';
     public const UPLOAD_MAX_SIZE = 50 * 1024 * 1024;
-    public const UPLOAD_ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'audio/mpeg', 'text/plain'];
+    public const UPLOAD_ALLOWED_TYPES = [
+        'image/jpeg', 'image/png', 'image/webp',
+        'video/mp4', 'video/webm', 'video/quicktime',
+        'audio/mpeg', 'audio/mp4', 'audio/wav', 'audio/x-wav', 'audio/ogg',
+        'text/plain',
+    ];
     public const SESSION_LIFETIME = 7200;
     public const CSRF_TOKEN_LENGTH = 32;
     public const INVITE_TOKEN_LENGTH = 48;

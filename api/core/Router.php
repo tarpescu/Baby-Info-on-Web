@@ -155,6 +155,17 @@ class Router
 
     public function dispatch(): void
     {
+        // Daca body-ul depaseste post_max_size, PHP goleste $_POST si $_FILES
+        // in liniste — fara verificarea asta, userul ar primi erori derutante.
+        $contentLength = (int) ($_SERVER['CONTENT_LENGTH'] ?? 0);
+        if ($contentLength > 0 && $contentLength > self::iniBytes((string) ini_get('post_max_size'))) {
+            Response::error(
+                'Request body too large — maximum allowed is ' . ini_get('post_max_size') .
+                ' (post_max_size). Start the dev server with: php -S localhost:8000 -d upload_max_filesize=50M -d post_max_size=52M router.php',
+                413
+            );
+        }
+
         // Rezolva Bearer token inainte de orice controller (REST API v1)
         AuthMiddleware::resolveBearer();
 
@@ -179,6 +190,27 @@ class Router
         }
 
         Response::error('Route not found', 404);
+    }
+
+    /**
+     * Converteste o valoare php.ini cu sufix (ex. "8M", "2G") in bytes.
+     *
+     * @return int Numarul de bytes
+     */
+    private static function iniBytes(string $value): int
+    {
+        $value = trim($value);
+        if ($value === '' || $value === '-1') {
+            return PHP_INT_MAX; // nelimitat
+        }
+        $unit = strtolower($value[strlen($value) - 1]);
+        $num  = (int) $value;
+        return match ($unit) {
+            'g' => $num * 1024 * 1024 * 1024,
+            'm' => $num * 1024 * 1024,
+            'k' => $num * 1024,
+            default => $num,
+        };
     }
 
     private function execute(string $controllerName, string $action, Request $request, array $params): void
