@@ -62,8 +62,8 @@ class MomentModel extends Model
         $shareToken = $isShared ? Security::generateShareToken() : null;
 
         $stmt = $this->db->prepare("
-            INSERT INTO moments (child_id, logged_by, type, title, body, is_pinned, is_shared, share_token, happened_at)
-            VALUES (:child_id, :logged_by, :type, :title, :body, :is_pinned, :is_shared, :share_token, :happened_at)
+            INSERT INTO moments (child_id, logged_by, type, title, body, is_pinned, is_shared, share_token, tags, happened_at)
+            VALUES (:child_id, :logged_by, :type, :title, :body, :is_pinned, :is_shared, :share_token, :tags, :happened_at)
             RETURNING id
         ");
         $stmt->execute([
@@ -75,6 +75,7 @@ class MomentModel extends Model
             ':is_pinned' => $data['is_pinned'] ? 1 : 0,
             ':is_shared' => $isShared,
             ':share_token' => $shareToken,
+            ':tags' => $data['tags'] ?? '',
             ':happened_at' => $data['happened_at'] ?? date('Y-m-d H:i:s'),
         ]);
         return (int) $stmt->fetchColumn();

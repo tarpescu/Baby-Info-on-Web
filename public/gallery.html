@@ -48,6 +48,8 @@
     <button class="filter-chip" data-type="video">🎬 Video</button>
     <button class="filter-chip" data-type="audio">🎵 Audio</button>
     <button class="filter-chip" data-type="note">📝 Notes</button>
+    <span class="filter-label" id="tagFilterLabel" style="display:none; margin-left:1rem;">Tags:</span>
+    <span id="tagChips" style="display:contents;"></span>
 </div>
 
 <!-- Gallery Content -->
@@ -125,11 +127,16 @@
                 <input type="datetime-local" id="momentDate" class="modal-input"/>
             </div>
 
+            <div class="modal-field">
+                <label for="momentTags">Tags <span style="opacity:0.5; text-transform:none;">(separate prin virgula)</span></label>
+                <input type="text" id="momentTags" class="modal-input" placeholder="primul zambet, vara, bunici..." maxlength="340"/>
+            </div>
+
             <!-- File upload (shown only for photo/video/audio) -->
             <div class="modal-field" id="momentFileField" style="display:none;">
                 <label for="momentFile">Attach file</label>
                 <input type="file" id="momentFile" class="modal-input"
-                       accept="image/jpeg,image/png,image/webp,video/mp4,audio/mpeg,text/plain,.txt"
+                       accept="image/jpeg,image/png,image/webp,video/mp4,video/webm,video/quicktime,.mov,audio/mpeg,audio/mp4,audio/wav,audio/ogg,text/plain,.txt"
                        style="padding:0.3rem; cursor:pointer;"/>
                 <span style="font-family:'Special Elite',cursive; font-size:0.7rem; color:var(--text-muted); display:block; margin-top:4px;">
                     JPEG, PNG, WebP, MP4, MP3, TXT — max 10 MB
@@ -174,6 +181,7 @@ let children         = [];
 let activeChildId    = null;
 let allMoments       = [];
 let activeFilter     = 'all';
+let activeTagFilter  = 'all';
 let activeMomentId   = null;
 let userCanWrite     = false;   // false pentru viewer/caregiver
 
@@ -310,6 +318,52 @@ function buildShelf(child) {
 }
 
 /**
+ * Parseaza sirul de tag-uri "a,b,c" intr-un array curat.
+ * @param {string} raw
+ * @returns {string[]}
+ */
+function parseTags(raw) {
+    return String(raw || '').split(',').map(t => t.trim()).filter(Boolean);
+}
+
+/**
+ * Construieste chip-urile de filtrare pe tag-uri din momentele incarcate.
+ * @param {Array} moments
+ */
+function renderTagChips(moments) {
+    const wrap  = document.getElementById('tagChips');
+    const label = document.getElementById('tagFilterLabel');
+    const allTags = [...new Set(moments.flatMap(m => parseTags(m.tags)))].sort();
+
+    if (allTags.length === 0) {
+        wrap.innerHTML = '';
+        label.style.display = 'none';
+        activeTagFilter = 'all';
+        return;
+    }
+    label.style.display = '';
+
+    // Daca tagul activ a disparut (ex. dupa stergere), revenim la "all"
+    if (activeTagFilter !== 'all' && !allTags.includes(activeTagFilter)) {
+        activeTagFilter = 'all';
+    }
+
+    wrap.innerHTML = ['all', ...allTags].map(tag => `
+        <button class="filter-chip tag-chip ${activeTagFilter === tag ? 'active' : ''}" data-tag="${esc(tag)}">
+            ${tag === 'all' ? 'All' : '# ' + esc(tag)}
+        </button>
+    `).join('');
+
+    wrap.querySelectorAll('.tag-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            activeTagFilter = chip.dataset.tag;
+            renderTagChips(allMoments);
+            renderGallery(allMoments);
+        });
+    });
+}
+
+/**
  * Randeaza galeria grupata pe luni.
  * @param {Array} moments
  */
@@ -322,9 +376,13 @@ function renderGallery(moments) {
         ? moments
         : moments.filter(m => m.is_shared);
 
-    const filtered = activeFilter === 'all'
+    const byType = activeFilter === 'all'
         ? viewable
         : viewable.filter(m => m.type === activeFilter);
+
+    const filtered = activeTagFilter === 'all'
+        ? byType
+        : byType.filter(m => parseTags(m.tags).includes(activeTagFilter));
 
     if (filtered.length === 0) {
         const emptyMsg = userCanWrite
@@ -411,6 +469,16 @@ function buildPolaroid(moment) {
 
             <p class="polaroid-caption font-handwritten" title="${esc(moment.title)}">${esc(moment.title)}</p>
 
+            ${parseTags(moment.tags).length ? `
+                <div style="display:flex; flex-wrap:wrap; gap:3px; margin-top:2px;">
+                    ${parseTags(moment.tags).slice(0, 3).map(t => `
+                        <span style="font-family:'Special Elite',cursive; font-size:0.6rem; color:var(--text-muted);
+                              border:1px dotted var(--outline); border-radius:8px; padding:0 6px;"># ${esc(t)}</span>
+                    `).join('')}
+                    ${parseTags(moment.tags).length > 3 ? `<span style="font-size:0.6rem; color:var(--text-muted);">+${parseTags(moment.tags).length - 3}</span>` : ''}
+                </div>
+            ` : ''}
+
             ${(moment.reactions && moment.reactions.length > 0) ? `
                 <div class="polaroid-reactions">${reactionEmojis}</div>
             ` : ''}
@@ -465,6 +533,13 @@ async function openDetail(moment) {
             <span class="detail-date">${formatDate(moment.happened_at)}</span>
             <span class="detail-author font-handwritten">by ${esc(moment.first_name)} ${esc(moment.last_name)}</span>
         </div>
+        ${parseTags(moment.tags).length ? `
+        <div style="display:flex; flex-wrap:wrap; gap:5px; margin:0.3rem 0 0.4rem;">
+            ${parseTags(moment.tags).map(t => `
+                <span class="font-typewriter" style="font-size:0.7rem; color:var(--secondary);
+                      border:1px dotted var(--outline); border-radius:10px; padding:1px 8px;"># ${esc(t)}</span>
+            `).join('')}
+        </div>` : ''}
         ${(moment.is_shared && moment.share_token) ? `
         <button id="shareLinkBtn" class="font-typewriter" style="margin:0.2rem 0 0.4rem; font-size:0.8rem; color:var(--secondary); border:1px dashed var(--outline); padding:4px 12px; cursor:pointer; background:none; display:inline-flex; align-items:center; gap:5px;">
             <span class="material-symbols-outlined" style="font-size:1rem;">link</span> Copiază link public
@@ -713,6 +788,9 @@ document.getElementById('addMomentForm').addEventListener('submit', async (e) =>
         const dateVal = document.getElementById('momentDate').value;
         if (dateVal) fd.append('happened_at', dateVal);
 
+        const tagsVal = document.getElementById('momentTags').value.trim();
+        if (tagsVal) fd.append('tags', tagsVal);
+
         const fileInput = document.getElementById('momentFile');
         if (fileInput.files.length > 0) {
             fd.append('photo', fileInput.files[0]);
@@ -818,6 +896,7 @@ async function loadTimeline() {
         allMoments = [];
     }
 
+    renderTagChips(allMoments);
     renderGallery(allMoments);
 }
 
