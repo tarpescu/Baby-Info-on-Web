@@ -28,8 +28,8 @@ class MedicalModel extends Model
     public function create(array $data): int
     {
         $stmt = $this->db->prepare("
-            INSERT INTO medical_records (child_id, logged_by, type, title, description, doctor_name, clinic_name, date_at, next_date)
-            VALUES (:child_id, :logged_by, :type, :title, :description, :doctor_name, :clinic_name, :date_at, :next_date)
+            INSERT INTO medical_records (child_id, logged_by, type, title, description, doctor_name, clinic_name, date_at, next_date, document_url)
+            VALUES (:child_id, :logged_by, :type, :title, :description, :doctor_name, :clinic_name, :date_at, :next_date, :document_url)
             RETURNING id
         ");
         $stmt->execute([
@@ -42,6 +42,7 @@ class MedicalModel extends Model
             ':clinic_name' => $data['clinic_name'] ?? null,
             ':date_at' => $data['date_at'],
             ':next_date' => $data['next_date'] ?? null,
+            ':document_url' => $data['document_url'] ?? null,
         ]);
         return (int) $stmt->fetchColumn();
     }

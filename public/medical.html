@@ -66,6 +66,10 @@
                     <label for="notes">Notite</label>
                     <textarea id="notes" name="notes" placeholder="Detalii despre eveniment…"></textarea>
                 </div>
+                <div class="field">
+                    <label for="document">Document atasat (PDF)</label>
+                    <input type="file" id="document" name="document" accept="application/pdf"/>
+                </div>
                 <button type="submit" class="submit-btn" id="submitBtn">Salveaza</button>
                 <p class="form-error" id="formError"></p>
             </form>
@@ -116,7 +120,7 @@ let currentUser = null;
 let children = [];
 let activeChildId = null;
 
-const WRITE_ROLES = ['owner', 'coparent', 'caregiver'];
+const WRITE_ROLES = ['owner', 'coparent'];
 
 /** Etichete lizibile + titlu derivat (coloana title e NOT NULL in DB). */
 const TYPE_LABEL = { visit: 'Vizita', vaccine: 'Vaccin', medication: 'Medicatie', allergy: 'Alergie' };
@@ -176,6 +180,12 @@ function recordHtml(r) {
     const notes = r.description
         ? `<div class="record-notes">${esc(r.description)}</div>`
         : '';
+    // Link catre documentul PDF atasat (servit din storage/ prin /uploads/)
+    const doc = r.document_url
+        ? `<a class="record-doc" href="${esc(r.document_url)}" target="_blank" rel="noopener"
+              style="display:inline-flex; align-items:center; gap:4px; margin-top:6px; font-size:0.85rem; color:var(--secondary); text-decoration:underline;">
+              <span class="material-symbols-outlined" style="font-size:1rem;">picture_as_pdf</span> Vezi documentul</a>`
+        : '';
     return `
         <div class="record">
             <div class="record-head">
@@ -184,6 +194,7 @@ function recordHtml(r) {
             </div>
             ${doctor}
             ${notes}
+            ${doc}
         </div>
     `;
 }
@@ -237,15 +248,37 @@ async function submitForm(e) {
         description: notes || null,        // notite -> coloana description
     };
 
+    // Atasament PDF optional — validare client-side (serverul re-valideaza cu finfo)
+    const docInput = document.getElementById('document');
+    const docFile = docInput.files[0] || null;
+    if (docFile && docFile.type !== 'application/pdf') {
+        formError('Documentul atasat trebuie sa fie un PDF.');
+        return;
+    }
+
     const btn = document.getElementById('submitBtn');
     btn.disabled = true;
     try {
-        const res = await fetch(`/api/children/${activeChildId}/medical`, {
-            method: 'POST',
-            credentials: 'include',
-            headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
-            body: JSON.stringify(payload),
-        });
+        let res;
+        if (docFile) {
+            // multipart/form-data — browserul seteaza singur Content-Type cu boundary
+            const fd = new FormData();
+            Object.entries(payload).forEach(([k, v]) => { if (v !== null) fd.append(k, v); });
+            fd.append('document', docFile);
+            res = await fetch(`/api/children/${activeChildId}/medical`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'X-CSRF-Token': await getCsrfToken() },
+                body: fd,
+            });
+        } else {
+            res = await fetch(`/api/children/${activeChildId}/medical`, {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': await getCsrfToken() },
+                body: JSON.stringify(payload),
+            });
+        }
         const data = await res.json().catch(() => ({}));
 
         if (res.status !== 201) {
@@ -253,7 +286,7 @@ async function submitForm(e) {
         }
 
         // Adauga in lista fara reload (in capul listei, sortare DESC dupa data)
-        const newRecord = { ...payload, id: data.id };
+        const newRecord = { ...payload, id: data.id, document_url: data.document_url || null };
         const list = document.getElementById('recordsList');
         const emptyEl = list.querySelector('.empty');
         if (emptyEl) list.innerHTML = '';
