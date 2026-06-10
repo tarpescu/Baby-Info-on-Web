@@ -26,12 +26,17 @@ class FamilyController extends Controller
         Response::json($members);
     }
 
+    /**
+     * Schimba permisiunea unui membru al familiei (doar owner).
+     * Body: { user_id, permission } — permission e validata pe whitelist,
+     * iar owner-ul nu isi poate schimba propria permisiune (anti-lockout).
+     */
     public function updatePermission(array $params): void
     {
         $this->requireAuth();
         $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
-        $this->requireWritePermission($childId);
+        $this->requireOwner($childId);
 
         $body = $this->request->body;
         $userId = (int) ($body['user_id'] ?? 0);
@@ -39,6 +44,15 @@ class FamilyController extends Controller
 
         if (!$userId || empty($permission)) {
             Response::error('user_id and permission required', 400);
+        }
+
+        $valid = ['owner', 'coparent', 'caregiver', 'viewer'];
+        if (!in_array($permission, $valid, true)) {
+            Response::error('Invalid permission value', 400);
+        }
+
+        if ($userId === SessionManager::userId()) {
+            Response::error('Cannot change your own permission', 400);
         }
 
         $model = new FamilyModel();
@@ -56,7 +70,7 @@ class FamilyController extends Controller
         $this->requireAuth();
         $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
-        $this->requireWritePermission($childId);
+        $this->requireOwner($childId);
 
         $body = $this->request->body;
         $userId = (int) ($body['user_id'] ?? 0);

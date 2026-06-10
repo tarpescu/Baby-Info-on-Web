@@ -37,7 +37,8 @@ class ImportController extends Controller
         'moments'  => MomentModel::class,
     ];
 
-    private const WRITE_ROLES = ['owner', 'coparent', 'caregiver'];
+    /** Doar owner si coparent pot scrie — caregiver/viewer sunt read-only. */
+    private const WRITE_ROLES = ['owner', 'coparent'];
 
     /** POST /api/import/csv — ZIP cu CSV-uri. */
     public function csv(array $params): void

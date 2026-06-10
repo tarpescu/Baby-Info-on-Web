@@ -17,12 +17,17 @@ use App\Models\FamilyModel;
 
 class InviteController extends Controller
 {
+    /**
+     * Genereaza un link de invitatie pentru familia unui copil.
+     * Doar owner-ul poate invita (coparent are acces complet la date,
+     * dar nu gestioneaza membrii familiei).
+     */
     public function store(array $params): void
     {
         $this->requireAuth();
         $this->requireCsrf();
         $childId = (int) ($params['id'] ?? 0);
-        $this->requireWritePermission($childId);
+        $this->requireOwner($childId);
 
         $body = $this->request->body;
         $email = $body['email'] ?? null;

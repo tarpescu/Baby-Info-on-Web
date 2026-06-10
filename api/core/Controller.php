@@ -72,23 +72,59 @@ abstract class Controller
         }
     }
 
+    /**
+     * Verifica permisiunea de scriere asupra unui copil.
+     * Doar 'owner' si 'coparent' pot scrie — 'caregiver' si 'viewer'
+     * sunt read-only (cerinta de curs).
+     *
+     * @return void Trimite 403 daca userul nu are drept de scriere.
+     */
     protected function requireWritePermission(int $childId): void
     {
         $this->requireFamilyAccess($childId);
+
+        $permission = $this->getPermission($childId);
+        $writeRoles = ['owner', 'coparent'];
+        if (!in_array($permission, $writeRoles, true)) {
+            Response::error('Write permission required', 403);
+        }
+    }
+
+    /**
+     * Verifica faptul ca userul este 'owner' al copilului.
+     * Folosita pentru actiuni administrative pe familie:
+     * invitatii, schimbarea permisiunilor, eliminarea membrilor.
+     *
+     * @return void Trimite 403 daca userul nu este owner.
+     */
+    protected function requireOwner(int $childId): void
+    {
+        $this->requireFamilyAccess($childId);
+
+        if ($this->getPermission($childId) !== 'owner') {
+            Response::error('Owner permission required', 403);
+        }
+    }
+
+    /**
+     * Returneaza permisiunea userului curent pentru un copil
+     * (owner / coparent / caregiver / viewer) sau null daca nu e membru.
+     *
+     * @return string|null
+     */
+    private function getPermission(int $childId): ?string
+    {
         $userId = SessionManager::userId();
 
         $db = \App\Config\Database::getConnection();
         $stmt = $db->prepare("
-            SELECT permission FROM family_members 
+            SELECT permission FROM family_members
             WHERE child_id = :child_id AND user_id = :user_id
             LIMIT 1
         ");
         $stmt->execute([':child_id' => $childId, ':user_id' => $userId]);
         $row = $stmt->fetch();
 
-        $writeRoles = ['owner', 'coparent', 'caregiver'];
-        if (!$row || !in_array($row['permission'], $writeRoles, true)) {
-            Response::error('Write permission required', 403);
-        }
+        return $row ? (string) $row['permission'] : null;
     }
 }
