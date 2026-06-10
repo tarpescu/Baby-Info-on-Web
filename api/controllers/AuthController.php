@@ -8,6 +8,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\RateLimiter;
 use App\Core\Response;
 use App\Core\Security;
 use App\Core\SessionManager;
@@ -40,10 +41,14 @@ class AuthController extends Controller
             Response::error('Email and password required', 400);
         }
 
+        // Rate limiting: max 5 incercari esuate / 15 min per email sau IP
+        RateLimiter::check('login', $email);
+
         $model = new UserModel();
         $user = $model->findByEmail($email);
 
         if (!$user) {
+            RateLimiter::recordFailure('login', $email);
             Response::error('Invalid credentials', 401);
         }
 
@@ -52,9 +57,11 @@ class AuthController extends Controller
         }
 
         if (!Security::verifyPassword($password, $user['password_hash'])) {
+            RateLimiter::recordFailure('login', $email);
             Response::error('Invalid credentials', 401);
         }
 
+        RateLimiter::clear('login', $email);
         SessionManager::regenerate();
         SessionManager::set('user_id', $user['id']);
         SessionManager::set('first_name', $user['first_name']);
@@ -105,8 +112,8 @@ class AuthController extends Controller
             Response::error('All fields are required', 400);
         }
 
-        if (strlen($password) < 6) {
-            Response::error('Password must be at least 6 characters', 400);
+        if (strlen($password) < 8) {
+            Response::error('Password must be at least 8 characters', 400);
         }
 
         // Cele 3 raspunsuri de securitate (folosite la resetarea parolei)
@@ -172,6 +179,7 @@ class AuthController extends Controller
      */
     public function reset(array $params): void
     {
+        $this->requireCsrf();
         $body = $this->request->body;
         $email = strtolower(trim((string) ($body['email'] ?? '')));
         $newPassword = (string) ($body['new_password'] ?? '');
@@ -189,18 +197,24 @@ class AuthController extends Controller
                 Response::error('All 3 security answers are required', 400);
             }
         }
-        if (strlen($newPassword) < 6) {
-            Response::error('Password must be at least 6 characters', 400);
+        if (strlen($newPassword) < 8) {
+            Response::error('Password must be at least 8 characters', 400);
         }
+
+        // Rate limiting: raspunsurile de securitate au entropie mica,
+        // fara limitare ar putea fi ghicite prin brute-force.
+        RateLimiter::check('reset', $email);
 
         $userModel = new UserModel();
         $user = $userModel->findByEmail($email);
 
         // Mesaj generic atat pentru email gresit cat si pentru raspunsuri gresite.
         if (!$user || !$userModel->verifySecurityAnswers((int) $user['id'], $answers)) {
+            RateLimiter::recordFailure('reset', $email);
             Response::error('Email or security answers are incorrect', 400);
         }
 
+        RateLimiter::clear('reset', $email);
         $userModel->updatePassword((int) $user['id'], $newPassword);
         Response::json(['message' => 'Password has been reset']);
     }

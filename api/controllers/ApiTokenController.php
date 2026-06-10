@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace App\Controllers;
 
 use App\Core\Controller;
+use App\Core\RateLimiter;
 use App\Core\Response;
 use App\Core\SessionManager;
 use App\Models\ApiTokenModel;
@@ -47,10 +48,14 @@ class ApiTokenController extends Controller
             Response::error('email and password are required', 422);
         }
 
+        // Rate limiting: acelasi mecanism ca la login (max 5 esecuri / 15 min)
+        RateLimiter::check('token', $email);
+
         $userModel = new UserModel();
         $user      = $userModel->findByEmail($email);
 
         if (!$user || !password_verify($password, $user['password_hash'])) {
+            RateLimiter::recordFailure('token', $email);
             Response::error('Invalid credentials', 401);
         }
 
@@ -58,6 +63,7 @@ class ApiTokenController extends Controller
             Response::error('Account is banned', 403);
         }
 
+        RateLimiter::clear('token', $email);
         $model = new ApiTokenModel();
         $raw   = $model->create((int) $user['id'], $name, $days > 0 ? $days : null);
 

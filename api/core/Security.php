@@ -38,7 +38,8 @@ class Security
                 'path'     => '/',
                 'samesite' => 'Strict',
                 'httponly' => false,    // Accesibil JS intentionat — necesar pentru double-submit
-                'secure'   => false,    // localhost nu foloseste HTTPS
+                // Secure automat cand serverul ruleaza pe HTTPS (in dev/localhost ramane false)
+                'secure'   => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
             ]);
 
             // Actualizam superglobalul pentru cererea curenta

@@ -191,8 +191,8 @@
         const email    = regForm.email.value.trim();
         const password = regForm.password.value;
 
-        if (password.length < 6) {
-            showRegError('Password must be at least 6 characters.');
+        if (password.length < 8) {
+            showRegError('Password must be at least 8 characters.');
             return;
         }
 
