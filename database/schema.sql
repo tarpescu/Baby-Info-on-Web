@@ -111,6 +111,7 @@ CREATE TABLE IF NOT EXISTS moments (
                                        is_pinned   INTEGER NOT NULL DEFAULT 0,
                                        is_shared   INTEGER NOT NULL DEFAULT 0,
                                        share_token TEXT    UNIQUE,
+                                       tags        TEXT    NOT NULL DEFAULT '',
                                        reactions   INTEGER NOT NULL DEFAULT 0,
                                        happened_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                        created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -164,6 +165,7 @@ CREATE TABLE IF NOT EXISTS medical_records (
                                                clinic_name TEXT,
                                                date_at     DATE    NOT NULL,
                                                next_date   DATE,
+                                               document_url TEXT,
                                                created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -236,3 +238,13 @@ CREATE INDEX IF NOT EXISTS idx_comments_moment ON comments(moment_id);
 CREATE INDEX IF NOT EXISTS idx_reactions_moment ON reactions(moment_id);
 CREATE INDEX IF NOT EXISTS idx_users_superadmin ON users(is_superadmin) WHERE is_superadmin = TRUE;
 CREATE INDEX IF NOT EXISTS idx_users_banned    ON users(banned_at) WHERE banned_at IS NOT NULL;
+
+-- ── Auth attempts (rate limiting pe login / reset parola / emitere token) ──
+CREATE TABLE IF NOT EXISTS auth_attempts (
+    id           SERIAL PRIMARY KEY,
+    action       TEXT    NOT NULL,              -- 'login' | 'reset' | 'token'
+    identifier   TEXT    NOT NULL,              -- email-ul incercat
+    ip           TEXT    NOT NULL DEFAULT '',
+    attempted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_auth_attempts ON auth_attempts(action, identifier, attempted_at);
