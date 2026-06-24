@@ -14,6 +14,7 @@ RewriteRule ^join$ join.html [L]
 RewriteRule ^gallery$ gallery.html [L]
 RewriteRule ^admin$ admin.html [L]
 RewriteRule ^medical$ medical.html [L]
+RewriteRule ^family$ family.html [L]
 
 # Fallback -> landing page
 RewriteRule ^(.*)$ landingpage.html [QSA,L]

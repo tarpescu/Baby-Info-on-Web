@@ -25,6 +25,25 @@ class ChildModel extends Model
         return $stmt->fetchAll();
     }
 
+    /**
+     * Returneaza toti copiii din platforma, cu numele owner-ului
+     * (folosit la exportul CSV din panoul de admin).
+     *
+     * @return array
+     */
+    public function getAll(): array
+    {
+        $stmt = $this->db->query("
+            SELECT c.id, c.first_name, c.last_name, c.date_of_birth, c.gender,
+                   c.blood_type, c.created_at,
+                   u.first_name AS owner_first, u.last_name AS owner_last, u.email AS owner_email
+            FROM children c
+            JOIN users u ON c.created_by = u.id
+            ORDER BY c.id
+        ");
+        return $stmt->fetchAll();
+    }
+
     public function findById(int $id): ?array
     {
         $stmt = $this->db->prepare("

@@ -525,7 +525,11 @@ function renderDashboardColumn(child) {
     document.getElementById('dashboardColumn').innerHTML = `
         <div class="dashboard-header">
             <h1 class="font-modern">${name}'s Journal</h1>
-            <p class="font-typewriter">AGE: ${age.toUpperCase()}</p>
+            <p class="font-typewriter">AGE: ${age.toUpperCase()}
+               <span style="margin-left:0.8rem; font-size:0.75rem;">EXPORT:
+                   <a href="/api/children/${child.id}/export/csv" download style="color:inherit;">CSV</a> ·
+                   <a href="/api/children/${child.id}/export/json" download style="color:inherit;">JSON</a>
+               </span></p>
         </div>
         <div class="bento-grid">
             <!-- Today card -->

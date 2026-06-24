@@ -50,6 +50,13 @@
     <button class="filter-chip" data-type="note">📝 Notes</button>
     <span class="filter-label" id="tagFilterLabel" style="display:none; margin-left:1rem;">Tags:</span>
     <span id="tagChips" style="display:contents;"></span>
+    <span class="filter-label" style="margin-left:1rem;">Period:</span>
+    <input type="date" id="dateFrom" title="From date"
+           style="font-family:'Courier Prime',monospace; font-size:0.75rem; border:1px solid var(--outline); background:transparent; padding:2px 6px;"/>
+    <span style="color:var(--text-muted);">–</span>
+    <input type="date" id="dateTo" title="To date"
+           style="font-family:'Courier Prime',monospace; font-size:0.75rem; border:1px solid var(--outline); background:transparent; padding:2px 6px;"/>
+    <button class="filter-chip" id="dateClear" style="display:none;">✕ Reset</button>
 </div>
 
 <!-- Gallery Content -->
@@ -380,9 +387,19 @@ function renderGallery(moments) {
         ? viewable
         : viewable.filter(m => m.type === activeFilter);
 
-    const filtered = activeTagFilter === 'all'
+    const byTag = activeTagFilter === 'all'
         ? byType
         : byType.filter(m => parseTags(m.tags).includes(activeTagFilter));
+
+    // Filtru pe interval de date (cerinta: "filterable by category and date range")
+    const fromVal = document.getElementById('dateFrom').value;
+    const toVal   = document.getElementById('dateTo').value;
+    const filtered = byTag.filter(m => {
+        const d = String(m.happened_at || '').slice(0, 10);
+        if (fromVal && d < fromVal) return false;
+        if (toVal && d > toVal) return false;
+        return true;
+    });
 
     if (filtered.length === 0) {
         const emptyMsg = userCanWrite
@@ -749,10 +766,25 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
-// Filter chips
-document.querySelectorAll('.filter-chip').forEach(chip => {
+// Date range filter
+['dateFrom', 'dateTo'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+        const hasRange = document.getElementById('dateFrom').value || document.getElementById('dateTo').value;
+        document.getElementById('dateClear').style.display = hasRange ? '' : 'none';
+        renderGallery(allMoments);
+    });
+});
+document.getElementById('dateClear').addEventListener('click', () => {
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    document.getElementById('dateClear').style.display = 'none';
+    renderGallery(allMoments);
+});
+
+// Filter chips (doar cele de tip — [data-type]; tag chips si dateClear au handlerele lor)
+document.querySelectorAll('.filter-chip[data-type]').forEach(chip => {
     chip.addEventListener('click', () => {
-        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.filter-chip[data-type]').forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         activeFilter = chip.dataset.type;
         renderGallery(allMoments);

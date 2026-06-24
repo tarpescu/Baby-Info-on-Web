@@ -69,6 +69,7 @@ class Router
         $this->add('POST', '/api/children/{id}/invites', 'InviteController', 'store');
         $this->add('GET', '/api/invite', 'InviteController', 'validate');
 
+        $this->add('GET', '/api/export/children', 'ExportController', 'children');
         $this->add('GET', '/api/children/{id}/export/json', 'ExportController', 'json');
         $this->add('GET', '/api/children/{id}/export/csv', 'ExportController', 'csv');
         $this->add('POST', '/api/import/csv', 'ImportController', 'csv');
@@ -133,6 +134,7 @@ class Router
         $this->add('POST',   '/api/v1/relationships/{id}/interactions', 'InteractionController',  'store');
 
         // Export / Import
+        $this->add('GET',  '/api/v1/export/children',           'ExportController', 'children');
         $this->add('GET',  '/api/v1/children/{id}/export/json', 'ExportController', 'json');
         $this->add('GET',  '/api/v1/children/{id}/export/csv',  'ExportController', 'csv');
         $this->add('POST', '/api/v1/import/json',               'ImportController', 'json');

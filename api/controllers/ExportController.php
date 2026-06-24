@@ -10,6 +10,7 @@ namespace App\Controllers;
 
 use App\Core\Controller;
 use App\Core\Response;
+use App\Core\SessionManager;
 use App\Models\ChildModel;
 use App\Models\FeedingModel;
 use App\Models\SleepModel;
@@ -22,6 +23,32 @@ use ZipArchive;
 class ExportController extends Controller
 {
     private const EXPORT_LIMIT = 100000;
+
+    /**
+     * GET /api/export/children — exporta lista copiilor in CSV.
+     * Super-admin primeste toti copiii din platforma (cu owner);
+     * un user obisnuit primeste copiii familiei sale (cu permisiunea lui).
+     *
+     * @return void Descarca un fisier children.csv
+     */
+    public function children(array $params): void
+    {
+        $this->requireAuth();
+
+        $model = new ChildModel();
+        $rows = SessionManager::isSuperAdmin()
+            ? $model->getAll()
+            : $model->getByUser((int) SessionManager::userId());
+
+        $body = $this->toCsv($rows);
+
+        http_response_code(200);
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="children.csv"');
+        header('Content-Length: ' . strlen($body));
+        echo $body;
+        exit;
+    }
 
     public function json(array $params): void
     {

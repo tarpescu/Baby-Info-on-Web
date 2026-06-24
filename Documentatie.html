@@ -71,6 +71,8 @@
             <li>Controller-ul validează datele de intrare, interacționează cu clasele <code>Model</code> pentru a citi/scrie în baza de date și returnează răspunsul sub formă de JSON.</li>
         </ol>
 
+        <p><strong>Rulare și portabilitate:</strong> În dezvoltare, aplicația rulează cu serverul web încorporat în PHP (<code>php -S localhost:8000 router.php</code>), nefiind necesar XAMPP sau Apache. Fișierul <code>router.php</code> joacă rolul de front-controller, dirijând cererile către API (<code>api/index.php</code>), către scriptul de servire a fișierelor media (<code>serve_media.php</code>) sau către paginile statice din <code>public/</code>. Pentru portabilitate, proiectul include și fișiere <code>.htaccess</code> (în <code>api/</code> și <code>public/</code>) care reproduc aceeași logică de rutare atunci când aplicația este găzduită pe un server <strong>Apache</strong> (ex. XAMPP), permițând astfel rularea în ambele medii fără modificări de cod.</p>
+
         <figure>
             <img src="diagrama_c4_l2.png" alt="C4 Container Diagram" style="max-width: 100%; height: auto;">            <figcaption>Figura 1: Arhitectura Containerelor (C4 Level 2) - Componentele principale ale aplicației Baby Info.</figcaption>
         </figure>
