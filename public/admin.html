@@ -231,7 +231,7 @@ async function loadUsers() {
 
 /** Ban/Unban: actualizeaza randul direct in DOM, fara reload. */
 async function handleUserAction(btn) {
-    const id = parseInt(btn.dataset.id, 10);
+    const id = parseInt(btn.dataset.id, 10);  // id-ul utilizatorului
     const action = btn.dataset.action; // 'ban' | 'unban'
     btn.disabled = true;
 

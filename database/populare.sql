@@ -53,11 +53,13 @@ INSERT INTO users (id, first_name, last_name, email, password_hash, role, avatar
 (48, 'Paraschiva','Nedelcu',    'paraschiva.n@mail.ro',      '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer',    'c3'),
 (49, 'Grigore',   'Nedelcu',    'grigore.n@mail.ro',         '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer',    'c6'),
 (50, 'Nicoleta',  'Coman',      'bona.nicoleta@mail.ro',     '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'caregiver', 'c4'),
-(51, 'Sergiu',    'Tarpescu',   'tarpescu@email.com',        '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'owner',     'c1')
+(51, 'Sergiu',    'Tarpescu',   'tarpescu@email.com',        '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'owner',     'c1'),
+(52, 'Mirabela',  'Popescu',    'mirabela@gmail.com',        '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer',    'c6'),
+(53, 'Mirabela',  'Popescu',    'mirabelapopescu@gmail.com', '$2y$12$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'viewer',    'c6')
 ON CONFLICT (id) DO NOTHING;
 
 UPDATE users
-SET password_hash = '$2y$12$eMrC4k0bsfEy9ykvljO9Ve8RJhl0rQLs4fvSk2u/Ga0Wie5fdY2vO';
+SET password_hash = '$2y$12$U.QmnQG8ib1Nkc5ClkafeO5hTzrVwtAzzHywBDVaqQM3I6g2dZr2m';
 
 -- Raspunsuri de securitate comune pentru toti userii (folosite la resetarea parolei).
 -- Raspunsuri (normalizate, lowercase): 1=rex, 2=bibi, 3=cluj
@@ -66,8 +68,12 @@ SET security_answer_1 = '$2y$12$.8Q6xnyuUPyDeBhulON.a.PWKEutXvKuYxjWQAro/tRd8lJp
     security_answer_2 = '$2y$12$m/Eh8hmQPORqdvGtwc2ebemeNxsdNSYBP7/nSu5NQB9tQoBcQwdwa',
     security_answer_3 = '$2y$12$/UB6cvWOUCTq0mlBYCUJjeYmMJTZOi8hPvrVctnhSEbBentbwrESq';
 
+-- Conturi de test speciale conform README (parola: test123)
+UPDATE users
+SET password_hash = '$2y$12$jznaitFcv1Be7PFO6WjdR.1yNCJQzIDELH25NmvFzRaUXDhxDzKOK'
+WHERE email IN ('mirabela@gmail.com', 'mirabelapopescu@gmail.com');
+
 -- Cont super-admin dedicat (email: tarpescu@email.com, parola: Sergiu123!)
--- Rulat dupa UPDATE-ul global ca sa nu fie suprascris.
 UPDATE users
 SET is_superadmin = TRUE,
     password_hash = '$2y$12$/O/J51Aej4GkdsiBjq7E1uIK0SStLkuSLTCC1hxEjpIODIVvxTB/m'
@@ -94,7 +100,7 @@ ON CONFLICT (id) DO NOTHING;
 
 -- FAMILY MEMBERS
 INSERT INTO family_members (child_id, user_id, permission) VALUES
-(1,1,'owner'),(1,2,'coparent'),(1,3,'viewer'),(1,4,'viewer'),(1,5,'caregiver'),
+(1,1,'owner'),(1,2,'coparent'),(1,3,'viewer'),(1,4,'viewer'),(1,5,'caregiver'),(1,52,'owner'),(1,53,'owner'),
 (2,1,'owner'),(2,2,'coparent'),(2,3,'viewer'),(2,4,'viewer'),
 (3,6,'owner'),(3,7,'coparent'),(3,8,'viewer'),(3,9,'viewer'),(3,10,'caregiver'),
 (4,11,'owner'),(4,12,'coparent'),(4,13,'viewer'),(4,14,'viewer'),(4,15,'caregiver'),
